@@ -1,0 +1,62 @@
+[
+  {
+    "label": "Librarian — poll",
+    "schedule": "every 2min · 23:30 America/New_York daily",
+    "purpose": "Librarian — nightly curation pass",
+    "host": "orchestrator box"
+  },
+  {
+    "label": "Vault sync",
+    "schedule": "every 5min",
+    "purpose": "Vault sync (commit brain writes, converge with GitHub)",
+    "host": "orchestrator box"
+  },
+  {
+    "label": "MCP reaper",
+    "schedule": "01:30 America/New_York daily",
+    "purpose": "Reap leaked MCP filesystem children by restarting the remote connectors",
+    "host": "orchestrator box"
+  },
+  {
+    "label": "Firewall audit",
+    "schedule": "01:30 America/New_York daily",
+    "purpose": "Firewall audit — nightly tripwire over the synced (Open + Private) tiers",
+    "host": "orchestrator box"
+  },
+  {
+    "label": "Watchdog",
+    "schedule": "every 10min",
+    "purpose": "Watchdog — 10-min staleness sentinel (silent-failure detector)",
+    "host": "orchestrator box"
+  },
+  {
+    "label": "Pipeline canary",
+    "schedule": "08:00 America/New_York daily",
+    "purpose": "Pipeline canary — daily end-to-end filing proof (drop -> model -> note -> ledger)",
+    "host": "orchestrator box"
+  },
+  {
+    "label": "Alert heartbeat",
+    "schedule": "08:05 08:05:00 America/New_York daily",
+    "purpose": "Weekly alerting heartbeat — a dead alert channel becomes noticeable by ABSENCE",
+    "host": "orchestrator box"
+  },
+  {
+    "label": "Skills refresh",
+    "schedule": "every 15min",
+    "purpose": "Skills refresh (mirror canonical claude-code-skills into the vault tree)",
+    "host": "orchestrator box"
+  },
+  {
+    "label": "Graph audit",
+    "schedule": "01:30 America/New_York daily",
+    "purpose": "Graph-health audit — nightly read-only tripwire over the Open knowledge graph (#9)",
+    "host": "orchestrator box"
+  },
+  {
+    "label": "Auto-refresh",
+    "schedule": "01:30 America/New_York daily",
+    "purpose": "Regenerate the architecture view from the latest repo (self-refresh)",
+    "host": "orchestrator box"
+  }
+]

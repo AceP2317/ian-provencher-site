@@ -1,0 +1,43 @@
+---
+interface Props {
+  href?: string;
+  class?: string;
+}
+const { href = '/', class: className = '' } = Astro.props;
+// Unique gradient id so multiple <Wordmark>s on one page don't collide.
+const gid = 'ip-' + Math.random().toString(36).slice(2, 8);
+---
+<a
+  href={href}
+  class={`group inline-flex items-center gap-2.5 ${className}`}
+  aria-label="Ian Provencher — home"
+>
+  <svg
+    viewBox="0 0 32 32"
+    class="h-7 w-7 shrink-0 transition-transform duration-300 ease-out group-hover:-translate-y-0.5"
+    aria-hidden="true"
+    style="filter: drop-shadow(0 0 3px color-mix(in oklab, var(--color-accent) 26%, transparent));"
+  >
+    <defs>
+      <linearGradient id={gid} x1="0" y1="0" x2="1" y2="1">
+        <stop offset="0" style="stop-color: var(--color-accent)" />
+        <stop offset="1" style="stop-color: var(--color-cyan)" />
+      </linearGradient>
+    </defs>
+    <rect x="2" y="2" width="28" height="28" rx="7" style="fill: var(--color-canvas); stroke: var(--color-line)" stroke-width="1.5" />
+    {/* I — stem + glowing accent node (the synapse tittle) */}
+    <rect x="9" y="12" width="2.6" height="9.5" rx="1.3" style="fill: var(--color-ink)" />
+    <circle cx="10.3" cy="9" r="1.7" style="fill: var(--color-accent)" />
+    {/* P — stem + bowl in the gradient */}
+    <path
+      d="M15.4 10.5 h4.4 a4 4 0 0 1 0 8 h-1.8 v3 h-2.6 z M18 12.8 v3.4 h1.8 a1.7 1.7 0 0 0 0-3.4 z"
+      fill={`url(#${gid})`}
+    />
+  </svg>
+  <span class="font-display text-[1.05rem] font-semibold leading-none tracking-tight text-ink">
+    {/* The two-hue amber→cyan spectrum is kept ONLY here and on the "IP" glyph above:
+        a short mark gives the hue arc no room to pass through the desaturated olive that
+        ruins it at headline length. See .name-accent in global.css. */}
+    Ian&nbsp;<span class="name-accent name-accent--spectrum">Provencher</span>
+  </span>
+</a>

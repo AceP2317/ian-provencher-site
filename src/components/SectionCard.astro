@@ -1,0 +1,43 @@
+---
+import Icon from './Icon.astro';
+import { statusLabel, type Section } from '../data/sections';
+
+interface Props { section: Section; index: number; }
+const { section, index } = Astro.props;
+
+const badgeClass: Record<string, string> = {
+  live: 'border-up/40 text-up',
+  stub: 'border-accent/40 text-accent-2',
+  planned: 'border-line-2 text-ink-faint',
+};
+// Literal class strings so Tailwind's scanner keeps each utility.
+const accentText: string = {
+  cyan: 'text-cyan', indigo: 'text-indigo', green: 'text-green', accent: 'text-accent-2',
+}[section.accent ?? 'accent'] ?? 'text-accent-2';
+const num = String(index + 1).padStart(2, '0');
+---
+<a
+  href={`/${section.slug}/`}
+  class="reveal panel group relative flex flex-col gap-3 p-5 transition-colors duration-200 hover:border-line-2"
+>
+  <div class="flex items-start justify-between">
+    <span class={`grid h-10 w-10 place-items-center rounded-lg border border-line bg-surface-2 ${accentText}`}>
+      <Icon name={section.icon} size={20} />
+    </span>
+    <span class={`chip ${badgeClass[section.status]}`}>
+      {section.status === 'live' && <span class="chip-dot" style="background: var(--color-up)"></span>}
+      {statusLabel[section.status]}
+    </span>
+  </div>
+  <div>
+    <div class="flex items-baseline gap-2">
+      <span class="section-index">/ {num}</span>
+      <h3 class="font-display text-lg font-semibold tracking-tight text-ink">{section.title}</h3>
+    </div>
+    <p class="mt-1.5 text-sm leading-relaxed text-ink-muted">{section.description}</p>
+  </div>
+  <span class="mt-auto inline-flex items-center gap-1 pt-1 text-xs font-medium text-ink-faint transition-colors group-hover:text-accent-2">
+    {section.status === 'live' ? 'Open' : 'Preview'}
+    <Icon name="arrow-up-right" size={13} />
+  </span>
+</a>

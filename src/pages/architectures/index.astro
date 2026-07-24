@@ -1,0 +1,89 @@
+---
+import PageLayout from '../../layouts/PageLayout.astro';
+import PipelineFlow from '../../components/PipelineFlow.astro';
+import ArchThumb from '../../components/ArchThumb.astro';
+import { architectures, KIND_META } from '../../data/architectures';
+import { bySlug } from '../../data/sections';
+
+const section = bySlug.get('architectures')!;
+const slug = (id: string) => id.replace(/^arch-/, '');
+const distinctKinds = (a: (typeof architectures)[number]) => [...new Set(a.nodes.map((n) => n.kind))];
+
+// Real figures, derived from the published graphs — not typed in, so they can never drift
+// out of sync with the diagrams they describe.
+const stats = [
+  { value: architectures.length, label: 'systems' },
+  { value: architectures.reduce((n, a) => n + a.nodes.length, 0), label: 'nodes' },
+  { value: architectures.reduce((n, a) => n + a.edges.length, 0), label: 'connections' },
+];
+---
+<PageLayout title="Architectures" description={section.description} image="/og/architectures.png?v=1">
+  <section class="section">
+    <div class="mx-auto max-w-6xl px-6">
+      <div class="max-w-2xl">
+        <p class="mono-label">Architectures · {architectures.length}</p>
+        <h1 class="mt-2 font-display text-4xl font-semibold tracking-tight text-ink">
+          The systems I run
+        </h1>
+        <p class="mt-4 text-base leading-relaxed text-ink-muted">
+          Interactive diagrams — click any node to inspect it, or step through the walkthrough.
+          Rendered from public-safe records exported out of my Command Center.
+        </p>
+      </div>
+
+      {/* A proof bar, not four paragraphs. .stat-value gives these tabular figures and a
+          cool tint so they read as GAUGES; data-countup settles them like an instrument
+          when they scroll into view (motion-gated, and it lands on the exact figure). */}
+      <dl class="mt-8 flex flex-wrap gap-x-12 gap-y-6">
+        {stats.map((s) => (
+          <div>
+            <dd class="stat-value" data-countup>{s.value}</dd>
+            <dt class="mono-label mt-1">{s.label}</dt>
+          </div>
+        ))}
+      </dl>
+
+      <div class="mt-8">
+        <PipelineFlow
+          label="How a private system reaches this page, public-safe"
+          stages={[
+            { name: 'command center', note: 'the private source' },
+            { name: 'safe-export', note: 'allowlist + scrub', lit: true },
+            { name: 'build', note: 'render diagrams' },
+            { name: 'live', note: 'public-safe only', lit: true },
+          ]}
+        />
+      </div>
+
+      {/* Each card carries a build-time miniature of the system's REAL topology, so the
+          index stops being six identical slabs. `lift-cyan` rings these cyan (architectures
+          is a cyan-accented section in the registry); the lift itself comes free from
+          `a.panel` — see global.css. */}
+      <div class="mt-10 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+        {architectures.map((a) => (
+          <a href={`/architectures/${slug(a.id)}/`}
+            class="reveal panel lift-cyan group flex flex-col gap-3 p-5">
+            <div class="arch-thumb-wrap">
+              <ArchThumb arch={a} />
+            </div>
+            <div class="flex items-center gap-1.5">
+              {distinctKinds(a).map((k) => (
+                <span class="h-2 w-2 rounded-full" style={`background:${KIND_META[k].color}`} title={KIND_META[k].label}></span>
+              ))}
+            </div>
+            <h2 class="font-display text-lg font-semibold leading-snug tracking-tight text-ink group-hover:text-cyan">
+              {a.title}
+            </h2>
+            <p class="text-sm leading-relaxed text-ink-muted">{a.tagline}</p>
+            <div class="mt-auto flex items-center gap-3 pt-2 font-mono text-[0.65rem] uppercase tracking-wider text-ink-faint">
+              <span>{a.nodes.length} nodes</span>
+              <span>·</span>
+              <span>{a.walkthrough.length} steps</span>
+              <span class="ml-auto text-cyan-deep group-hover:text-cyan">Explore →</span>
+            </div>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+</PageLayout>

@@ -1,0 +1,81 @@
+---
+import PageLayout from '../layouts/PageLayout.astro';
+import SectionCard from '../components/SectionCard.astro';
+import PipelineFlow from '../components/PipelineFlow.astro';
+import { site } from '../data/site';
+import { gridSections } from '../data/sections';
+---
+<PageLayout title={site.name} description={site.description}>
+  {/* ── Hero ─────────────────────────────────────────────────────────────── */}
+  <section class="relative overflow-hidden">
+    <div class="accent-glow"></div>
+    <div class="absolute inset-0 bg-grid bg-grid-fade opacity-40" aria-hidden="true"></div>
+    <div class="relative mx-auto max-w-6xl px-6 pb-16 pt-20 sm:pt-28">
+      <p class="mono-label">Ian Provencher · builder</p>
+      <h1 class="mt-4 max-w-3xl font-display font-semibold tracking-tight text-ink"
+          style="font-size: var(--text-display); line-height: var(--text-display--line-height); letter-spacing: var(--text-display--letter-spacing);">
+        The workspace behind <span class="name-accent">the work</span>.
+      </h1>
+      <p class="mt-6 max-w-xl text-lg leading-relaxed text-ink-muted">
+        {site.tagline} This is the public side of it — the repos, builds, cron jobs,
+        apps, and architectures I actually run, plus field notes.
+      </p>
+      <div class="mt-8 flex flex-wrap items-center gap-3">
+        <a href="/blog/" class="btn btn-primary">Read the blog</a>
+        <a href="https://github.com/AceP2317" class="btn btn-secondary">GitHub</a>
+      </div>
+
+      {/*
+        The claim here used to be "a living workspace — most of this keeps itself
+        current, unattended." That wasn't true: two of nineteen sections refresh
+        themselves. export-public.mjs (tools, architectures, cron) needs the
+        private Command Center OS and Hermes, which CI can't reach, so those stay
+        manual (D2) — and blog, tips, glossary, learn and the rest are authored.
+
+        So the claim is now scoped to what actually runs unattended, which is the
+        real pipeline in .github/workflows/refresh-data.yml: fetch repos and jobs
+        daily at 08:17 UTC, run check-safe.mjs (exit 1 aborts BEFORE the commit),
+        commit only if the snapshot changed, push, deploy.
+
+        Smaller claim, fully load-bearing. Stage notes must stay under ~20 chars —
+        PipelineFlow centres each note on its node at a fixed 208px gap, and
+        longer strings collide with their neighbour and clip at the viewBox edge.
+      */}
+      <div class="relative mt-12">
+        <PipelineFlow
+          label="Repos and the job board keep themselves current — fetched, gated, deployed, unattended"
+          stages={[
+            { name: 'fetch', note: 'daily · 08:17 UTC' },
+            { name: 'gate', note: 'red aborts the run', lit: true },
+            { name: 'commit', note: 'only if changed' },
+            { name: 'deploy', note: 'auto, on push' },
+            { name: 'live', note: '~1 min later', lit: true },
+          ]}
+        />
+      </div>
+    </div>
+  </section>
+
+  {/* ── The map: every section, live or in build ─────────────────────────── */}
+  <section class="section-band">
+    <div class="section mx-auto max-w-6xl px-6">
+      <div class="flex items-end justify-between gap-4">
+        <div>
+          <span class="section-index">/ index</span>
+          <h2 class="mt-1 font-display text-2xl font-semibold tracking-tight text-ink">
+            Everything, one tile at a time
+          </h2>
+        </div>
+        <p class="hidden max-w-xs text-sm text-ink-muted sm:block">
+          A modular workspace — each tile lights up as it's wired in.
+        </p>
+      </div>
+
+      <div class="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        {gridSections.map((section, i) => (
+          <SectionCard section={section} index={i} />
+        ))}
+      </div>
+    </div>
+  </section>
+</PageLayout>

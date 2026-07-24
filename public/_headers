@@ -1,0 +1,40 @@
+# Cloudflare Workers static-assets honors this file (same format as Pages).
+# More-specific paths win; every request also gets the site-wide /* block.
+
+# ── Caching ──────────────────────────────────────────────────────────────
+# Content-hashed build output (JS, CSS, fonts) — the filename changes whenever
+# the bytes change, so these are safe to cache forever.
+/_astro/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# Social/OG cards — long-lived but revalidatable (filenames are stable, so they
+# can be regenerated in place).
+/og/*
+  Cache-Control: public, max-age=604800
+
+# Icons — stable, regeneratable.
+/favicon.svg
+  Cache-Control: public, max-age=604800
+/*.png
+  Cache-Control: public, max-age=604800
+
+# ── Security + privacy (site-wide) ───────────────────────────────────────
+/*
+  # Force HTTPS for a year (add "; preload" only when ready — hard to reverse).
+  Strict-Transport-Security: max-age=31536000; includeSubDomains
+  # Don't let browsers MIME-sniff responses into a different content type.
+  X-Content-Type-Options: nosniff
+  # Clickjacking guard (CSP frame-ancestors below is the modern equivalent).
+  X-Frame-Options: SAMEORIGIN
+  # Send only the origin on cross-site navigations; full path same-origin.
+  Referrer-Policy: strict-origin-when-cross-origin
+  # Deny powerful features this site never uses.
+  Permissions-Policy: geolocation=(), camera=(), microphone=(), payment=(), usb=()
+  # Report-only first: observe violations before switching to an enforcing
+  # `Content-Security-Policy`. img-src allows https: for external favicons
+  # (Favorites) and article thumbnails (Signal); the islands use inline styles
+  # and Astro injects an inline reveal script, hence 'unsafe-inline'. media-src covers
+  # the podcast audio, which is the site's only cross-origin media (R2, served from
+  # media.ian-provencher.com) — without it the <audio> player falls back to
+  # default-src 'self' and is blocked the moment this policy stops being report-only.
+  Content-Security-Policy-Report-Only: default-src 'self'; script-src 'self' 'unsafe-inline'; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; media-src 'self' https://media.ian-provencher.com; font-src 'self'; connect-src 'self'; base-uri 'self'; form-action 'self'; object-src 'none'; frame-ancestors 'self'

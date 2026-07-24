@@ -1,0 +1,188 @@
+---
+/**
+ * /about — the "who I am" page. Personal-brand identity: the operator behind the
+ * tools. Prose is public-safe (the employer is named only by generic descriptor —
+ * the safe-export firewall hard-blocks the literal). Identity + socials come from
+ * src/data/site.ts; structured data adds a ProfilePage + BreadcrumbList on top of
+ * the site-wide Person node in BaseLayout.
+ */
+import PageLayout from '../../layouts/PageLayout.astro';
+import Icon from '../../components/Icon.astro';
+import { site, socials } from '../../data/site';
+import { bySlug } from '../../data/sections';
+
+const section = bySlug.get('about')!;
+const origin = new URL(Astro.site!).origin;
+const personId = `${origin}/#person`;
+
+const aboutSchema = [
+  {
+    '@type': 'ProfilePage',
+    '@id': `${origin}/about/#profilepage`,
+    name: `About ${site.name}`,
+    url: `${origin}/about/`,
+    description: section.description,
+    isPartOf: { '@id': `${origin}/#website` },
+    mainEntity: { '@id': personId },
+  },
+  {
+    '@type': 'BreadcrumbList',
+    '@id': `${origin}/about/#breadcrumb`,
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: `${origin}/` },
+      { '@type': 'ListItem', position: 2, name: 'About', item: `${origin}/about/` },
+    ],
+  },
+];
+
+// Icon per social label (falls back to the external-link arrow).
+const socialIcon = (label: string) => {
+  const l = label.toLowerCase();
+  if (l === 'github') return 'git-branch';
+  if (l === 'linkedin') return 'linkedin';
+  if (l === 'nextdoor') return 'nextdoor';
+  return 'arrow-up-right';
+};
+---
+<PageLayout
+  title="About"
+  description={section.description}
+  image="/og/about.png?v=1"
+  schema={aboutSchema}
+>
+  {/* ── Intro hero ─────────────────────────────────────────────────────── */}
+  <section class="relative overflow-hidden border-b border-line">
+    <div class="bg-grid bg-grid-fade pointer-events-none absolute inset-0 -z-10 opacity-60"></div>
+    <div class="relative mx-auto max-w-5xl px-6 pt-20 pb-16 sm:pt-28 sm:pb-24">
+      <p class="mono-label">About</p>
+      <h1 class="mt-3 max-w-3xl font-display text-4xl font-semibold tracking-tight text-ink sm:text-5xl">
+        The operator who directs AI to build his own software.
+      </h1>
+      <p class="mt-5 max-w-2xl font-display text-lg leading-relaxed text-cyan">
+        I run supply-chain operations — and I direct AI to build the software those operations always needed:
+        full-stack, Python to the edge, orchestrated end to end.
+      </p>
+      <p class="mt-5 max-w-2xl text-lg leading-relaxed text-ink-muted">
+        I'm Ian Provencher — a supply-chain operator who's spent years inside the flow of real
+        material through real plants, and who now directs AI to build the software that fixes the exact problems that
+        flow throws off: full-stack applications, data tooling, and agentic systems, orchestrated end
+        to end. Deep domain, real shipped software, and a bias for the working
+        tool over the slide deck.
+      </p>
+      <p class="mt-4 max-w-2xl text-base leading-relaxed text-ink-muted">
+        This site is my public workspace — the repos, tools, cron jobs, apps, and architectures behind
+        the work, plus the field notes. It renders reviewed, public-safe snapshots of the real
+        infrastructure I run; it never re-types it.
+      </p>
+    </div>
+  </section>
+
+  {/* ── /01 The operator behind it ─────────────────────────────────────── */}
+  <section class="mx-auto max-w-4xl px-6 py-16 sm:py-20">
+    <p class="flex items-center gap-2.5">
+      <span class="section-index">/ 01</span>
+      <span class="mono-label">The operator behind it</span>
+    </p>
+    <div class="mt-6 flex flex-col gap-5 text-lg leading-relaxed text-ink-muted">
+      <p>
+        Years as a supply-chain analyst at a global home-appliance manufacturer — deep inside
+        end-to-end operations: the flow of material through real plants and the systems
+        that run it, from planning and sourcing to production, logistics, warehousing, and
+        engineering. Not adjacent to it, not advising on it from a deck — actually running the parts
+        most software is built without ever touching, down to the MRP and BOM mechanics underneath.
+      </p>
+      <p>
+        That's the moat. When the problem is a tangle of planning logic, material constraints, and the
+        gaps an ERP left behind, I understand it in operational terms before a single line of code
+        exists — so what gets built solves the real problem, not a tidy abstraction of it.
+      </p>
+      <p>
+        And the AI half isn't new. A passion for it ran alongside the operations work the whole way —
+        and it's now formally part of my role, helping shape the path, scope, and implementations of
+        AI across the company's North America region.
+      </p>
+      <p class="text-ink">
+        Strip the domain away and the job is constant: find the hard, specific, one-off problem nobody
+        will build a product for — and ship the exact tool that solves it.
+      </p>
+    </div>
+  </section>
+
+  {/* ── /02 What I build here ──────────────────────────────────────────── */}
+  <section class="section-band">
+    <div class="mx-auto max-w-4xl px-6 py-16 sm:py-20">
+      <p class="flex items-center gap-2.5">
+        <span class="section-index">/ 02</span>
+        <span class="mono-label">What I build</span>
+      </p>
+      <p class="mt-6 max-w-2xl text-lg leading-relaxed text-ink-muted">
+        I build my own operational software end to end — full-stack apps, tools, cron jobs, and
+        architectures that keep a one-person operation running like a much larger one — with AI
+        (mostly Claude Code) as the force multiplier. The real estate is private; what you see here is
+        the reviewed, public-safe render of it.
+      </p>
+      <div class="mt-8 grid grid-cols-1 gap-3 sm:grid-cols-2">
+        <a href="/tools/" class="reveal panel flex items-center gap-3 p-4 transition-colors hover:border-line-2">
+          <span class="grid h-9 w-9 shrink-0 place-items-center rounded-lg border border-line bg-surface-2 text-accent"><Icon name="wrench" size={17} /></span>
+          <span class="text-sm leading-snug text-ink-muted"><span class="font-medium text-ink">Builds</span> — the software I've shipped</span>
+        </a>
+        <a href="/architectures/" class="reveal panel flex items-center gap-3 p-4 transition-colors hover:border-line-2">
+          <span class="grid h-9 w-9 shrink-0 place-items-center rounded-lg border border-line bg-surface-2 text-cyan"><Icon name="network" size={17} /></span>
+          <span class="text-sm leading-snug text-ink-muted"><span class="font-medium text-ink">Architectures</span> — diagrams of the systems</span>
+        </a>
+        <a href="/cron/" class="reveal panel flex items-center gap-3 p-4 transition-colors hover:border-line-2">
+          <span class="grid h-9 w-9 shrink-0 place-items-center rounded-lg border border-line bg-surface-2 text-indigo"><Icon name="timer" size={17} /></span>
+          <span class="text-sm leading-snug text-ink-muted"><span class="font-medium text-ink">Cron</span> — the machinery that runs itself</span>
+        </a>
+        <a href="/command-center/" class="reveal panel flex items-center gap-3 p-4 transition-colors hover:border-line-2">
+          <span class="grid h-9 w-9 shrink-0 place-items-center rounded-lg border border-line bg-surface-2 text-cyan"><Icon name="radar" size={17} /></span>
+          <span class="text-sm leading-snug text-ink-muted"><span class="font-medium text-ink">Command Center</span> — the console I run it all from</span>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  {/* ── /03 What actually drives me ────────────────────────────────────── */}
+  <section class="mx-auto max-w-4xl px-6 py-16 sm:py-20">
+    <p class="flex items-center gap-2.5">
+      <span class="section-index">/ 03</span>
+      <span class="mono-label">What actually drives me</span>
+    </p>
+    <div class="mt-6 flex flex-col gap-5 text-lg leading-relaxed text-ink-muted">
+      <p>
+        The part that drives me isn't the building — it's the sharing. AI is the biggest leveler small
+        business has ever had. The shop running on spreadsheets can have its data turned into a working
+        tool today, and own the custom system it runs on tomorrow — no enterprise budget, no license,
+        no asking permission.
+      </p>
+      <p class="text-ink">
+        The businesses that harness that won't just keep up; they'll own what they used to buy off the
+        shelf. Helping more of them get there is the whole point of
+        <a href="https://appliediqsolutions.com" class="name-accent font-semibold" target="_blank" rel="noopener">AppliedIQ Solutions</a>,
+        my practice — custom supply-chain software and AI-built operational tools, designed and shipped
+        by one operator who's run the floor.
+      </p>
+    </div>
+  </section>
+
+  {/* ── Connect ────────────────────────────────────────────────────────── */}
+  <section class="section-band">
+    <div class="mx-auto max-w-4xl px-6 py-14 sm:py-16">
+      <p class="flex items-center gap-2.5">
+        <span class="section-index">/ 04</span>
+        <span class="mono-label">Connect</span>
+      </p>
+      <p class="mt-6 max-w-2xl text-lg leading-relaxed text-ink-muted">
+        The direct lines — no funnel, no gatekeeper.
+      </p>
+      <div class="mt-6 flex flex-wrap gap-3">
+        {socials.map((s) => (
+          <a href={s.href} target="_blank" rel="noopener me" class="btn btn-secondary">
+            <Icon name={socialIcon(s.label)} size={16} />
+            {s.label}
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+</PageLayout>

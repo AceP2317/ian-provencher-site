@@ -1,0 +1,151 @@
+---
+/**
+ * /resume — the public-safe living résumé. Renders src/data/resume.ts (generic,
+ * firewall-clean). Print-optimized (Ctrl/⌘-P → a clean PDF). The full,
+ * employer-named résumé for applications is generated privately by the /admin
+ * generator and downloaded — it never appears here.
+ */
+import PageLayout from '../../layouts/PageLayout.astro';
+import Icon from '../../components/Icon.astro';
+import { bySlug } from '../../data/sections';
+import { resume, resumeSchema } from '../../data/resume';
+import { site } from '../../data/site';
+
+const section = bySlug.get('resume')!;
+const origin = new URL(Astro.site!).origin;
+---
+<PageLayout
+  title="Résumé"
+  description={section.description}
+  image="/og/resume.png?v=1"
+  schema={resumeSchema(origin)}
+>
+  <section class="section">
+    <div class="resume-doc mx-auto max-w-3xl px-6">
+      {/* Header */}
+      <header class="border-b border-line pb-6">
+        <div class="flex flex-wrap items-start justify-between gap-4">
+          <div>
+            <p class="mono-label">Résumé</p>
+            <h1 class="mt-2 font-display text-4xl font-semibold tracking-tight text-ink">{site.name}</h1>
+            <p class="mt-2 max-w-xl text-base leading-relaxed text-ink-muted">{resume.headline}</p>
+          </div>
+          <button
+            id="print-resume"
+            onclick="window.print()"
+            class="no-print btn btn-secondary text-sm"
+            type="button"
+          >
+            <Icon name="file-text" size={15} /> Save as PDF
+          </button>
+        </div>
+        <div class="mt-4 flex flex-wrap items-center gap-x-4 gap-y-1 text-sm text-ink-muted">
+          <span>{resume.location}</span>
+          {resume.links.map((l) => (
+            <a href={l.href} target="_blank" rel="noopener" class="text-cyan-deep transition-colors hover:text-cyan">{l.label}</a>
+          ))}
+        </div>
+      </header>
+
+      {/* Summary */}
+      <section class="border-b border-line py-6">
+        <p class="text-base leading-relaxed text-ink-muted">{resume.summary}</p>
+      </section>
+
+      {/* Experience */}
+      <section class="py-6">
+        <h2 class="section-index">Experience</h2>
+        <div class="mt-5 flex flex-col gap-7">
+          {resume.experience.map((x) => (
+            <article>
+              <div class="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1">
+                <h3 class="font-display text-lg font-semibold tracking-tight text-ink">
+                  {x.role} <span class="text-ink-muted">· {x.org}</span>
+                </h3>
+                {x.dates && <span class="font-mono text-xs text-ink-faint">{x.dates}</span>}
+              </div>
+              {x.location && <p class="mt-0.5 font-mono text-xs text-ink-faint">{x.location}</p>}
+              <p class="mt-2 text-sm leading-relaxed text-ink-muted">{x.summary}</p>
+              <ul class="mt-3 flex flex-col gap-1.5">
+                {x.highlights.map((h) => (
+                  <li class="flex gap-2.5 text-sm leading-relaxed text-ink-muted">
+                    <span class="mt-2 h-1 w-1 shrink-0 rounded-full bg-accent" aria-hidden="true"></span>
+                    <span>{h}</span>
+                  </li>
+                ))}
+              </ul>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      {/* Skills */}
+      <section class="border-t border-line py-6">
+        <h2 class="section-index">Skills</h2>
+        <div class="mt-5 grid grid-cols-1 gap-5 sm:grid-cols-3">
+          {resume.skills.map((g) => (
+            <div>
+              <p class="mono-label">{g.label}</p>
+              <ul class="mt-2 flex flex-col gap-1 text-sm text-ink-muted">
+                {g.items.map((it) => <li>{it}</li>)}
+              </ul>
+            </div>
+          ))}
+        </div>
+      </section>
+
+      {resume.education.length > 0 && (
+        <section class="border-t border-line py-6">
+          <h2 class="section-index">Education</h2>
+          <div class="mt-5 flex flex-col gap-4">
+            {resume.education.map((e) => (
+              <div class="flex flex-wrap items-baseline justify-between gap-x-4">
+                <p class="text-sm text-ink"><span class="font-medium">{e.title}</span> · {e.org}</p>
+                {e.dates && <span class="font-mono text-xs text-ink-faint">{e.dates}</span>}
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      {resume.certifications.length > 0 && (
+        <section class="border-t border-line py-6">
+          <h2 class="section-index">Certifications</h2>
+          <div class="mt-5 flex flex-col gap-4">
+            {resume.certifications.map((c) => (
+              <div class="flex flex-wrap items-baseline justify-between gap-x-4">
+                <p class="text-sm text-ink"><span class="font-medium">{c.title}</span> · {c.org}</p>
+                {c.dates && <span class="font-mono text-xs text-ink-faint">{c.dates}</span>}
+              </div>
+            ))}
+          </div>
+        </section>
+      )}
+
+      <p class="no-print mt-8 text-sm leading-relaxed text-ink-faint">
+        This is my public, always-current résumé. For a role-specific version tailored to a job
+        description, <a href="/about/" class="text-cyan-deep hover:text-cyan">get in touch</a>.
+      </p>
+    </div>
+  </section>
+
+  {/* Print: strip the site chrome, force a clean black-on-white document.
+      Scoped to this page (is:global ships only in /resume/'s output). */}
+  <style is:global>
+    @media print {
+      body > header,
+      body > footer,
+      .skip-link,
+      .no-print { display: none !important; }
+      body { background: #fff; }
+      .section { padding-block: 0 !important; }
+      .resume-doc { max-width: none; padding: 0; }
+      .resume-doc, .resume-doc * { color: #16181d !important; }
+      .resume-doc a { text-decoration: none; }
+      .resume-doc .border-line,
+      .resume-doc [class*="border-"] { border-color: #d5d8de !important; }
+      .resume-doc .bg-accent { background: #16181d !important; }
+      @page { margin: 1.4cm; }
+    }
+  </style>
+</PageLayout>

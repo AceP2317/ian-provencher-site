@@ -1,0 +1,13 @@
+/* BUILDER */
+  Operator & builder: Ian Provencher
+  Site: https://ian-provencher.com
+  Practice: https://appliediqsolutions.com
+  Nextdoor: https://nextdoor.com/page/appliediq-solutions-new-bern-nc/
+  GitHub: AceP2317
+  Role: Supply-chain operator who directs AI to build his own operational software
+
+/* SITE */
+  Stack: Astro, React islands, Tailwind CSS, TypeScript
+  Type: Self-hosted (no font/analytics CDNs)
+  Hosting: Cloudflare Workers (static assets)
+  Built with: Claude Code

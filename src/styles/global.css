@@ -1,0 +1,1324 @@
+@import "tailwindcss";
+
+/* ============================================================================
+   ian-provencher.com — Design Tokens
+   Direction: "Operational Instrument" — same slate + cyan family as AppliedIQ,
+   but the personal brand's own accent: phosphor amber (matches Command Center
+   OS). These @theme tokens generate Tailwind utilities (bg-canvas, text-ink,
+   border-line, font-display, …) AND expose matching --color-* / --font-* CSS
+   variables. One source of truth.
+
+   Amber is the brand accent — change the four --color-accent* values below
+   (accent / -2 / -deep / -on-accent) and the <meta name="theme-color"> in
+   BaseLayout to re-skin the entire site. Component SVGs (Wordmark, favicon)
+   reference the tokens too, so they follow the swap.
+   ============================================================================ */
+@theme {
+  /* — Surfaces (dark, layered) — */
+  --color-canvas: #0f1117;     /* page background — slate-ink */
+  --color-surface: #161a23;    /* cards / panels */
+  --color-surface-2: #1d2230;  /* raised within a panel */
+  --color-line: #262c3a;       /* hairline borders / grid */
+  --color-line-2: #353d4f;     /* stronger dividers */
+
+  /* — Ink (text) — */
+  --color-ink: #e8eaf0;        /* primary text */
+  --color-ink-muted: #a4abbd;  /* secondary text */
+  --color-ink-faint: #838b9e;  /* metadata / labels (WCAG-AA on canvas) */
+
+  /* — Accent: phosphor amber (primary, DOMINANT; matches Command Center OS) — */
+  --color-accent: #f2a33c;     /* primary accent — amber */
+  --color-accent-2: #f7bd6b;   /* hover / lighter */
+  --color-accent-deep: #c2740f;/* pressed / deep */
+  /* Ink that sits ON amber (buttons, chips) — amber is light, so text must be dark. */
+  --color-on-accent: #1a1206;
+
+  /* — Cyan (secondary "analytics" charge) — */
+  --color-cyan: #22d3ee;       /* data / analytics */
+  --color-cyan-2: #67e8f9;     /* lighter cyan */
+  --color-cyan-deep: #06b6d4;  /* deep cyan — small accent text (links, indices) */
+
+  /* — Indigo (tasteful tertiary accent) — */
+  --color-indigo: #818cf8;
+
+  /* — Green (tasteful accent; doubles as positive status) — */
+  --color-green: #34d399;
+
+  /* — Violet + rose (favorites board: design + supply-chain category accents) — */
+  --color-violet: #c084fc;
+  --color-rose: #fb7185;
+
+  /* — Warm signal: sand (the instrument-metadata "readout" voice) — */
+  --color-label: #c7a978;      /* mono-labels / small uppercase labels */
+
+  /* — Status (instrument signals) — */
+  --color-up: #34d399;         /* positive / on-target */
+  --color-down: #f87171;       /* negative / alert */
+  --color-warn: #fbbf24;       /* caution */
+
+  /* — Type — */
+  --font-sans: "Inter Variable", "Inter", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --font-display: "Space Grotesk Variable", "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+
+  /* — Display type scale (hero / section headings) — */
+  --text-display: clamp(2.75rem, 1.5rem + 5vw, 5rem);
+  --text-display--line-height: 1.02;
+  --text-display--letter-spacing: -0.03em;
+
+  /* — Motion — */
+  --ease-instrument: cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+/* ============================================================================
+   Shared design values that are NOT meant to become Tailwind utilities.
+
+   These live on :root, deliberately NOT in @theme. Tailwind v4 tree-shakes any
+   @theme token nothing consumes — a value referenced only from an inline style,
+   a JS-set custom property, or a @layer rule it doesn't scan would be dropped
+   from the built CSS and resolve to nothing at runtime. :root is never shaken.
+   Nobody wants a `bg-grain` utility anyway.
+   ============================================================================ */
+:root {
+  /* Durations — one scale, so motion across the site feels like one system. */
+  --t-fast: 150ms;
+  --t-base: 200ms;
+  --t-slow: 420ms;
+
+  /* Radius — one scale. These replace a scatter of 0.3 / 0.4 / 0.5 / 0.75rem literals that
+     were four answers to one question; a corner radius that varies by 0.05rem between two
+     adjacent controls is exactly the kind of thing nobody can name but everybody feels. */
+  --r-sm: 0.375rem;
+  --r-md: 0.5rem;
+  --r-lg: 0.75rem;
+  --r-pill: 999px;
+
+  /* Small type — the metadata register. Same reasoning: 0.6875 / 0.72 / 0.75 / 0.8125rem
+     were five near-identical sizes doing three jobs. Micro = the mono uppercase label,
+     small = a secondary line, compact = a small control's own text. Body/display sizes stay
+     in @theme, where they earn Tailwind utilities; these are consumed only from @layer
+     components, which is precisely why they belong here and not there (see above). */
+  --fs-micro: 0.6875rem;   /* 11px */
+  --fs-small: 0.75rem;     /* 12px */
+  --fs-compact: 0.8125rem; /* 13px */
+
+  /* Elevation ramp. Dark UI needs a real shadow ramp or every card sits flat. */
+  --elev-1: 0 1px 2px rgb(0 0 0 / 0.28);
+  --elev-2: 0 8px 28px -10px rgb(0 0 0 / 0.55);
+  --elev-3: 0 30px 80px -30px rgb(0 0 0 / 0.75);
+
+  /* The hover ring. Delivered as a box-shadow, never a border-color: a Tailwind
+     utility (`border-line`) sits in the `utilities` layer, which beats `components`
+     on layer order before specificity is ever consulted — so a border-color hover
+     written here would silently lose on every card that carries the base utility.
+     A 1px ring lands on the same pixel and collides with nothing. */
+  --ring-accent: 0 0 0 1px color-mix(in oklab, var(--color-accent) 45%, transparent);
+  --ring-cyan: 0 0 0 1px color-mix(in oklab, var(--color-cyan) 45%, transparent);
+  --glow-accent: 0 10px 30px -10px color-mix(in oklab, var(--color-accent) 45%, transparent);
+  --glow-cyan: 0 10px 30px -10px color-mix(in oklab, var(--color-cyan) 40%, transparent);
+
+  /* Film grain. A 5–8% gradient on a dark canvas BANDS into visible stripes on an
+     8-bit display; grain dithers it away. This is the single clearest tell between
+     an expensive-looking dark gradient and a CSS-tutorial one. The strength is baked
+     into the SVG's own rect opacity rather than a layer opacity, so it can't dim
+     anything else that shares the layer. If you can SEE the grain, it is too strong —
+     it is meant to be felt, not seen. */
+  --grain: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.82' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23n)' opacity='0.055'/%3E%3C/svg%3E");
+}
+
+/* ============================================================================
+   Base layer
+   ============================================================================ */
+@layer base {
+  html {
+    color-scheme: dark;
+    scroll-behavior: smooth;
+  }
+
+  /* Horizontal-overflow guard. Decorative layers that deliberately bleed outside
+     their box (the atmosphere wells below overscan by 20%) have margin to spare on
+     a wide viewport and never reach the screen edge — but on a phone the container
+     IS the screen, so the bleed hangs off the right and widens the whole document.
+     The page then slides sideways under your thumb, and it is invisible on every
+     desktop test.
+
+     `clip`, NOT `hidden`: overflow:hidden on html/body creates a scroll container,
+     which breaks position:sticky (the header) and scroll anchoring. `clip` clips
+     without creating one — this is exactly what it exists for. */
+  html,
+  body {
+    overflow-x: clip;
+  }
+
+  body {
+    position: relative;
+    background-color: var(--color-canvas);
+    color: var(--color-ink);
+    font-family: var(--font-sans);
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+  }
+
+  /* ── Atmosphere ───────────────────────────────────────────────────────────
+     Two layers, split deliberately, because they have different costs.
+
+     ::before = the drifting wells (gradients only). Animated with `translate` and
+     `scale`, which are compositor properties: the layer rasterizes once and is then
+     transformed. Cheap.
+
+     ::after = the film grain (a tiled bitmap). NEVER animated — moving a layer that
+     carries tiled noise forces the compositor to re-raster the whole thing every
+     frame. Keeping the noise on its own static layer is what makes the drift free.
+
+     Both sit below all content, take no pointer events, and are `contain: strict`
+     so they can never trigger layout anywhere else. */
+  body::before,
+  body::after {
+    content: "";
+    position: fixed;
+    z-index: -1;
+    pointer-events: none;
+    contain: strict;
+  }
+
+  body::before {
+    inset: -20%; /* overscan, so the drift never reveals an edge */
+    background-image:
+      radial-gradient(
+        38% 38% at 22% 26%,
+        color-mix(in oklab, var(--color-accent) 9%, transparent),
+        transparent 68%
+      ),
+      radial-gradient(
+        42% 40% at 80% 68%,
+        color-mix(in oklab, var(--color-cyan) 7%, transparent),
+        transparent 70%
+      );
+  }
+
+  body::after {
+    inset: 0;
+    background-image: var(--grain);
+    background-repeat: repeat;
+    background-size: 140px 140px;
+  }
+
+  /* Motion is opt-IN. A `reduce` block is a safety net, not the only line of defence. */
+  @media (prefers-reduced-motion: no-preference) {
+    body::before {
+      animation: atmosphere-drift 90s var(--ease-instrument) infinite alternate;
+    }
+  }
+
+  /* Freeze the drift where the compositor cost actually bites. Gated on
+     `pointer: coarse`, not width alone — this is a compositor decision, not a
+     screen-size one, so a touch laptop deserves the cheap path too. The wells
+     stay; only the motion goes. */
+  @media (pointer: coarse) {
+    body::before { animation: none; }
+  }
+
+  @keyframes atmosphere-drift {
+    from { translate: 0 0; scale: 1; }
+    to   { translate: 2.5% -2%; scale: 1.08; }
+  }
+
+  ::selection {
+    background-color: color-mix(in oklab, var(--color-accent) 35%, transparent);
+    color: var(--color-ink);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-accent);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+
+  /* Dark, slim scrollbars to match the instrument register */
+  * {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-line-2) transparent;
+  }
+  *::-webkit-scrollbar { width: 10px; height: 10px; }
+  *::-webkit-scrollbar-thumb {
+    background-color: var(--color-line-2);
+    border-radius: 999px;
+    border: 2px solid var(--color-canvas);
+  }
+}
+
+/* ============================================================================
+   Reusable primitives — all built from the tokens above.
+   ============================================================================ */
+@layer components {
+  /* Skip link — first focusable element; visible only on keyboard focus. */
+  .skip-link {
+    position: fixed;
+    top: 0;
+    left: 0;
+    z-index: 100;
+    transform: translateY(-130%);
+    background-color: var(--color-accent);
+    color: var(--color-on-accent);
+    padding: 0.5rem 1rem;
+    border-radius: 0 0 0.5rem 0;
+    font-size: 0.875rem;
+    font-weight: 600;
+    transition: transform 0.15s var(--ease-instrument);
+  }
+  .skip-link:focus { transform: translateY(0); }
+
+  /* Mono uppercase micro-label — the "instrument" metadata voice */
+  .mono-label {
+    font-family: var(--font-mono);
+    font-size: 0.6875rem;       /* 11px */
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--color-label);
+  }
+
+  /* Panel — the base card surface. Glass, not slab.
+
+     A solid card is an opaque slab painted straight over the atmosphere behind it.
+     Four parts, each doing a job:
+       · gradient fill (lighter top → darker bottom) — implies a light source;
+         a flat fill implies nothing.
+       · brighter border-top — the cheapest "light comes from above" cue there is.
+       · inset white hairline — a 1px specular lip, like a real bevel.
+       · backdrop blur — this is the PRICE OF THE TRANSLUCENCY, not a look. Card
+         text over a busy backdrop is legible because the card is opaque; drop the
+         alpha without blurring and the background's sharp detail competes with the
+         copy. Blur turns it into a soft wash so both depth and legibility survive. */
+  .panel {
+    background-image: linear-gradient(
+      160deg,
+      color-mix(in oklab, var(--color-surface) 92%, transparent),
+      color-mix(in oklab, var(--color-surface) 76%, transparent)
+    );
+    border: 1px solid var(--color-line);
+    border-top-color: color-mix(in oklab, var(--color-line-2) 85%, transparent);
+    border-radius: var(--r-lg);
+    box-shadow: inset 0 1px 0 0 rgb(255 255 255 / 0.04);
+    -webkit-backdrop-filter: blur(10px) saturate(1.15);
+    backdrop-filter: blur(10px) saturate(1.15);
+  }
+
+  /* The opt-out. `backdrop-filter` makes an element the containing block for any
+     position:fixed DESCENDANT — so glassifying a shared .panel silently traps every
+     fixed thing inside any panel, and it resolves against the card instead of the
+     viewport (opening tiny, offset, or invisible). Anything that hosts a fixed child,
+     or that is already opaque and would only pay the cost for nothing (the WebGL
+     canvas), takes .panel--flat. */
+  .panel--flat {
+    background-image: none;
+    background-color: var(--color-surface);
+    -webkit-backdrop-filter: none;
+    backdrop-filter: none;
+  }
+
+  /* `backdrop-filter` re-rasterizes everything behind the element, and must redo it
+     on every frame the element moves relative to its backdrop — on a scrolling page,
+     that is EVERY frame, multiplied by every glassy card on screen. It is the single
+     biggest cause of janky phone scrolling.
+
+     Gated on `pointer: coarse` rather than width: the cost is about the device's
+     compositor, not its screen. Nothing is lost — the blur existed to soften a busy
+     backdrop showing through a translucent card, and a near-opaque card buys the same
+     legibility for free. */
+  @media (pointer: coarse) {
+    .panel {
+      -webkit-backdrop-filter: none;
+      backdrop-filter: none;
+      background-image: linear-gradient(
+        160deg,
+        color-mix(in oklab, var(--color-surface) 99%, transparent),
+        color-mix(in oklab, var(--color-surface) 96%, transparent)
+      );
+    }
+  }
+
+  /* ── The one interaction system ──────────────────────────────────────────────
+     Applied everywhere. Three different hover conventions (and links with no hover
+     at all) is what makes a site feel homemade. */
+
+  /* Lift — for anything with a box: cards, tiles, panels.
+
+     Hung on `a.panel` / `button.panel` as well as an explicit `.lift`, because every
+     card on this site is ALREADY an interactive .panel. One rule therefore reaches all
+     19 card pages instead of a class added to 19 files, and any card added later gets
+     it for free. A non-interactive .panel (the arch inspector aside, the search dialog)
+     is correctly untouched — it has no hover to answer. */
+  .lift,
+  a.panel,
+  button.panel {
+    transition:
+      translate var(--t-base) var(--ease-instrument),
+      box-shadow var(--t-base) var(--ease-instrument),
+      border-color var(--t-base) var(--ease-instrument);
+  }
+
+  /* All :hover-only affordances below are gated on `(hover: hover) and (pointer: fine)`.
+     A touchscreen has no hover to answer, and the browser's emulated "sticky hover" on
+     tap is inconsistent across iOS Safari / Android Chrome — showing a lift/glow that
+     sometimes needs a second tap to actually follow the link reads as broken. Touch gets
+     its own acknowledgement instead: the tap-ripple (see the comet/ripple split below). */
+  @media (hover: hover) and (pointer: fine) {
+    @media (prefers-reduced-motion: no-preference) {
+      /* `translate`, NOT `transform`. The scroll-reveal system settles its targets with
+         `.reveal-on .reveal.is-visible { transform: none }` at specificity (0,3,0); a
+         `:hover { transform: … }` here is lower and LOSES — so the lift would silently do
+         nothing on every card that is also a reveal target, which is most of them. The
+         independent `translate` property cannot collide with `transform` at all. */
+      .lift:hover,
+      a.panel:hover,
+      button.panel:hover { translate: 0 -3px; }
+    }
+
+    /* Fires in BOTH motion modes, deliberately. Under reduced motion we remove the
+       MOVEMENT, not the RESPONSE — an interactive element that does nothing at all on
+       hover reads as broken, not as calm.
+
+       The ring is a box-shadow, not a border-color: these cards carry Tailwind's
+       `border-line` utility, and the `utilities` layer beats `components` on LAYER ORDER,
+       which is consulted before specificity — so a border-color hover written here would
+       silently lose. A 1px ring lands on the same pixel and collides with nothing. The
+       border-color is kept as a bonus for the cards where it does win. */
+    .lift:hover,
+    a.panel:hover,
+    button.panel:hover {
+      box-shadow: var(--ring-accent), var(--glow-accent), inset 0 1px 0 0 rgb(255 255 255 / 0.06);
+      border-color: color-mix(in oklab, var(--color-accent) 40%, var(--color-line));
+    }
+
+    /* Cyan variant — for the sections whose registry accent is cyan (architectures,
+       stack, claude-setup, command-center). Assigning the ring by section family beats
+       one accent on everything, which is the fastest way to look templated. */
+    .lift-cyan:hover,
+    a.panel.lift-cyan:hover {
+      box-shadow: var(--ring-cyan), var(--glow-cyan), inset 0 1px 0 0 rgb(255 255 255 / 0.06);
+      border-color: color-mix(in oklab, var(--color-cyan) 40%, var(--color-line));
+    }
+
+    .link-sweep:hover {
+      background-size: 100% 1px;
+      color: var(--color-cyan);
+    }
+  }
+
+  /* Link sweep — for text INSIDE a sentence. Never lift an inline link: translating
+     a word inside a paragraph shoves the line and reads as a rendering bug.
+     `text-decoration` can't animate; a background can. */
+  .link-sweep {
+    background-image: linear-gradient(to right, var(--color-cyan), var(--color-cyan));
+    background-repeat: no-repeat;
+    background-position: 0 100%;
+    background-size: 0% 1px;
+    transition:
+      background-size var(--t-base) var(--ease-instrument),
+      color var(--t-base) var(--ease-instrument);
+  }
+
+  /* Faint data-grid backdrop motif */
+  .bg-grid {
+    background-image:
+      linear-gradient(to right, color-mix(in oklab, var(--color-line) 55%, transparent) 1px, transparent 1px),
+      linear-gradient(to bottom, color-mix(in oklab, var(--color-line) 55%, transparent) 1px, transparent 1px);
+    background-size: 52px 52px;
+  }
+  .bg-grid-fade {
+    -webkit-mask-image: radial-gradient(ellipse 90% 70% at 50% 0%, #000 35%, transparent 100%);
+    mask-image: radial-gradient(ellipse 90% 70% at 50% 0%, #000 35%, transparent 100%);
+  }
+
+  /* Live status dot with a soft pulse */
+  .status-dot {
+    width: 0.5rem;
+    height: 0.5rem;
+    border-radius: 999px;
+    background-color: var(--color-up);
+    box-shadow: 0 0 0 0 color-mix(in oklab, var(--color-up) 60%, transparent);
+    animation: instrument-pulse 2.4s var(--ease-instrument) infinite;
+  }
+  @keyframes instrument-pulse {
+    0%   { box-shadow: 0 0 0 0 color-mix(in oklab, var(--color-up) 55%, transparent); }
+    70%  { box-shadow: 0 0 0 6px color-mix(in oklab, var(--color-up) 0%, transparent); }
+    100% { box-shadow: 0 0 0 0 color-mix(in oklab, var(--color-up) 0%, transparent); }
+  }
+
+  /* Uniform vertical rhythm for long-scroll sections. */
+  .section { padding-block: clamp(4rem, 8vw, 7rem); }
+  .section-band {
+    background-color: var(--color-surface);
+    border-block: 1px solid var(--color-line);
+  }
+
+  /* Mono section numeral, e.g. "/ 03" — the instrument index voice. */
+  .section-index {
+    font-family: var(--font-mono);
+    font-size: 0.75rem;
+    letter-spacing: 0.1em;
+    color: var(--color-cyan-deep);
+  }
+
+  /* Big readout number.
+
+     A stat in the same white as the body copy makes a proof bar read as four
+     PARAGRAPHS rather than four GAUGES. A cool tint plus a faint bloom is what says
+     "this is a measured value", and it costs no legibility because the number is huge.
+     `tabular-nums` is doing more work than the colour: it's what stops the digits
+     jittering during the count-up and makes a figure look measured rather than typed. */
+  .stat-value {
+    font-family: var(--font-display);
+    font-weight: 600;
+    font-size: clamp(2.25rem, 1.5rem + 3vw, 3.5rem);
+    line-height: 1;
+    letter-spacing: -0.02em;
+    font-variant-numeric: tabular-nums;
+    color: color-mix(in oklab, var(--color-cyan-2) 22%, var(--color-ink));
+    text-shadow: 0 0 22px color-mix(in oklab, var(--color-cyan) 22%, transparent);
+  }
+
+  /* Buttons.
+
+     A flat rectangle of brand-colour is the "basic" look. Three things fix it: a
+     gradient fill (implies a light source), an inset top highlight (the specular
+     lip), and — the one most often missing — a real :active PRESS. A button that
+     doesn't acknowledge the click feels dead. This one previously declared
+     `transform` in its transition list and never set a transform anywhere, so it
+     had no press state at all; `translate` replaces it (see .lift, trap #2). */
+  /* SOURCE-ORDER CONTRACT: .btn is declared HERE, before the architecture block below, in
+     the same @layer components. `.arch-mode` / `.arch-dot` / `.arch-btn` carry `btn` and
+     override its radius/size at EQUAL specificity — they win on source order alone. Do not
+     move the arch block above this one, and do not "tidy" these declarations apart: doing
+     either silently restores .btn's 0.5rem radius on the pills. */
+  .btn {
+    position: relative;   /* for the sheen */
+    overflow: hidden;     /* clips the sheen to the button */
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    border-radius: var(--r-md);
+    font-size: 0.875rem;
+    font-weight: 600;
+    padding: 0.625rem 1.25rem;
+    transition:
+      background-color var(--t-base) var(--ease-instrument),
+      border-color var(--t-base) var(--ease-instrument),
+      box-shadow var(--t-base) var(--ease-instrument),
+      translate var(--t-fast) var(--ease-instrument);
+  }
+
+  /* The specular sheen sweep. Decorative only — it lives on ::after so it can never
+     affect layout, and it is absent (not broken) under reduced motion. */
+  .btn::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: linear-gradient(
+      100deg,
+      transparent 20%,
+      rgb(255 255 255 / 0.22) 45%,
+      transparent 70%
+    );
+    translate: -120%;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .btn:hover::after {
+      transition: translate var(--t-slow) var(--ease-instrument);
+      translate: 120%;
+    }
+  }
+
+  .btn-primary {
+    background-image: linear-gradient(
+      180deg,
+      var(--color-accent-2),
+      var(--color-accent) 55%,
+      var(--color-accent-deep)
+    );
+    color: var(--color-on-accent);
+    box-shadow: inset 0 1px 0 0 rgb(255 255 255 / 0.32), var(--elev-1);
+  }
+  .btn-primary:hover {
+    box-shadow: inset 0 1px 0 0 rgb(255 255 255 / 0.4), var(--glow-accent);
+  }
+
+  .btn-secondary {
+    border: 1px solid var(--color-line);
+    background-image: linear-gradient(180deg, var(--color-surface-2), var(--color-surface));
+    color: var(--color-ink);
+    box-shadow: inset 0 1px 0 0 rgb(255 255 255 / 0.05);
+  }
+  .btn-secondary:hover {
+    border-color: var(--color-line-2);
+    box-shadow: inset 0 1px 0 0 rgb(255 255 255 / 0.08), var(--elev-2);
+  }
+
+  /* The press. Fires in both motion modes — this is a response, not a flourish. */
+  .btn:active { translate: 0 1px; }
+  .btn-primary:active { box-shadow: inset 0 2px 6px 0 rgb(0 0 0 / 0.3); }
+  .btn-secondary:active { box-shadow: inset 0 2px 6px 0 rgb(0 0 0 / 0.35); }
+
+  /* Data-flow hairline — a more deliberate divider than a flat border. */
+  .rule-flow {
+    height: 1px;
+    border: 0;
+    background: linear-gradient(to right, transparent, var(--color-line-2) 50%, transparent);
+  }
+
+  /* The one decorative motif — a static radial accent glow (atmosphere). */
+  .accent-glow {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    background: radial-gradient(
+      ellipse 60% 50% at 50% 0%,
+      color-mix(in oklab, var(--color-accent) 16%, transparent),
+      transparent 70%
+    );
+  }
+
+  /* ── The accent word ────────────────────────────────────────────────────────
+     This used to be `linear-gradient(100deg, amber, cyan)` on headline words, and
+     it was actively making the headline WORSE: amber (#f2a33c, hue ~65°) to cyan
+     (#22d3ee, hue ~195°) is a ~135° arc, and sRGB interpolation across it drags
+     straight through desaturated olive (the midpoint is ~rgb(138,187,149)). So the
+     middle letters of the accented phrase rendered DULLER and greyer than the
+     near-white body text beside them — the accent was reading as a dimming, not as
+     an emphasis. Confirmed by zooming the live hero.
+
+     The rule that matters: an accent's colour must sit at or ABOVE the luminance of
+     the surrounding text. Check the stops against your INK colour, never against the
+     background. No two-hue gradient across that arc can satisfy that, so headline
+     accents are now a single-hue amber ramp, and cyan does its job as a GLOW instead
+     of as a gradient stop — both brand hues still present, zero mud. */
+  .name-accent {
+    background-image: linear-gradient(
+      100deg,
+      var(--color-accent-2),
+      var(--color-accent) 55%,
+      var(--color-accent-deep)
+    );
+    -webkit-background-clip: text;
+    background-clip: text;
+    color: transparent;
+
+    /* NON-NEGOTIABLE. Gradient text is `color: transparent` + `background-clip: text`,
+       and a text-shadow paints BENEATH the glyph — so a transparent glyph shows it
+       straight through. Any inherited text-shadow (the usual legibility trick over a
+       busy backdrop) would paint the page background through the accent word and wash
+       it out, and no amount of brightening the gradient would fix it. */
+    text-shadow: none;
+
+    /* The glow must be a FILTER, for exactly the same reason: a filter operates on the
+       composited glyph and lights it from OUTSIDE, where a text-shadow would sit behind
+       transparent pixels and be visible through them. */
+    filter: drop-shadow(0 0 14px color-mix(in oklab, var(--color-cyan) 40%, transparent));
+  }
+
+  /* The two-hue spectrum survives where it works: SHORT marks. On the wordmark and
+     the "IP" glyph the arc has no room to mud out — the transition reads as a spectrum
+     rather than as a dip. Kept deliberately (operator's call); do not "unify" these. */
+  .name-accent--spectrum {
+    background-image: linear-gradient(100deg, var(--color-accent), var(--color-cyan));
+    filter: drop-shadow(0 0 10px color-mix(in oklab, var(--color-accent) 30%, transparent));
+  }
+
+  /* Mobile nav — native <details> disclosure (zero JS).
+     Shown only below `lg`; the desktop nav takes over at ≥1024px. */
+  .nav-mobile > summary {
+    cursor: pointer;
+    list-style: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 2.75rem;   /* 44px touch target */
+    height: 2.75rem;
+    border-radius: 0.5rem;
+    border: 1px solid var(--color-line);
+    background: var(--color-surface);
+    color: var(--color-ink);
+    transition: border-color 0.15s var(--ease-instrument);
+  }
+  .nav-mobile > summary::-webkit-details-marker { display: none; }
+  .nav-mobile > summary:hover { border-color: var(--color-line-2); }
+  .nav-mobile[open] > summary { border-color: var(--color-line-2); }
+  .nav-mobile-panel {
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 100%;               /* drop below the sticky header bar */
+    display: flex;
+    flex-direction: column;
+    gap: 0.125rem;
+    padding: 0.5rem;
+    background: var(--color-canvas);
+    border-bottom: 1px solid var(--color-line);
+    box-shadow: 0 14px 34px -14px rgba(0, 0, 0, 0.65);
+  }
+  .nav-mobile-panel a {
+    display: flex;
+    align-items: center;
+    min-height: 2.75rem;      /* 44px touch target */
+    padding: 0.5rem 0.9rem;
+    border-radius: 0.5rem;
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: var(--color-ink-muted);
+    transition: color 0.15s var(--ease-instrument), background-color 0.15s var(--ease-instrument);
+  }
+  .nav-mobile-panel a:hover { color: var(--color-ink); background: var(--color-surface); }
+  .nav-mobile-panel a[aria-current="page"] { color: var(--color-ink); background: var(--color-surface); }
+
+  /* Desktop nav — the all-visible chip bar (≥lg), a second header row. Every
+     section shows as an icon+label chip, icon-coded by section accent, and the
+     row wraps freely. No dropdown: total visibility is the priority. */
+  .nav-chips {
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.25rem 0.3rem;
+    padding-bottom: 0.7rem;
+  }
+  .nav-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    padding: 0.35rem 0.65rem;
+    border-radius: 0.5rem;
+    font-size: 0.85rem;
+    font-weight: 500;
+    line-height: 1;
+    color: var(--color-ink-muted);
+    border: 1px solid transparent;
+    transition: color 0.15s var(--ease-instrument),
+      background-color 0.15s var(--ease-instrument),
+      border-color 0.15s var(--ease-instrument);
+  }
+  .nav-chip .chip-icon {
+    display: inline-flex;
+    color: var(--chip-accent, var(--color-accent));
+    opacity: 0.85;
+    transition: opacity 0.15s var(--ease-instrument);
+  }
+  .nav-chip:hover {
+    color: var(--color-ink);
+    background: var(--color-surface);
+    border-color: var(--color-line);
+  }
+  .nav-chip:hover .chip-icon { opacity: 1; }
+  .nav-chip[aria-current="page"] {
+    color: var(--color-ink);
+    background: var(--color-surface);
+    border-color: var(--color-line-2);
+  }
+  .nav-chip[aria-current="page"] .chip-icon { opacity: 1; }
+
+  /* Favorites board filter — the category/tag chips are toggle buttons (aria-pressed),
+     and an active filter forces matched cards past the scroll-reveal so none stay blank. */
+  button.nav-chip { font-family: inherit; cursor: pointer; }
+  .nav-chip[aria-pressed="true"] {
+    color: var(--color-ink);
+    background: var(--color-surface);
+    border-color: var(--color-line-2);
+  }
+  .nav-chip[aria-pressed="true"] .chip-icon { opacity: 1; }
+  button.chip { cursor: pointer; }
+  .chip[aria-pressed="true"] {
+    color: var(--color-ink);
+    border-color: var(--color-accent);
+    background: var(--color-surface);
+  }
+  .fav-filtering .reveal { opacity: 1 !important; transform: none !important; }
+
+  /* Admin walkthrough disclosures — collapsible how-to under each console lever. */
+  .admin-walk > summary { cursor: pointer; list-style: none; }
+  .admin-walk > summary::-webkit-details-marker { display: none; }
+
+  /* Scroll reveal — JS-gated so content is NEVER hidden without JS. The
+     `reveal-on` class is added to <html> only when JS runs AND motion is
+     allowed (see BaseLayout). An IntersectionObserver adds `.is-visible` once. */
+  .reveal-on .reveal {
+    opacity: 0;
+    transform: translateY(16px);
+    transition:
+      opacity 0.6s var(--ease-instrument),
+      transform 0.6s var(--ease-instrument);
+  }
+  .reveal-on .reveal.is-visible { opacity: 1; transform: none; }
+
+  /* Stagger. Every card in a grid entering the viewport together and firing as one
+     block reads as a page-load, not as a reveal. A short per-position delay makes it
+     read as a sequence. Positional, so it needs no markup change on any of the 19
+     pages that use .reveal; capped at 8 so a long board never accumulates a
+     perceptible lag on the last card. */
+  .reveal-on .reveal:nth-child(2) { transition-delay: 45ms; }
+  .reveal-on .reveal:nth-child(3) { transition-delay: 90ms; }
+  .reveal-on .reveal:nth-child(4) { transition-delay: 135ms; }
+  .reveal-on .reveal:nth-child(5) { transition-delay: 180ms; }
+  .reveal-on .reveal:nth-child(6) { transition-delay: 225ms; }
+  .reveal-on .reveal:nth-child(7) { transition-delay: 270ms; }
+  .reveal-on .reveal:nth-child(n + 8) { transition-delay: 315ms; }
+
+  /* ── Tap ripple ─────────────────────────────────────────────────────────────
+     A phone has no pointer, so the cursor comet can never fire there. Touch still
+     deserves an acknowledgement. Scale and opacity ONLY — it never distorts or
+     displaces the page, which is the line between "tactile" and "toy" — and it never
+     travels past scale(1), so it stays a touch-sized cue instead of a splash across
+     the screen. `pointer-events: none` so it can never swallow the tap it answers. */
+  .tap-ripple {
+    position: fixed;
+    z-index: 90;
+    pointer-events: none;
+    width: 14rem;
+    height: 14rem;
+    margin: -7rem 0 0 -7rem; /* centre on the touch point */
+    border-radius: 999px;
+    background: radial-gradient(
+      circle,
+      color-mix(in oklab, var(--color-accent) 20%, transparent),
+      color-mix(in oklab, var(--color-accent) 9%, transparent) 38%,
+      transparent 62%
+    );
+    animation: tap-ripple 620ms var(--ease-instrument) forwards;
+  }
+  @keyframes tap-ripple {
+    from { transform: scale(0.18); opacity: 0.9; }
+    to   { transform: scale(1);    opacity: 0; }
+  }
+
+  /* ── Cursor comet ───────────────────────────────────────────────────────────
+     The layer is `contain: strict` so it can never trigger layout elsewhere. The dots
+     are built in JS (see BaseLayout) — a no-JS page therefore never has them at all,
+     and a phone never pays to create a node it can't animate. */
+  .comet-layer {
+    position: fixed;
+    inset: 0;
+    z-index: 80;
+    pointer-events: none;
+    contain: strict;
+  }
+  .comet-dot {
+    position: absolute;
+    top: 0;
+    left: 0;
+    border-radius: 999px;
+    opacity: 0;
+    will-change: transform, opacity;
+    background: radial-gradient(
+      circle,
+      color-mix(in oklab, var(--color-accent) 55%, transparent),
+      transparent 68%
+    );
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .status-dot { animation: none; }
+    html { scroll-behavior: auto; }
+    .reveal { opacity: 1 !important; transform: none !important; transition: none !important; }
+    .reveal-on .reveal { transition-delay: 0ms !important; }
+    .btn::after { display: none; }
+    .tap-ripple { animation-duration: 1ms; }
+  }
+}
+
+/* ============================================================================
+   Architecture viewer (islands/ArchitectureViewer.jsx)
+
+   SOURCE-ORDER CONTRACT (the other half of the note on .btn above): this block comes
+   AFTER .btn and after .panel / .panel--flat, in the same @layer components. Several
+   rules here override those at EQUAL specificity and win on source order alone — the
+   pill radius, the control sizes, and (critically) the gradient border, which depends
+   on beating .panel--flat's opaque `background-color` and `background-image: none`.
+   MOVING THIS BLOCK ABOVE THEM SILENTLY BREAKS ALL OF IT, while the CSS still looks
+   perfectly correct. Do not reorder.
+   ============================================================================ */
+@layer components {
+  .arch-viewer { display: grid; gap: 1rem; grid-template-columns: 1fr; }
+  @media (min-width: 900px) {
+    .arch-viewer { grid-template-columns: minmax(0, 1.7fr) minmax(300px, 1fr); align-items: stretch; }
+    .arch-canvas, .arch3d-canvas, .arch-panel { height: min(64vh, 560px); }
+    .arch-panel { overflow-y: auto; }
+    .arch-canvas { display: flex; align-items: center; }
+  }
+  .arch-canvas { padding: 1rem; }
+  .arch-canvas svg { max-height: 100%; }
+
+  /* ── The two canvas surfaces — the one gradient border on the site ───────────
+     The diagram IS the page here, so this is where a gradient border earns its keep;
+     everywhere else it would be decoration.
+
+     The two-background trick: layer 1 (padding-box) carries the FILL, layer 2 (border-box)
+     carries the border gradient, and the border itself is transparent so the second layer
+     shows through it.
+
+     >>> TRAP <<< `background-color` is clipped to the LAST layer's background-clip —
+     border-box — so an opaque background-color paints straight OVER the gradient border and
+     hides it completely, while the CSS reads as correct. `.panel--flat` (which
+     `.arch3d-canvas` carries, because a WebGL canvas must not pay for a backdrop-filter)
+     sets exactly such a colour. It is explicitly zeroed here. `.panel--flat` also sets
+     `background-image: none`, and ONLY source order saves the gradient from that.
+
+     `.panel`'s brighter border-top is dropped on these two: the gradient already has a
+     lighter top edge, and two "light from above" cues fight each other. */
+  .arch-canvas,
+  .arch3d-canvas {
+    background-color: transparent;
+    background-image:
+      linear-gradient(
+        160deg,
+        color-mix(in oklab, var(--color-surface) 96%, transparent),
+        color-mix(in oklab, var(--color-surface) 88%, transparent)
+      ),
+      linear-gradient(
+        150deg,
+        color-mix(in oklab, var(--color-cyan) 34%, var(--color-line)),
+        var(--color-line) 42%,
+        color-mix(in oklab, var(--color-accent) 26%, var(--color-line))
+      );
+    background-origin: padding-box, border-box;
+    background-clip: padding-box, border-box;
+    border-color: transparent;
+    border-top-color: transparent;
+    /* box-shadow DOES NOT MERGE. Overriding it here would delete .panel's inset specular
+       lip and the panel would go subtly flat — so the lip is re-declared, not replaced. */
+    box-shadow: var(--elev-2), inset 0 1px 0 0 rgb(255 255 255 / 0.04);
+  }
+
+  /* 3D architecture viewer — the WebGL canvas, its billboarded labels, and the
+     2D/3D mode toggle. The canvas fills its cell; labels are real focusable
+     buttons rendered via drei <Html>. */
+  .arch3d-canvas { position: relative; overflow: hidden; padding: 0; height: clamp(340px, 58vh, 560px); }
+  .arch3d-canvas canvas { display: block; border-radius: inherit; touch-action: none; }
+  .arch-modes { display: flex; justify-content: flex-end; gap: 0.4rem; margin-bottom: 0.6rem; }
+
+  /* ── .arch-mode / .arch-dot — size/shape/state modifiers on `.btn` ───────────
+     Both now carry `btn btn-secondary` in the JSX (the precedent was already here: the
+     Prev/Next buttons are `btn btn-secondary arch-btn`, and `.arch-btn` is nothing but a
+     size modifier). They inherit the tokenized transitions, the ring/glow, the inset
+     specular lip, the reduced-motion-gated sheen sweep, and a real :active press — none of
+     which they had. What is left below is size, shape and the is-on state.
+
+     >>> LAYER-ORDER TRAP <<< The `:hover { border-color }` rules below work ONLY because
+     these elements get their border from `.btn-secondary`, in this same @layer components
+     — NOT from a Tailwind utility. A `utilities` single-class beats a `components` compound
+     selector on LAYER ORDER, before specificity is ever consulted. Refactor the border to
+     `border-line` and these hovers die silently. Keep the border in the components layer;
+     keep rings as box-shadow. */
+  .arch-mode {
+    font-size: var(--fs-small); font-weight: 600; letter-spacing: 0.03em;
+    padding: 0.3rem 0.75rem; border-radius: var(--r-sm);
+    color: var(--color-ink-muted);
+    cursor: pointer;
+  }
+  .arch-mode:hover { color: var(--color-ink); border-color: var(--color-line-2); }
+
+  .arch3d-label {
+    display: inline-flex; align-items: center; gap: 0.3rem; white-space: nowrap;
+    padding: 0.2rem 0.5rem; border-radius: var(--r-sm);
+    border: 1px solid var(--color-line-2);
+    color: var(--color-ink); font-family: var(--font-display); font-size: var(--fs-small); font-weight: 600;
+    cursor: pointer;
+    /* NO backdrop-filter. These labels are drei <Html> billboards, transform-repositioned
+       EVERY FRAME while the camera orbits — and the camera auto-rotates whenever the scene
+       is idle. A backdrop-filter that moves relative to its backdrop must re-rasterize the
+       region behind it every frame, once per label, forever: it was the single most
+       expensive thing in the 3D scene, paid for a 2px blur nobody can see.
+       The legibility is bought back with opacity instead — the same trade the codebase
+       already makes for coarse pointers on `.panel`. The base elevation is ALSO set inline
+       in Scene3D (box-shadow does not merge, and the label's hover/selected shadow is
+       inline); this declaration is the resting value. */
+    background: color-mix(in oklab, var(--color-surface) 94%, transparent);
+    box-shadow: var(--elev-1);
+  }
+  .arch3d-dot { width: 6px; height: 6px; border-radius: var(--r-pill); display: inline-block; }
+
+  .arch-panel {
+    padding: 1.25rem 1.35rem;
+    /* Re-declare .panel's inset lip alongside the elevation — box-shadow does not merge. */
+    box-shadow: var(--elev-2), inset 0 1px 0 0 rgb(255 255 255 / 0.04);
+  }
+  .arch-controls {
+    grid-column: 1 / -1;
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 0.75rem; flex-wrap: wrap;
+  }
+  .arch-btn { font-size: var(--fs-compact); padding: 0.45rem 0.9rem; min-height: 2.5rem; }
+  .arch-dots { display: flex; align-items: center; gap: 0.35rem; flex-wrap: wrap; }
+  .arch-dot {
+    font-family: var(--font-mono); font-size: var(--fs-micro); letter-spacing: 0.06em;
+    color: var(--color-ink-faint);
+    border-radius: var(--r-pill);
+    padding: 0.25rem 0.75rem;
+    min-height: 2.25rem; justify-content: center;
+    cursor: pointer;
+  }
+  .arch-dot-num { padding: 0.25rem 0; min-width: 2.25rem; text-align: center; }
+  .arch-dot:hover { color: var(--color-ink); border-color: var(--color-line-2); }
+
+  /* The on state. ONE ink on amber: `.arch-dot.is-on` used to say `--color-canvas` while
+     `.arch-mode.is-on` said `--color-on-accent` — two different answers to the same
+     question, on the same colour, three rules apart. `--color-on-accent` is the answer.
+     This is .btn-primary's fill, but the 1px border is KEPT (btn-primary has none): these
+     are auto-width controls, and dropping the border would shrink each pill by 2px the
+     moment it turns on. */
+  .arch-mode.is-on,
+  .arch-dot.is-on {
+    color: var(--color-on-accent);
+    background-image: linear-gradient(
+      180deg,
+      var(--color-accent-2),
+      var(--color-accent) 55%,
+      var(--color-accent-deep)
+    );
+    border-color: var(--color-accent);
+    box-shadow: inset 0 1px 0 0 rgb(255 255 255 / 0.32), var(--elev-1);
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    /* `translate`, never `transform` — see .lift, trap #2. */
+    .arch-mode:hover,
+    .arch-dot:hover { translate: 0 -1px; }
+    /* `.btn:active { translate: 0 1px }` is declared EARLIER in this layer at equal
+       specificity, and a pressed button matches :hover too — so the lift above would beat
+       it and the press would silently vanish. Re-assert it after. */
+    .arch-mode:active,
+    .arch-dot:active { translate: 0 1px; }
+  }
+
+  .arch-kind {
+    font-family: var(--font-mono); font-size: var(--fs-micro); letter-spacing: 0.12em;
+    text-transform: uppercase; display: inline-flex; align-items: center; gap: 0.4rem;
+  }
+  .arch-kind-dot { width: 0.5rem; height: 0.5rem; border-radius: var(--r-pill); }
+  .arch-h { font-family: var(--font-display); font-size: 1.35rem; font-weight: 600;
+    letter-spacing: -0.01em; color: var(--color-ink); margin: 0.5rem 0 0; }
+  .arch-sub { font-family: var(--font-mono); font-size: var(--fs-small); color: var(--color-ink-muted); margin: 0.35rem 0 0; }
+  .arch-body { margin-top: 0.9rem; color: var(--color-ink-muted); font-size: 0.9rem; line-height: 1.7; }
+  .arch-body strong { color: var(--color-ink); font-weight: 600; }
+  .arch-code {
+    font-family: var(--font-mono);
+    /* `em`, NOT one of the --fs-* rem tokens, and deliberately so: inline code must track
+       the size of the sentence it sits in. A rem token here would fix it at one size in a
+       heading and in body copy alike. */
+    font-size: 0.82em;
+    background: var(--color-surface); border: 1px solid var(--color-line);
+    border-radius: var(--r-sm); padding: 0.05em 0.3em; color: var(--color-cyan-deep);
+  }
+  /* Inline text — it must NEVER lift (translating a word inside a block shoves the line and
+     reads as a rendering bug). It carries `.link-sweep` in the JSX, which owns the hover
+     (a cyan underline that grows) and the transition. */
+  .arch-clear {
+    margin-top: 1rem; font-size: var(--fs-compact); color: var(--color-cyan-deep);
+  }
+
+  /* ── The 2D scene: nodes + edges ─────────────────────────────────────────────
+     Scene2D is the SSR output, the crawler view, the no-JS view, and the default on every
+     coarse-pointer device under 900px — the dullest scene shipped to the most people. A 2D
+     node had NO hover state at all. Everything below is CSS rather than an inline style or
+     a `reduced` prop for one reason: @media works with JS off, and a prop does not.
+
+     FOUR SVG TRAPS are load-bearing here:
+       1. `box-shadow` DOES NOT RENDER on an SVG child. The site's whole ring convention
+          (--ring-cyan / --ring-accent) is simply unavailable — `filter: drop-shadow()` is
+          the only way to ring a rect. It is a paint, not a composite, so it is hover-only.
+       2. `transform-origin` on SVG defaults to the VIEWBOX, not the element — which is why
+          there is no `scale` here: a naive one flings every node outward from the diagram
+          centre. (If one is ever wanted: `transform-box: fill-box; transform-origin: center`,
+          exactly as `.pf-fire` already does at the bottom of this file.)
+       3. The lift is in SVG USER UNITS, not CSS px. The viewBox is ~1000 units wide and
+          displays at ~700 CSS px, so `-6` lands at roughly -4 screen px — and scales with
+          the viewport, as it should. A `-3px` CSS-pixel intuition would land at ~2px and be
+          invisible.
+       4. `translate`, NEVER `transform`: the node <g> already carries a
+          `transform="translate(cx cy)"` ATTRIBUTE which IS its position. A CSS `transform`
+          replaces it and sends the node to the origin; the independent `translate` property
+          composes with it. */
+  .arch-node,
+  .arch-edge { transition: opacity var(--t-base) var(--ease-instrument); }
+  .arch-node { cursor: pointer; }
+  .arch-edge.is-link { cursor: pointer; }
+  /* Opacity on a CLASS, not an inline style. Inline can never be reached by an @media rule,
+     so the old inline `opacity/transition` ran at a hardcoded 0.25s with no easing even
+     under reduced motion. (0.12 and 0.14 were also two answers to one question — 0.14.) */
+  .arch-node.is-off,
+  .arch-edge.is-off { opacity: 0.14; }
+
+  .arch-node-box {
+    fill: var(--color-surface-2);
+    /* `stroke` as a CSS property rather than a `stroke=` presentation attribute — this
+       repo's own documented convention (PipelineFlow.astro made exactly this call), and it
+       is what gives the per-state hook. `--k` is the node's kind colour, set inline on the
+       <g> (CSP allows inline styles). */
+    stroke: var(--k, var(--color-ink-faint));
+    stroke-width: 1.6;
+    transition:
+      fill var(--t-fast) var(--ease-instrument),
+      stroke-width var(--t-fast) var(--ease-instrument),
+      filter var(--t-fast) var(--ease-instrument);
+  }
+  .arch-node-dot { fill: var(--k, var(--color-ink-faint)); }
+
+  /* Hover, focus and selected are ONE system, not two — and the ring/brighten fires in BOTH
+     motion modes (only the lift is gated). :focus-visible gets the same DRAWN treatment
+     because Safari does not render a CSS `outline` on an SVG child: these <g>s are already
+     keyboard-reachable, so without this the keyboard path exists and shows nothing there. */
+  .arch-node:hover:not(.is-off) .arch-node-box,
+  .arch-node:focus-visible .arch-node-box,
+  .arch-node.is-sel .arch-node-box {
+    /* Deliberately NOT color-mix() on `fill`. lightningcss cannot statically fold a
+       color-mix() whose operand is a runtime custom property, and the fallback it emits is
+       the FIRST OPERAND — so a browser without color-mix() would paint the hovered node a
+       solid slab of its kind colour. brightness() lifts the fill and the stroke together
+       and has no such cliff. Keep it well under ~1.8, past which brightness() desaturates
+       toward white instead of intensifying. */
+    stroke-width: 3;
+    filter: drop-shadow(0 0 6px var(--k)) brightness(1.3);
+  }
+
+  .arch-edge-line {
+    stroke: var(--color-ink-faint);
+    stroke-width: 1.6;
+    transition:
+      stroke var(--t-fast) var(--ease-instrument),
+      stroke-width var(--t-fast) var(--ease-instrument),
+      filter var(--t-fast) var(--ease-instrument);
+  }
+  .arch-edge-label {
+    fill: var(--color-ink-faint);
+    transition: fill var(--t-fast) var(--ease-instrument);
+  }
+  .arch-edge.is-link:hover:not(.is-off) .arch-edge-line,
+  .arch-edge:focus-visible .arch-edge-line,
+  .arch-edge.is-sel .arch-edge-line {
+    stroke: var(--color-cyan);
+    stroke-width: 2.4;
+    filter: drop-shadow(0 0 5px var(--color-cyan));
+  }
+  .arch-edge.is-link:hover:not(.is-off) .arch-edge-label,
+  .arch-edge:focus-visible .arch-edge-label,
+  .arch-edge.is-sel .arch-edge-label { fill: var(--color-cyan); }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .arch-node { transition: opacity var(--t-base) var(--ease-instrument), translate var(--t-fast) var(--ease-instrument); }
+    .arch-node:hover:not(.is-off) { translate: 0 -6px; } /* SVG user units — see trap 3 */
+  }
+
+  /* ── Architecture card thumbnail (components/ArchThumb.astro) ────────────────
+     A build-time miniature of the system's real node graph, so each card on the index
+     is visibly a different machine rather than one more identical slab. */
+  .arch-thumb-wrap {
+    border-radius: var(--r-md);
+    border: 1px solid var(--color-line);
+    background:
+      linear-gradient(to right, color-mix(in oklab, var(--color-line) 40%, transparent) 1px, transparent 1px),
+      linear-gradient(to bottom, color-mix(in oklab, var(--color-line) 40%, transparent) 1px, transparent 1px),
+      var(--color-canvas);
+    background-size: 18px 18px, 18px 18px, auto;
+    overflow: hidden;
+    box-shadow: var(--elev-1);
+  }
+  .arch-thumb {
+    display: block;
+    width: 100%;
+    height: 7.5rem;
+    padding: 0.5rem;
+  }
+
+  /* The halo is what makes the graph read as POWERED on hover — the same "these parts are
+     energised" cue the bloom gives the real 3D scene, done here for the price of an
+     opacity transition. At rest it is fully absent, so the card stays calm. */
+  .arch-thumb-halo {
+    opacity: 0;
+    transition: opacity var(--t-slow) var(--ease-instrument);
+  }
+  a.panel:focus-visible .arch-thumb-halo {
+    opacity: 0.22;
+  }
+  @media (hover: hover) and (pointer: fine) {
+    a.panel:hover .arch-thumb-halo {
+      opacity: 0.22;
+    }
+  }
+
+  /* The arch block had NO reduced-motion rule of any kind. Remove the MOVEMENT, keep the
+     RESPONSE — an interactive element that does nothing at all on hover reads as broken,
+     not as calm. So the halo loses its fade but KEEPS its opacity response above, and the
+     node keeps its ring/brighten while losing its lift. (The 2D flow pulses need nothing:
+     they reuse `.pf-syn`, which is already opacity-0 and un-animated under reduce.) */
+  @media (prefers-reduced-motion: reduce) {
+    .arch-thumb-halo { transition: none; }
+    .arch-node { translate: none; }
+  }
+}
+
+/* ============================================================================
+   Blog — source chips + markdown prose for /blog entries
+   ============================================================================ */
+@layer components {
+  /* Source badge — mono pill with a per-network status dot. */
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.4rem;
+    border: 1px solid var(--color-line-2);
+    border-radius: 999px;
+    padding: 0.2rem 0.65rem;
+    font-family: var(--font-mono);
+    font-size: 0.625rem; /* 10px */
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-ink-muted);
+    white-space: nowrap;
+  }
+  .chip-dot { width: 0.4rem; height: 0.4rem; border-radius: 999px; flex: none; }
+
+  /* Rendered-markdown prose for blog entries — house type, no plugin dep. */
+  .post-prose { color: var(--color-ink-muted); line-height: 1.75; max-width: 65ch; overflow-wrap: anywhere; }
+  .post-prose p { margin-block: 1em; }
+  .post-prose h2, .post-prose h3, .post-prose h4 {
+    font-family: var(--font-display);
+    color: var(--color-ink);
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    margin-block: 1.6em 0.6em;
+  }
+  .post-prose h2 { font-size: 1.5rem; }
+  .post-prose h3 { font-size: 1.25rem; }
+  .post-prose h4 { font-size: 1.05rem; }
+  .post-prose a {
+    color: var(--color-cyan-deep);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    transition: color 0.15s var(--ease-instrument);
+  }
+  .post-prose a:hover { color: var(--color-cyan); }
+  .post-prose strong { color: var(--color-ink); font-weight: 600; }
+  .post-prose ul, .post-prose ol { margin-block: 1em; padding-left: 1.4em; }
+  .post-prose ul { list-style: disc; }
+  .post-prose ol { list-style: decimal; }
+  .post-prose li { margin-block: 0.35em; }
+  .post-prose blockquote {
+    border-left: 2px solid var(--color-accent);
+    padding-left: 1rem;
+    color: var(--color-ink);
+    font-style: italic;
+    margin-block: 1.2em;
+  }
+  .post-prose code {
+    font-family: var(--font-mono);
+    font-size: 0.875em;
+    background: var(--color-surface-2);
+    border: 1px solid var(--color-line);
+    border-radius: 0.3rem;
+    padding: 0.1em 0.35em;
+    overflow-wrap: anywhere;
+  }
+  .post-prose pre {
+    background: var(--color-surface);
+    border: 1px solid var(--color-line);
+    border-radius: 0.6rem;
+    padding: 1rem;
+    overflow-x: auto;
+    margin-block: 1.2em;
+  }
+  .post-prose pre code { background: none; border: none; padding: 0; }
+  .post-prose hr { border-color: var(--color-line); margin-block: 2em; }
+  .post-prose > :first-child { margin-top: 0; }
+  .post-prose > :last-child { margin-bottom: 0; }
+}
+
+/* ============================================================================
+   Search overlay (islands/SearchOverlay.jsx)
+   Layout lives in the island's Tailwind classes; only the pieces that can't be
+   expressed as utilities live here — the hit mark, the entrance motion, the
+   active-row treatment, and the reduced-motion guard.
+   ============================================================================ */
+@layer components {
+  /* Matched-term highlight inside titles + excerpts. */
+  .search-hit {
+    background: color-mix(in oklab, var(--color-accent) 22%, transparent);
+    color: var(--color-ink);
+    border-radius: 2px;
+    padding: 0 1px;
+  }
+
+  /* The backdrop scrim — dims + blurs the page behind the dialog. */
+  .search-scrim {
+    background: color-mix(in oklab, var(--color-canvas) 78%, transparent);
+    -webkit-backdrop-filter: blur(6px);
+    backdrop-filter: blur(6px);
+    animation: search-fade 0.16s var(--ease-instrument);
+  }
+
+  /* The dialog panel — capped height + a short scale/fade entrance. */
+  .search-panel {
+    max-height: min(70vh, 640px);
+    box-shadow: 0 30px 80px -30px rgba(0, 0, 0, 0.75);
+    animation: search-pop 0.18s var(--ease-instrument);
+  }
+
+  @keyframes search-fade {
+    from { opacity: 0; }
+    to   { opacity: 1; }
+  }
+  @keyframes search-pop {
+    from { opacity: 0; transform: translateY(-6px) scale(0.98); }
+    to   { opacity: 1; transform: none; }
+  }
+
+  /* Result rows — base look is Tailwind; the active (keyboard/hover) row lights up. */
+  .search-result { transition: background-color 0.12s var(--ease-instrument), border-color 0.12s var(--ease-instrument); }
+  .search-result.is-active {
+    background: color-mix(in oklab, var(--color-accent) 12%, var(--color-surface-2));
+    border-color: var(--color-line-2);
+  }
+
+  /* Per-record accent dot on the type badge. */
+  .search-dot { background: var(--dot, var(--color-accent)); }
+
+  /* Scope filter popover — a small fade in. */
+  .search-scope-pop { animation: search-fade 0.12s var(--ease-instrument); }
+
+  /* Header search-bar results popover (islands/HeaderSearch.jsx). */
+  .header-search-pop {
+    box-shadow: 0 24px 60px -24px rgba(0, 0, 0, 0.7);
+    animation: search-pop 0.14s var(--ease-instrument);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .search-scrim,
+    .search-panel,
+    .search-scope-pop,
+    .header-search-pop { animation: none; }
+    .search-panel,
+    .header-search-pop { transform: none; }
+    .search-result { transition: none; }
+  }
+}
+
+/* ============================================================================
+   PipelineFlow (src/components/PipelineFlow.astro) — a mini "living
+   architecture": a labeled left→right signal path with traveling-dot pulses on
+   each edge + firing nodes. Pure SVG/CSS, zero JS. Lines are normalized via
+   pathLength=100 so one dashed segment travels the whole edge. Motion-safe:
+   pulses hidden (opacity 0) and nodes static under reduced motion.
+   ============================================================================ */
+@layer components {
+  .pf-syn {
+    opacity: 0;
+    fill: none;
+    stroke-linecap: round;
+    stroke-dasharray: 0.01 100;
+  }
+  @media (prefers-reduced-motion: no-preference) {
+    .pf-syn { opacity: 1; animation: pf-syn 3s linear infinite; }
+    .pf-fire {
+      transform-box: fill-box;
+      transform-origin: center;
+      animation: pf-fire 2.8s ease-in-out infinite;
+    }
+  }
+  @keyframes pf-syn { to { stroke-dashoffset: -100; } }
+  @keyframes pf-fire { 0%, 100% { opacity: 0.4; } 50% { opacity: 1; } }
+}

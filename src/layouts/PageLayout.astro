@@ -1,0 +1,30 @@
+---
+// PageLayout — the standard chrome wrapper (header + <main> + footer) around
+// BaseLayout. Use for every normal page; pass through the SEO props.
+import BaseLayout from './BaseLayout.astro';
+import SiteHeader from '../components/SiteHeader.astro';
+import SiteFooter from '../components/SiteFooter.astro';
+import SearchOverlay from '../components/islands/SearchOverlay.jsx';
+
+interface Props {
+  title?: string;
+  description?: string;
+  image?: string;
+  ogType?: 'website' | 'article';
+  article?: { publishedTime?: string; modifiedTime?: string; author?: string };
+  schema?: Record<string, unknown>[];
+  noindex?: boolean;
+  rssHref?: string;
+  rssTitle?: string;
+}
+const props = Astro.props;
+---
+<BaseLayout {...props}>
+  <SiteHeader />
+  <main id="main">
+    <slot />
+  </main>
+  <SiteFooter />
+  {/* Site-wide search — display:none until opened, so client:idle (not :visible). */}
+  <SearchOverlay client:idle />
+</BaseLayout>

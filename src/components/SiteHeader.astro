@@ -1,0 +1,99 @@
+---
+import Wordmark from './Wordmark.astro';
+import Icon from './Icon.astro';
+import HeaderSearch from './islands/HeaderSearch.jsx';
+import { navSections } from '../data/sections';
+
+const path = Astro.url.pathname;
+const isActive = (slug: string) => {
+  const href = `/${slug}/`;
+  return path === href || path.startsWith(href);
+};
+---
+{/*
+  The blur is deliberately gated on `pointer: fine`, and it must be gated HERE in the
+  markup rather than in global.css: `backdrop-blur-md` is a Tailwind utility, and cascade
+  layers are ordered — `utilities` beats `components` before specificity is ever consulted —
+  so a rule in @layer components could not turn it off.
+
+  Why gate it at all: a backdrop-filter forces the browser to re-rasterize everything behind
+  the element, and it must redo that on every frame the element moves relative to its backdrop.
+  On a STICKY HEADER over a scrolling page, that is every scroll frame, for the entire session.
+  It is the single biggest cause of choppy phone scrolling.
+
+  Gated on the compositor (`pointer: coarse`), not on screen width — a touch laptop deserves
+  the cheap path too. Nothing is lost: the blur exists to soften a busy backdrop showing through
+  a translucent bar, and the near-opaque bar below buys the same legibility for free.
+*/}
+<header
+  class="sticky top-0 z-50 border-b border-line bg-canvas/95 [@media(pointer:fine)]:bg-canvas/65 [@media(pointer:fine)]:backdrop-blur-md"
+>
+  <div class="mx-auto max-w-6xl px-6">
+    {/* Row 1 — wordmark, the persistent search bar, blog CTA, and (below lg) the mobile menu */}
+    <div class="flex h-16 items-center gap-3">
+      <Wordmark />
+      <HeaderSearch client:load />
+      <a href="/blog/" class="btn btn-primary inline-flex shrink-0 px-4 py-2 text-sm">Read the blog</a>
+
+      {/* Mobile nav — native <details>, no JS. Hidden at ≥lg where the chip bar shows. */}
+      <details class="nav-mobile shrink-0 lg:hidden">
+        <summary aria-label="Open menu">
+          <Icon name="menu" size={20} />
+        </summary>
+        <nav class="nav-mobile-panel" aria-label="Primary">
+          {
+            navSections.map((item) => (
+              <a
+                href={`/${item.slug}/`}
+                aria-current={isActive(item.slug) ? 'page' : undefined}
+              >
+                {item.navLabel ?? item.title}
+              </a>
+            ))
+          }
+        </nav>
+      </details>
+    </div>
+
+    {/* Row 2 — the all-visible chip bar (≥lg). Every section, icon-coded by accent,
+        wraps cleanly to more rows. Nothing is hidden behind a dropdown. */}
+    <nav class="nav-chips hidden lg:flex" aria-label="Primary">
+      {
+        navSections.map((item) => (
+          <a
+            href={`/${item.slug}/`}
+            class="nav-chip"
+            style={`--chip-accent: var(--color-${item.accent ?? 'accent'})`}
+            aria-current={isActive(item.slug) ? 'page' : undefined}
+          >
+            <span class="chip-icon"><Icon name={item.icon} size={15} /></span>
+            <span>{item.navLabel ?? item.title}</span>
+          </a>
+        ))
+      }
+    </nav>
+  </div>
+</header>
+
+{/* Bridge the static Search button to the search island (mounted in PageLayout). */}
+<script is:inline>
+  // This script RE-EXECUTES on every view transition. The click bridge is a DOCUMENT-level
+  // delegated listener, and `document` survives a swap — so without this guard every
+  // navigation would add another listener and a single click would fire ip:search-open
+  // two, three, four times.
+  if (!window.__ipSearchBridge) {
+    window.__ipSearchBridge = true;
+    document.addEventListener('click', (e) => {
+      if (e.target.closest('[data-search-open]')) {
+        window.dispatchEvent(new CustomEvent('ip:search-open'));
+      }
+    });
+  }
+
+  // The label, by contrast, MUST re-run on every navigation: the header is swapped with the
+  // rest of the body, so the new one renders with the default ⌘ hint again.
+  // Windows/Linux use Ctrl+K; only Mac gets ⌘. Swap the label to match the platform.
+  if (!/mac|iphone|ipad|ipod/i.test(navigator.platform || navigator.userAgent || '')) {
+    document.querySelectorAll('[data-kbd-hint]').forEach((el) => { el.textContent = 'Ctrl K'; });
+  }
+</script>

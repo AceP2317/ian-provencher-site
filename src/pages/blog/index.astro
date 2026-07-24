@@ -1,0 +1,81 @@
+---
+import { getCollection } from 'astro:content';
+import PageLayout from '../../layouts/PageLayout.astro';
+import PipelineFlow from '../../components/PipelineFlow.astro';
+import { bySlug } from '../../data/sections';
+import {
+  publishedFilter, sortByPublished, formatEntryDate, isoDate, blogSchema, SOURCE_META,
+} from '../../data/blog';
+
+const section = bySlug.get('blog')!;
+const entries = (await getCollection('blog', publishedFilter)).sort(sortByPublished);
+const origin = new URL(Astro.site!).origin;
+---
+<PageLayout
+  title="Blog"
+  description={section.description}
+  image="/og/blog.png?v=1"
+  schema={blogSchema(origin, entries)}
+  rssHref="/blog/rss.xml"
+>
+  <section class="section">
+    <div class="mx-auto max-w-3xl px-6">
+      <div class="flex items-end justify-between gap-4">
+        <div>
+          <p class="mono-label">Field notes · {entries.length}</p>
+          <h1 class="mt-2 font-display text-4xl font-semibold tracking-tight text-ink">Blog</h1>
+        </div>
+        <a href="/blog/rss.xml" class="mono-label transition-colors hover:text-ink">RSS ↗</a>
+      </div>
+      <p class="mt-4 max-w-xl text-base leading-relaxed text-ink-muted">
+        The build, in public — written here, and dragged in from wherever else it lands.
+      </p>
+
+      <div class="mt-8">
+        <PipelineFlow
+          label="How a post reaches the site"
+          stages={[
+            { name: 'author', note: 'here or the admin console' },
+            { name: 'gate', note: 'never ships red', lit: true },
+            { name: 'commit', note: 'reviewable diff' },
+            { name: 'deploy', note: 'CI, on push' },
+            { name: 'live', note: '~1 min later', lit: true },
+          ]}
+        />
+      </div>
+
+      <div class="mt-10 flex flex-col">
+        {entries.length === 0 ? (
+          <p class="panel p-8 text-center text-sm text-ink-muted">No field notes yet.</p>
+        ) : entries.map((e) => {
+          const meta = SOURCE_META[e.data.source];
+          const href = `/blog/${e.id}/`;
+          return (
+            <article class="reveal border-b border-line py-7 first:pt-0">
+              <div class="flex flex-wrap items-center gap-x-3 gap-y-2">
+                <time datetime={isoDate(e.data.publishedAt)} class="font-mono text-xs tracking-wide text-ink-faint">
+                  {formatEntryDate(e.data.publishedAt)}
+                </time>
+                <span class="chip">
+                  <span class="chip-dot" style={`background:${meta.dot}`}></span>
+                  {meta.label}
+                </span>
+                {e.data.draft && <span class="chip" style="border-color: var(--color-warn); color: var(--color-warn)">Draft</span>}
+              </div>
+              <h2 class="mt-3 font-display text-xl font-semibold tracking-tight text-ink">
+                <a href={href} class="transition-colors hover:text-accent-2">{e.data.title}</a>
+              </h2>
+              <p class="mt-2 leading-relaxed text-ink-muted">{e.data.description}</p>
+              <div class="mt-3 flex items-center gap-4">
+                <a href={href} class="text-sm font-medium text-cyan-deep transition-colors hover:text-cyan">Read →</a>
+                {e.data.source !== 'authored' && e.data.sourceUrl && (
+                  <a href={e.data.sourceUrl} class="text-sm text-ink-faint transition-colors hover:text-ink">Original ↗</a>
+                )}
+              </div>
+            </article>
+          );
+        })}
+      </div>
+    </div>
+  </section>
+</PageLayout>

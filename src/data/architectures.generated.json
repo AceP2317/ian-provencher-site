@@ -1,0 +1,1994 @@
+[
+  {
+    "id": "arch-command-center",
+    "title": "Command Center OS",
+    "tagline": "Local-first operations console where the UI and the AI work the same files — and a human gate guards 'done'.",
+    "story": "The console renders state; Claude Code changes it. Both sides meet in `/data` — plain JSON files, one per record, no database. The UI writes through API routes with atomic temp-and-rename saves; agent sessions edit the same files with ordinary file tools under a binding contract (CLAUDE.md).\n\nThe live loop: a file watcher on `/data` pushes Server-Sent Events to the browser, so the screen moves the instant either side changes anything — the signature moment is watching an assignment card slide lanes while an agent works.\n\nAssignments are the dispatch mechanism: a card created in the UI lands in `inbox/`, a session (opened by hand, or spawned headless by the RUN NOW button with a chosen model and effort) claims it into `active/`, works it, and parks the result in `review/`. Only the operator moves work to `done/` — that gate is enforced in code, not convention. A nightly headless run sweeps the sources and writes the morning briefing.",
+    "nodes": [
+      {
+        "id": "you",
+        "label": "Ian",
+        "sublabel": "operator",
+        "kind": "operator",
+        "x": 9,
+        "y": 45,
+        "detail": "The single human in the loop. Creates work in the console, dispatches it to agents, and holds the one power no agent has: moving finished work into `done/`. Everything else in the system can be automated; this judgment call deliberately can't.",
+        "z": null,
+        "group": null,
+        "weight": null
+      },
+      {
+        "id": "console",
+        "label": "Console UI",
+        "sublabel": "Next.js · localhost:3000",
+        "kind": "surface",
+        "x": 30,
+        "y": 20,
+        "detail": "The Next.js face of the system, served locally and on the LAN for the phone. It renders whatever `/data` says, live — it never holds state of its own, so closing the browser loses nothing.",
+        "z": null,
+        "group": null,
+        "weight": null
+      },
+      {
+        "id": "api",
+        "label": "API routes",
+        "sublabel": "collections · queue · runner",
+        "kind": "engine",
+        "x": 54,
+        "y": 20,
+        "detail": "The console's writing hand: collection CRUD, validated queue transitions, and the RUN NOW runner endpoint. Every write is atomic — temp file, then rename — so no reader ever sees a half-written record.",
+        "z": null,
+        "group": null,
+        "weight": null
+      },
+      {
+        "id": "watcher",
+        "label": "Watcher",
+        "sublabel": "chokidar → SSE",
+        "kind": "engine",
+        "x": 54,
+        "y": 47,
+        "detail": "A file watcher over all of `/data`. Each change becomes a Server-Sent Event pushed to every open tab — the reason the screen moves the instant either the operator or an agent touches anything.",
+        "z": null,
+        "group": null,
+        "weight": null
+      },
+      {
+        "id": "data",
+        "label": "/data",
+        "sublabel": "JSON records · queue dirs",
+        "kind": "store",
+        "x": 84,
+        "y": 33,
+        "detail": "The entire truth of the system: plain JSON, one file per record, queue stages as directories. No database, no hidden state — anything that can read files can read (and audit) the whole operation.",
+        "z": null,
+        "group": null,
+        "weight": null
+      },
+      {
+        "id": "claude",
+        "label": "Claude Code",
+        "sublabel": "sessions · headless runner",
+        "kind": "agent",
+        "x": 54,
+        "y": 78,
+        "detail": "The engine room. Interactive sessions and headless runners work the same files under a binding agent contract: claim from `inbox/`, execute, close to `review/` — never to `done/`. Each runner's output is captured to a per-run log.",
+        "z": null,
+        "group": null,
+        "weight": null
+      },
+      {
+        "id": "github",
+        "label": "GitHub",
+        "sublabel": "private remote",
+        "kind": "external",
+        "x": 22,
+        "y": 78,
+        "detail": "The private remote. Meaningful changes land as commits — data included — so the whole operation carries history and an offsite copy.",
+        "z": null,
+        "group": null,
+        "weight": null
+      }
+    ],
+    "edges": [
+      {
+        "from": "you",
+        "to": "console",
+        "label": "operates",
+        "detail": "Every interaction starts at this one surface — desktop or phone.",
+        "flow": null
+      },
+      {
+        "from": "console",
+        "to": "api",
+        "label": null,
+        "detail": "Buttons and forms become API calls; the UI never touches the filesystem directly.",
+        "flow": null
+      },
+      {
+        "from": "api",
+        "to": "data",
+        "label": "atomic writes",
+        "detail": "Temp-and-rename saves mean the watcher and readers never see a torn write.",
+        "flow": null
+      },
+      {
+        "from": "data",
+        "to": "watcher",
+        "label": "file events",
+        "detail": "Raw file events are debounced into clean per-collection signals.",
+        "flow": null
+      },
+      {
+        "from": "watcher",
+        "to": "console",
+        "label": "live SSE",
+        "detail": "One event stream per tab — the status-bar dot is this connection, live.",
+        "flow": null
+      },
+      {
+        "from": "api",
+        "to": "claude",
+        "label": "RUN NOW spawns",
+        "detail": "The runner endpoint launches a detached headless session with the assignment's chosen model and effort.",
+        "flow": null
+      },
+      {
+        "from": "claude",
+        "to": "data",
+        "label": "claims · results",
+        "detail": "Agents move assignment files through the queue directories and write artifacts — the same records the UI renders.",
+        "flow": null
+      },
+      {
+        "from": "claude",
+        "to": "github",
+        "label": "commits",
+        "detail": "Sessions commit and push at milestones; the operator never runs git by hand.",
+        "flow": null
+      }
+    ],
+    "walkthrough": [
+      {
+        "title": "Operator at the console",
+        "body": "One person, one surface. The console is the only interface the operator needs — every record, every queue lane, every briefing renders here, live. It holds no state of its own; it is a window onto `/data`.",
+        "nodes": [
+          "you",
+          "console"
+        ],
+        "edges": [
+          {
+            "from": "you",
+            "to": "console"
+          }
+        ]
+      },
+      {
+        "title": "Writes go through the API",
+        "body": "When the operator dispatches an assignment or edits a record, the UI calls an API route, and the route writes JSON with an atomic temp-and-rename save. No database — the filesystem is the database, and every record is a human-readable file.",
+        "nodes": [
+          "console",
+          "api",
+          "data"
+        ],
+        "edges": [
+          {
+            "from": "console",
+            "to": "api"
+          },
+          {
+            "from": "api",
+            "to": "data"
+          }
+        ]
+      },
+      {
+        "title": "The live loop",
+        "body": "A watcher over `/data` turns every file change into a Server-Sent Event, and every open tab redraws. This is the signature moment of the console: an agent moves a file on disk, and the card slides lanes on screen in the same second.",
+        "nodes": [
+          "data",
+          "watcher",
+          "console"
+        ],
+        "edges": [
+          {
+            "from": "data",
+            "to": "watcher"
+          },
+          {
+            "from": "watcher",
+            "to": "console"
+          }
+        ]
+      },
+      {
+        "title": "RUN NOW spawns a session",
+        "body": "The RUN NOW button asks the runner endpoint to spawn a detached headless Claude Code session with the assignment's chosen model and effort. The session's output is captured to a per-run log, so a failed run is never silent.",
+        "nodes": [
+          "console",
+          "api",
+          "claude"
+        ],
+        "edges": [
+          {
+            "from": "console",
+            "to": "api"
+          },
+          {
+            "from": "api",
+            "to": "claude"
+          }
+        ]
+      },
+      {
+        "title": "The agent works the same files",
+        "body": "The spawned session follows the same contract as any interactive one: claim the assignment into `active/`, execute the brief, write artifacts, close to `review/`. It edits the very files the console renders — there is no second copy of anything.",
+        "nodes": [
+          "claude",
+          "data"
+        ],
+        "edges": [
+          {
+            "from": "claude",
+            "to": "data"
+          }
+        ]
+      },
+      {
+        "title": "The review gate and the record",
+        "body": "Finished work parks in `review/` and waits. Only the operator can accept it into `done/` — the gate is enforced in code, and a send-back carries a written reason the next runner must address. Meanwhile every milestone lands as a commit on the private remote: full history, data included.",
+        "nodes": [
+          "you",
+          "console",
+          "claude",
+          "github"
+        ],
+        "edges": [
+          {
+            "from": "you",
+            "to": "console"
+          },
+          {
+            "from": "claude",
+            "to": "github"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "arch-appliediq-site",
+    "title": "AppliedIQ Solutions — the public face",
+    "tagline": "A 17-page consulting site with live supply-chain demos and a streaming AI assistant, all on Cloudflare's edge.",
+    "story": "The site is the public proof of the practice: not screenshots of tools, but running supply-chain consoles a visitor can drive (BOM Explorer, Order Confirmation Command Center, Past-Due Order Triage, ASN Update Radar, Staging Triage Console, Production Plan Churn, Parameter Audit Console) — each a React island rebuilt on synthetic data, no client specifics anywhere.\n\nThe frame is Astro: static pages render instantly from Cloudflare's edge, and interactivity hydrates only where a demo island needs it. The 'Ask the tooling' assistant rides the same Worker platform with its own locked voice and spend cap (drawn in detail in its own architecture).\n\nEverything deploys from one private repo. The site is also the graduation target for the public showcase: the architecture diagrams you are reading are source material for it.",
+    "nodes": [
+      {
+        "id": "visitor",
+        "label": "Visitor",
+        "sublabel": "public web",
+        "kind": "operator",
+        "x": 9,
+        "y": 40,
+        "detail": "Anyone — a hiring manager, a fellow practitioner, a curious searcher. The site's job is to let them touch working tools within seconds, no signup, no friction.",
+        "z": null,
+        "group": null,
+        "weight": null
+      },
+      {
+        "id": "edge",
+        "label": "Cloudflare edge",
+        "sublabel": "Workers · global CDN",
+        "kind": "engine",
+        "x": 32,
+        "y": 40,
+        "detail": "The site is served from Cloudflare Workers at the edge — static pages arrive from the nearest point of presence, so first paint is fast anywhere on the planet.",
+        "z": null,
+        "group": null,
+        "weight": null
+      },
+      {
+        "id": "astro",
+        "label": "Astro pages",
+        "sublabel": "17 pages · static-first",
+        "kind": "surface",
+        "x": 56,
+        "y": 24,
+        "detail": "Seventeen static-first pages: home, work, FAQ, bio, contact, and a page per demo. Astro ships zero JavaScript for the prose and hydrates only the interactive islands.",
+        "z": null,
+        "group": null,
+        "weight": null
+      },
+      {
+        "id": "demos",
+        "label": "7 demo islands",
+        "sublabel": "React · synthetic data",
+        "kind": "surface",
+        "x": 56,
+        "y": 56,
+        "detail": "Full supply-chain consoles rebuilt as public demos on synthetic, self-loading data — the internal tools' capabilities without any internal facts. Each is a React island that hydrates on its own page.",
+        "z": null,
+        "group": null,
+        "weight": null
+      },
+      {
+        "id": "ask",
+        "label": "Ask worker",
+        "sublabel": "/api/ask · locked voice",
+        "kind": "engine",
+        "x": 82,
+        "y": 40,
+        "detail": "The streaming AI assistant's serverless relay — rate-limited, spend-capped, adversarially hardened. It has its own full diagram: 'Ask the tooling'.",
+        "z": null,
+        "group": null,
+        "weight": null
+      },
+      {
+        "id": "repo",
+        "label": "Private repo",
+        "sublabel": "GitHub · one deploy path",
+        "kind": "external",
+        "x": 32,
+        "y": 76,
+        "detail": "One private repository drives the whole site; every deploy is a commit. The public artifact is fully versioned without the source being public.",
+        "z": null,
+        "group": null,
+        "weight": null
+      }
+    ],
+    "edges": [
+      {
+        "from": "visitor",
+        "to": "edge",
+        "label": "https",
+        "detail": "Every request lands on the nearest edge location.",
+        "flow": null
+      },
+      {
+        "from": "edge",
+        "to": "astro",
+        "label": "static pages",
+        "detail": "Pre-rendered HTML — no server work for the prose.",
+        "flow": null
+      },
+      {
+        "from": "edge",
+        "to": "demos",
+        "label": "hydrates islands",
+        "detail": "Demo JavaScript loads only on demo pages.",
+        "flow": null
+      },
+      {
+        "from": "astro",
+        "to": "ask",
+        "label": "questions",
+        "detail": "Three surfaces embed the chat island; it posts to the Worker.",
+        "flow": null
+      },
+      {
+        "from": "repo",
+        "to": "edge",
+        "label": "deploys",
+        "detail": "Push to main → build → live at the edge.",
+        "flow": null
+      }
+    ],
+    "walkthrough": [
+      {
+        "title": "A visitor arrives",
+        "body": "No matter where they are, the request lands on Cloudflare's nearest edge location and static HTML comes straight back. The first impression is speed — the site is proof of engineering before a single word is read.",
+        "nodes": [
+          "visitor",
+          "edge"
+        ],
+        "edges": [
+          {
+            "from": "visitor",
+            "to": "edge"
+          }
+        ]
+      },
+      {
+        "title": "Static-first pages",
+        "body": "Seventeen Astro pages ship as pre-rendered HTML with almost no JavaScript. Prose, bio, FAQ, and contact cost nothing to serve and render instantly.",
+        "nodes": [
+          "edge",
+          "astro"
+        ],
+        "edges": [
+          {
+            "from": "edge",
+            "to": "astro"
+          }
+        ]
+      },
+      {
+        "title": "Live demos",
+        "body": "The heart of the site: working supply-chain consoles — BOM exploration, order confirmation, past-due triage, ASN radar, staging triage, plan churn, parameter audit — rebuilt on synthetic data as React islands. Visitors don't read about the tools; they drive them.",
+        "nodes": [
+          "edge",
+          "demos"
+        ],
+        "edges": [
+          {
+            "from": "edge",
+            "to": "demos"
+          }
+        ]
+      },
+      {
+        "title": "The assistant on top",
+        "body": "Three surfaces carry the 'Ask the tooling' chat island, relaying through a locked-voice, spend-capped Worker. That system has its own diagram — open the 'Ask the tooling' architecture to walk it.",
+        "nodes": [
+          "astro",
+          "ask"
+        ],
+        "edges": [
+          {
+            "from": "astro",
+            "to": "ask"
+          }
+        ]
+      },
+      {
+        "title": "One repo, one deploy path",
+        "body": "Everything versions in a single private repository; a push to main is a deploy. The site stays a build product — reproducible, revertible, and honest about what it is.",
+        "nodes": [
+          "repo",
+          "edge"
+        ],
+        "edges": [
+          {
+            "from": "repo",
+            "to": "edge"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "arch-nightly-ops",
+    "title": "Nightly ops — the console that briefs itself",
+    "tagline": "A scheduled headless agent sweeps every source at dawn and writes the morning briefing before anyone is awake.",
+    "story": "The Command Center's promise is that it stays current without being tended. The mechanism is a Windows scheduled task at 06:30 (wake-from-sleep and catch-up-if-missed enabled) that launches a headless Claude Code session pinned to **Sonnet 5 at x-high effort** — the operator's floor for any real work.\n\nThe session runs `/refresh-console` under the same binding contract as any interactive session, and it is deliberately conservative: it reports drift, it never silently fixes it. It sweeps the assignment queue (separating the agents' backlog from Ian's own items), task staleness, git motion across both repos, real record counts, the goals and learning pulse, and yesterday's activity log — then writes the deep, sectioned Daily Briefing and one honest activity-log line.\n\nBy the time the console is opened in the morning, the briefing is already there: queue, motion, numbers, stale flags, today's top calls, risks, and the decisions waiting on the operator.",
+    "nodes": [
+      {
+        "id": "scheduler",
+        "label": "Task Scheduler",
+        "sublabel": "06:30 · wake + catch-up",
+        "kind": "engine",
+        "x": 10,
+        "y": 32,
+        "detail": "The Windows scheduled task fires at 06:30 daily, wakes the machine if asleep, runs on battery, and catches up if the trigger was missed — a briefing every morning, no exceptions.",
+        "z": null,
+        "group": null,
+        "weight": null
+      },
+      {
+        "id": "cmd",
+        "label": "nightly-refresh.cmd",
+        "sublabel": "PATH · logging · stdin",
+        "kind": "engine",
+        "x": 34,
+        "y": 32,
+        "detail": "A small launcher script that prepends the Claude CLI to PATH, redirects stdin, and captures the whole session's output to data/system/refresh.log — a failed run is never silent.",
+        "z": null,
+        "group": null,
+        "weight": null
+      },
+      {
+        "id": "claude",
+        "label": "Headless session",
+        "sublabel": "Sonnet 5 · x-high",
+        "kind": "agent",
+        "x": 60,
+        "y": 32,
+        "detail": "A full Claude Code session with no human at the keyboard, pinned to Sonnet 5 at x-high effort. It follows the same agent contract as any interactive session — conservative sweeps, honest reporting, no silent fixes.",
+        "z": null,
+        "group": null,
+        "weight": null
+      },
+      {
+        "id": "sources",
+        "label": "Sources",
+        "sublabel": "queue · tasks · git · goals · log",
+        "kind": "store",
+        "x": 60,
+        "y": 68,
+        "detail": "Everything swept is a real read: assignment lanes, task records and their ages, git logs across both repos, record counts by status, goals and learning movement, and the last 24 hours of the activity log.",
+        "z": null,
+        "group": null,
+        "weight": null
+      },
+      {
+        "id": "briefing",
+        "label": "Daily Briefing",
+        "sublabel": "sectioned · navigable",
+        "kind": "store",
+        "x": 86,
+        "y": 32,
+        "detail": "The output: a deep briefing with an executive summary and up to ten navigable sections — queue, motion, numbers, stale, today, goals pulse, learning, risks, yesterday, and decisions waiting. Empty sections are skipped, never padded.",
+        "z": null,
+        "group": null,
+        "weight": null
+      },
+      {
+        "id": "console",
+        "label": "Console",
+        "sublabel": "renders at dawn",
+        "kind": "surface",
+        "x": 86,
+        "y": 68,
+        "detail": "The Daily Briefing module renders whatever the nightly session wrote — the file watcher pushes it live the moment the write lands, no reload needed.",
+        "z": null,
+        "group": null,
+        "weight": null
+      }
+    ],
+    "edges": [
+      {
+        "from": "scheduler",
+        "to": "cmd",
+        "label": "06:30 fire",
+        "detail": "Wake-to-run and start-when-available cover sleep and missed triggers.",
+        "flow": null
+      },
+      {
+        "from": "cmd",
+        "to": "claude",
+        "label": "claude -p",
+        "detail": "Headless launch with model and effort pinned; output captured to refresh.log.",
+        "flow": null
+      },
+      {
+        "from": "claude",
+        "to": "sources",
+        "label": "sweeps",
+        "detail": "Read-only passes over every source; drift is flagged, never fixed silently.",
+        "flow": null
+      },
+      {
+        "from": "claude",
+        "to": "briefing",
+        "label": "writes",
+        "detail": "One sectioned briefing record plus one activity-log line — the only writes the run makes.",
+        "flow": null
+      },
+      {
+        "from": "briefing",
+        "to": "console",
+        "label": "renders live",
+        "detail": "The watcher pushes the new briefing to any open tab instantly.",
+        "flow": null
+      }
+    ],
+    "walkthrough": [
+      {
+        "title": "The 06:30 trigger",
+        "body": "Windows Task Scheduler fires daily at 06:30 — configured to wake the machine, run on battery, and start late if the moment was missed. The morning briefing does not depend on the operator remembering anything.",
+        "nodes": [
+          "scheduler",
+          "cmd"
+        ],
+        "edges": [
+          {
+            "from": "scheduler",
+            "to": "cmd"
+          }
+        ]
+      },
+      {
+        "title": "A guarded launch",
+        "body": "The launcher script handles the unglamorous parts: the CLI's PATH, a redirected stdin, and full output capture to refresh.log. If anything goes wrong, the log says exactly what — a failed run is never invisible.",
+        "nodes": [
+          "cmd",
+          "claude"
+        ],
+        "edges": [
+          {
+            "from": "cmd",
+            "to": "claude"
+          }
+        ]
+      },
+      {
+        "title": "The conservative sweep",
+        "body": "The headless session — Sonnet 5 at x-high, the same floor as any dispatched work — reads every source: queue lanes with assignees separated, task ages, git motion in both repos, real counts, goals and learning movement, yesterday's log. It flags drift; it never silently mutates anything.",
+        "nodes": [
+          "claude",
+          "sources"
+        ],
+        "edges": [
+          {
+            "from": "claude",
+            "to": "sources"
+          }
+        ]
+      },
+      {
+        "title": "The sectioned briefing",
+        "body": "The write is one deep record: an executive summary plus navigable sections — queue, motion, numbers, stale, today, goals pulse, learning, risks, yesterday, decisions. Sections with nothing to say are skipped entirely; nothing is padded.",
+        "nodes": [
+          "claude",
+          "briefing"
+        ],
+        "edges": [
+          {
+            "from": "claude",
+            "to": "briefing"
+          }
+        ]
+      },
+      {
+        "title": "Morning at the console",
+        "body": "The moment the briefing file lands, the watcher pushes it to every open tab. Opening the console over coffee, the day's state is already organized: what moved, what's stale, what needs a decision.",
+        "nodes": [
+          "briefing",
+          "console"
+        ],
+        "edges": [
+          {
+            "from": "briefing",
+            "to": "console"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "arch-brain-pipeline",
+    "title": "The brain snapshot pipeline",
+    "tagline": "How 803 private vault notes become a public-safe living graph — sanitized at the source, simulated in the browser.",
+    "story": "The Brain module renders the Hermes vault as a force-directed graph — but the vault holds three privacy tiers, and only the Open tier may ever leave it. The pipeline enforces that structurally.\n\nA Claude session with vault MCP access (typically the nightly refresh, when the connector is reachable) reads the vault's link structure and emits a sanitized snapshot: Open-tier notes only, edges kept only when **both** endpoints are Open, and no private identifiers of any kind. The snapshot is a single JSON file — 803 nodes, 1,871 links — that the console serves through one API route.\n\nEverything visual happens client-side: a d3-force simulation lays the graph out fresh on every load, and the canvas renderer draws it with group-tinted links, focus neighborhoods, search, and filters. The vault itself is never touched by the browser — the graph is a shadow, cast deliberately.",
+    "nodes": [
+      {
+        "id": "vault",
+        "label": "Hermes vault",
+        "sublabel": "Open / Private / Confidential",
+        "kind": "store",
+        "x": 10,
+        "y": 36,
+        "detail": "The canonical Obsidian vault with three structural privacy tiers. Only the Open tier participates in this pipeline — Private and Confidential are invisible to it by construction, not by policy.",
+        "z": null,
+        "group": null,
+        "weight": null
+      },
+      {
+        "id": "session",
+        "label": "MCP session",
+        "sublabel": "nightly · vault tools",
+        "kind": "agent",
+        "x": 34,
+        "y": 36,
+        "detail": "A Claude session holding vault MCP tools — usually the nightly refresh when the connector is reachable. It reads note links and titles, and regenerates the snapshot when it's older than seven days.",
+        "z": null,
+        "group": null,
+        "weight": null
+      },
+      {
+        "id": "sanitizer",
+        "label": "Sanitize pass",
+        "sublabel": "Open tier · both-endpoint edges",
+        "kind": "engine",
+        "x": 58,
+        "y": 36,
+        "detail": "The privacy gate: only Open-tier notes enter; an edge survives only if both of its endpoints are Open; private identifiers never appear. What can't be seen can't leak.",
+        "z": null,
+        "group": null,
+        "weight": null
+      },
+      {
+        "id": "graph",
+        "label": "graph.json",
+        "sublabel": "803 nodes · 1,871 links",
+        "kind": "store",
+        "x": 82,
+        "y": 36,
+        "detail": "One flat JSON snapshot: node ids, titles, groups, and link counts, plus the edge list. Small enough to ship whole, honest enough to rebuild the entire picture.",
+        "z": null,
+        "group": null,
+        "weight": null
+      },
+      {
+        "id": "api",
+        "label": "/api/brain",
+        "sublabel": "serves the snapshot",
+        "kind": "engine",
+        "x": 82,
+        "y": 72,
+        "detail": "A single route that reads the snapshot fresh on every request — the console never caches stale structure.",
+        "z": null,
+        "group": null,
+        "weight": null
+      },
+      {
+        "id": "canvas",
+        "label": "Canvas renderer",
+        "sublabel": "d3-force · 60fps",
+        "kind": "surface",
+        "x": 58,
+        "y": 72,
+        "detail": "The browser lays the graph out live with a force simulation, then renders with group-tinted links, click-to-focus neighborhoods, search, and group filters — all without ever restarting the physics.",
+        "z": null,
+        "group": null,
+        "weight": null
+      }
+    ],
+    "edges": [
+      {
+        "from": "vault",
+        "to": "session",
+        "label": "MCP reads",
+        "detail": "Tier-scoped tools — the session can only reach what its tools allow.",
+        "flow": null
+      },
+      {
+        "from": "session",
+        "to": "sanitizer",
+        "label": "link structure",
+        "detail": "Titles and links, nothing else, head for the gate.",
+        "flow": null
+      },
+      {
+        "from": "sanitizer",
+        "to": "graph",
+        "label": "writes snapshot",
+        "detail": "The only artifact: a public-safe JSON file.",
+        "flow": null
+      },
+      {
+        "from": "graph",
+        "to": "api",
+        "label": "read fresh",
+        "detail": "Served whole on every request.",
+        "flow": null
+      },
+      {
+        "from": "api",
+        "to": "canvas",
+        "label": "one fetch",
+        "detail": "The browser takes it from there — layout, focus, search, filters.",
+        "flow": null
+      }
+    ],
+    "walkthrough": [
+      {
+        "title": "Three tiers, one exit",
+        "body": "The vault's privacy model is structural: Open, Private (encrypted), Confidential (separately encrypted). This pipeline only ever sees the Open tier — the other two are unreachable by construction.",
+        "nodes": [
+          "vault",
+          "session"
+        ],
+        "edges": [
+          {
+            "from": "vault",
+            "to": "session"
+          }
+        ]
+      },
+      {
+        "title": "The reading session",
+        "body": "When a Claude session with vault MCP access runs (the nightly refresh, when the connector is up), it reads note titles and their link structure — and regenerates the snapshot only when the existing one is older than a week.",
+        "nodes": [
+          "session",
+          "sanitizer"
+        ],
+        "edges": [
+          {
+            "from": "session",
+            "to": "sanitizer"
+          }
+        ]
+      },
+      {
+        "title": "The sanitize gate",
+        "body": "Open-tier notes only. Edges survive only when both endpoints are Open — a link from a public note to a private one simply doesn't exist in the output. No private identifiers, ever.",
+        "nodes": [
+          "sanitizer",
+          "graph"
+        ],
+        "edges": [
+          {
+            "from": "sanitizer",
+            "to": "graph"
+          }
+        ]
+      },
+      {
+        "title": "One file, one route",
+        "body": "The snapshot is a single JSON file — 803 nodes, 1,871 links — served fresh by one API route. There is no database and no cache to go stale.",
+        "nodes": [
+          "graph",
+          "api"
+        ],
+        "edges": [
+          {
+            "from": "graph",
+            "to": "api"
+          }
+        ]
+      },
+      {
+        "title": "Alive in the browser",
+        "body": "The client does the living part: a d3-force simulation lays out the graph on every visit, and the canvas draws it with cluster-tinted links, focus neighborhoods, search, and filters. The vault casts a shadow; the shadow moves.",
+        "nodes": [
+          "api",
+          "canvas"
+        ],
+        "edges": [
+          {
+            "from": "api",
+            "to": "canvas"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "arch-site-assistant",
+    "title": "'Ask the tooling' — the site's live assistant",
+    "tagline": "A public AI assistant in Ian's locked voice — streaming, spend-capped, and adversarially hardened.",
+    "story": "The AppliedIQ site doesn't just *show* AI work — it runs some. Visitors on three surfaces (home, /work, /faq) can ask about the tooling and get streamed answers in Ian's locked v0.3 voice.\n\nThe path: the chat island posts to a Cloudflare Worker, which relays to the Anthropic API with streaming and prompt caching, then pipes text-only SSE back to the browser. The browser never sees an API key; the Worker enforces rate limits and a hard spend cap.\n\nThe part that earns the showcase: the system prompt is a locked artifact carrying the voice contract and an employer firewall — held 8-for-8 against adversarial probing angles before launch. It answers about the public tools; it does not leak employer specifics, no matter how the question is framed.",
+    "nodes": [
+      {
+        "id": "visitor",
+        "label": "Visitor",
+        "sublabel": "public web",
+        "kind": "operator",
+        "x": 10,
+        "y": 38,
+        "detail": "Anyone on the public internet. No account, no tracking wall — they type a question about the tooling and watch the answer stream in.",
+        "z": null,
+        "group": null,
+        "weight": null
+      },
+      {
+        "id": "site",
+        "label": "appliediqsolutions.com",
+        "sublabel": "Astro · CF Workers · 3 surfaces",
+        "kind": "surface",
+        "x": 34,
+        "y": 38,
+        "detail": "The consulting site: static Astro pages with React islands, deployed on Cloudflare Workers. The chat island appears on three surfaces (home, /work, /faq) and holds no secrets — it only knows how to ask.",
+        "z": null,
+        "group": null,
+        "weight": null
+      },
+      {
+        "id": "worker",
+        "label": "/api/ask Worker",
+        "sublabel": "SSE relay · rate limit · spend cap",
+        "kind": "engine",
+        "x": 60,
+        "y": 38,
+        "detail": "The guarded middle. It holds the API key, enforces per-visitor rate limits and a hard monthly spend cap, relays the question upstream, and pipes text-only SSE back down. The browser never sees a credential or a raw API response.",
+        "z": null,
+        "group": null,
+        "weight": null
+      },
+      {
+        "id": "anthropic",
+        "label": "Anthropic API",
+        "sublabel": "streaming · prompt cache",
+        "kind": "external",
+        "x": 85,
+        "y": 38,
+        "detail": "The model service. Responses stream token-by-token, and the locked system prompt is cache-hit on every request — faster answers at a fraction of the token cost.",
+        "z": null,
+        "group": null,
+        "weight": null
+      },
+      {
+        "id": "voice",
+        "label": "Locked voice prompt",
+        "sublabel": "v0.3 · employer firewall · 8/8 held",
+        "kind": "store",
+        "x": 60,
+        "y": 74,
+        "detail": "A versioned system-prompt artifact carrying two contracts: the voice (it answers the way Ian writes) and the firewall (it discusses the public tools, never employer specifics). It held 8-for-8 against adversarial probing angles before launch.",
+        "z": null,
+        "group": null,
+        "weight": null
+      }
+    ],
+    "edges": [
+      {
+        "from": "visitor",
+        "to": "site",
+        "label": "asks",
+        "detail": "A question typed into the chat island on any of the three surfaces.",
+        "flow": null
+      },
+      {
+        "from": "site",
+        "to": "worker",
+        "label": "question",
+        "detail": "The island posts the question; nothing sensitive rides along because the island holds nothing sensitive.",
+        "flow": null
+      },
+      {
+        "from": "worker",
+        "to": "anthropic",
+        "label": null,
+        "detail": "The Worker attaches the locked prompt and relays upstream with streaming enabled.",
+        "flow": null
+      },
+      {
+        "from": "anthropic",
+        "to": "worker",
+        "label": "token stream",
+        "detail": "Tokens stream back as they're generated.",
+        "flow": null
+      },
+      {
+        "from": "voice",
+        "to": "worker",
+        "label": "system prompt",
+        "detail": "The locked artifact is injected server-side on every request — visitors can't see or alter it.",
+        "flow": null
+      },
+      {
+        "from": "worker",
+        "to": "site",
+        "label": "SSE · text only",
+        "detail": "Plain text events to the browser: no markup injection surface, no metadata leakage.",
+        "flow": null
+      }
+    ],
+    "walkthrough": [
+      {
+        "title": "A visitor asks",
+        "body": "Anyone on the public site can ask about the tooling — no login, no friction. The chat island is a small React component that knows exactly one thing: how to send a question and render a stream.",
+        "nodes": [
+          "visitor",
+          "site"
+        ],
+        "edges": [
+          {
+            "from": "visitor",
+            "to": "site"
+          }
+        ]
+      },
+      {
+        "title": "Into the Worker",
+        "body": "The question posts to a Cloudflare Worker — the only piece that holds credentials. It rate-limits per visitor and enforces a hard spend cap, so a hostile crowd can cost at most a known, bounded amount.",
+        "nodes": [
+          "site",
+          "worker"
+        ],
+        "edges": [
+          {
+            "from": "site",
+            "to": "worker"
+          }
+        ]
+      },
+      {
+        "title": "The locked voice",
+        "body": "Server-side, the Worker attaches the locked v0.3 system prompt: the voice contract that makes answers sound like Ian, and the firewall that keeps employer specifics out of scope no matter how the question is framed. It held 8-for-8 under adversarial probing before launch.",
+        "nodes": [
+          "voice",
+          "worker"
+        ],
+        "edges": [
+          {
+            "from": "voice",
+            "to": "worker"
+          }
+        ]
+      },
+      {
+        "title": "Streaming through Anthropic",
+        "body": "The relay runs with streaming and prompt caching — the locked prompt is a cache hit on every request, so answers start fast and cost a fraction of the naive setup.",
+        "nodes": [
+          "worker",
+          "anthropic"
+        ],
+        "edges": [
+          {
+            "from": "worker",
+            "to": "anthropic"
+          },
+          {
+            "from": "anthropic",
+            "to": "worker"
+          }
+        ]
+      },
+      {
+        "title": "Text-only SSE back",
+        "body": "What returns to the browser is plain text events — no raw API responses, no keys, no metadata. The visitor watches the answer type itself out, and the browser never learns anything worth stealing.",
+        "nodes": [
+          "worker",
+          "site",
+          "visitor"
+        ],
+        "edges": [
+          {
+            "from": "worker",
+            "to": "site"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "arch-abacus-pipeline",
+    "title": "The mirror/bridge deploy pipeline",
+    "tagline": "Claude artifacts become deployed full-stack apps through two composable skill prompts — then move to durable infrastructure.",
+    "story": "A fleet of supply-chain consoles was built as Claude React artifacts and deployed through a two-skill pipeline. **abacus-mirror** ports an artifact at high fidelity to a managed Next.js web app — it encodes the platform's deploy contract (component slot, managed providers, dependency age gate, design tokens) so the port survives contact with the platform. **abacus-bridge** then augments the deployed mirror server-side: database persistence with an admin/use split, per-dataset merge, upload history, and a secure-by-default auth gate whose secret never enters the source.\n\nThe key property: the Claude artifact stays canonical. Edit the source, re-derive the deployment — the orchestrator skill re-mirrors in place preserving the data layer, then re-bridges from the recorded augmentation spec.\n\nThe portability is the point. When one hosting platform stopped being available, nothing was locked in — proven tools port to a governed enterprise platform (managed Postgres behind an ORM layer that keeps the next hop portable too). Build fast on whatever's available; move to durable infrastructure when it matters.",
+    "nodes": [
+      {
+        "id": "artifact",
+        "label": "Claude artifact",
+        "sublabel": "canonical React source",
+        "kind": "store",
+        "x": 10,
+        "y": 28,
+        "detail": "The single source of truth: a React tool built as a Claude artifact. Every deployment is derived from it, never forked — edit here, re-derive everywhere. That one rule is what kept a dozen tools from drifting apart.",
+        "z": null,
+        "group": null,
+        "weight": null
+      },
+      {
+        "id": "mirror",
+        "label": "abacus-mirror",
+        "sublabel": "faithful-port prompt",
+        "kind": "engine",
+        "x": 34,
+        "y": 28,
+        "detail": "A skill that emits a structured deploy prompt. It encodes the target platform's contract — single component slot, managed providers, a dependency age gate, the design-token system — so the port arrives correct instead of being debugged into shape.",
+        "z": null,
+        "group": null,
+        "weight": null
+      },
+      {
+        "id": "deepagent",
+        "label": "Abacus DeepAgent",
+        "sublabel": "managed Next.js build",
+        "kind": "external",
+        "x": 58,
+        "y": 28,
+        "detail": "The managed build agent on the deploy platform. It consumes the mirror and bridge prompts and produces a hosted Next.js app — useful precisely because the prompts do the disciplined thinking for it.",
+        "z": null,
+        "group": null,
+        "weight": null
+      },
+      {
+        "id": "bridge",
+        "label": "abacus-bridge",
+        "sublabel": "DB · auth · server engines",
+        "kind": "engine",
+        "x": 34,
+        "y": 64,
+        "detail": "The second skill: server-side augmentation for an already-deployed mirror. Database persistence with an admin/use split, per-dataset merge, upload history, and an auth gate that is secure by default — its secret value never appears in any source file.",
+        "z": null,
+        "group": null,
+        "weight": null
+      },
+      {
+        "id": "app",
+        "label": "Deployed app",
+        "sublabel": "full-stack · per-user data",
+        "kind": "surface",
+        "x": 82,
+        "y": 45,
+        "detail": "The result: a full-stack tool with real persistence and real users, derived entirely from the canonical artifact plus a recorded augmentation spec. Re-deriving after a source edit preserves the data layer.",
+        "z": null,
+        "group": null,
+        "weight": null
+      },
+      {
+        "id": "btp",
+        "label": "Enterprise platform",
+        "sublabel": "durable target · ORM-portable",
+        "kind": "external",
+        "x": 82,
+        "y": 82,
+        "detail": "A governed enterprise platform with managed Postgres. Tools that prove themselves move here, and an ORM layer keeps even this hop portable. Nothing in the pipeline is ever locked in.",
+        "z": null,
+        "group": null,
+        "weight": null
+      }
+    ],
+    "edges": [
+      {
+        "from": "artifact",
+        "to": "mirror",
+        "label": "source of truth",
+        "detail": "The mirror reads the canonical source; it never edits it.",
+        "flow": null
+      },
+      {
+        "from": "mirror",
+        "to": "deepagent",
+        "label": "structured prompt",
+        "detail": "One prompt carries the whole platform contract.",
+        "flow": null
+      },
+      {
+        "from": "bridge",
+        "to": "deepagent",
+        "label": "augment prompt",
+        "detail": "A second prompt adds the server side to the deployed mirror.",
+        "flow": null
+      },
+      {
+        "from": "deepagent",
+        "to": "app",
+        "label": "deploy",
+        "detail": "The managed agent builds and hosts the full-stack app.",
+        "flow": null
+      },
+      {
+        "from": "app",
+        "to": "btp",
+        "label": "move",
+        "detail": "Proven tools move to durable infrastructure on their own schedule.",
+        "flow": null
+      }
+    ],
+    "walkthrough": [
+      {
+        "title": "The canonical artifact",
+        "body": "Every tool starts and stays as a Claude React artifact — the one copy that matters. Deployments are derived from it, never forked from each other, so a fleet of a dozen tools has exactly a dozen sources of truth, not a web of divergent copies.",
+        "nodes": [
+          "artifact",
+          "mirror"
+        ],
+        "edges": [
+          {
+            "from": "artifact",
+            "to": "mirror"
+          }
+        ]
+      },
+      {
+        "title": "Mirror: the faithful port",
+        "body": "The abacus-mirror skill compiles the artifact into a structured deploy prompt that already knows the platform's rules — component slot, managed providers, dependency age gate, design tokens. The port survives contact with the platform because the contract rode in with it.",
+        "nodes": [
+          "mirror",
+          "deepagent"
+        ],
+        "edges": [
+          {
+            "from": "mirror",
+            "to": "deepagent"
+          }
+        ]
+      },
+      {
+        "title": "Bridge: server-side augmentation",
+        "body": "abacus-bridge upgrades the deployed mirror with what artifacts can't have: a database with an admin/use split, per-dataset merge, upload history, and an auth gate whose secret never enters the source. Mirror stays pure; bridge adds the server.",
+        "nodes": [
+          "bridge",
+          "deepagent"
+        ],
+        "edges": [
+          {
+            "from": "bridge",
+            "to": "deepagent"
+          }
+        ]
+      },
+      {
+        "title": "The deployed full-stack app",
+        "body": "The output is a hosted tool with persistence and users — and it is still derivable. Edit the canonical artifact and the orchestrator re-mirrors in place, preserving the data layer, then re-bridges from the recorded spec. The deployment is a build product, not a fork.",
+        "nodes": [
+          "deepagent",
+          "app"
+        ],
+        "edges": [
+          {
+            "from": "deepagent",
+            "to": "app"
+          }
+        ]
+      },
+      {
+        "title": "Move to durable infrastructure",
+        "body": "When one hosting platform stopped being available, nothing was lost — because nothing was locked in. Proven tools move to a governed enterprise platform (managed Postgres behind an ORM layer that keeps even that hop portable). Build fast anywhere; move to durable infrastructure when it matters.",
+        "nodes": [
+          "app",
+          "btp"
+        ],
+        "edges": [
+          {
+            "from": "app",
+            "to": "btp"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "arch-hermes",
+    "title": "Hermes — the shared brain",
+    "tagline": "One knowledge vault, served to every AI surface over MCP, curated nightly by an autonomous librarian.",
+    "story": "The problem Hermes solves: every AI surface (claude.ai, Claude Code, Desktop) used to hold its own partial memory. Hermes makes one canonical Obsidian vault the single source — 535+ atomic notes woven into Maps of Content — and serves it to all surfaces over MCP.\n\nThe serving path is hardened: the vault lives on a VPS that accepts no inbound connections; a Cloudflare Tunnel dials out, and Cloudflare Access gates identity at the edge before anything reaches the filesystem server.\n\nPrivacy is structural, not procedural: three tiers (Open / git-crypt Private / gocryptfs Confidential) with tier-scoped write tools, so work data gets filtered, never firehosed. The Librarian — a scheduled headless Claude Code agent under systemd — runs nightly: routes new material to the right tier, shelves atomic notes, weaves the link graph, and maintains the maps. The design principle, in the vault's own words: the brain should be a librarian, not a desk clerk.",
+    "nodes": [
+      {
+        "id": "surfaces",
+        "label": "Claude surfaces",
+        "sublabel": "claude.ai · Code · Desktop",
+        "kind": "surface",
+        "x": 12,
+        "y": 32,
+        "detail": "Every place a conversation happens — the web app, the CLI, the desktop app. Before Hermes each kept its own partial memory; now they all read and write the same brain over MCP, so context earned in one surface is available in all of them.",
+        "z": null,
+        "group": null,
+        "weight": null
+      },
+      {
+        "id": "tunnel",
+        "label": "Tunnel + Access",
+        "sublabel": "Cloudflare edge · identity gate",
+        "kind": "engine",
+        "x": 36,
+        "y": 32,
+        "detail": "The only door, and it opens outward. A Cloudflare Tunnel dials out from the server (nothing dials in), and Cloudflare Access checks identity at the edge before a request ever reaches the filesystem.",
+        "z": null,
+        "group": null,
+        "weight": null
+      },
+      {
+        "id": "vps",
+        "label": "Hardened VPS",
+        "sublabel": "outbound-only · MCP server",
+        "kind": "engine",
+        "x": 60,
+        "y": 32,
+        "detail": "A small server with no inbound ports that runs the MCP filesystem service. Its tools are tier-scoped: each capability can only touch the vault tier it was built for, so a compromised or confused caller can't reach past its lane.",
+        "z": null,
+        "group": null,
+        "weight": null
+      },
+      {
+        "id": "vault",
+        "label": "claude-brain vault",
+        "sublabel": "Open / Private / Confidential",
+        "kind": "store",
+        "x": 84,
+        "y": 32,
+        "detail": "The canonical Obsidian vault: 535+ atomic notes woven into Maps of Content. Privacy is structural — three tiers with different encryption (plain / git-crypt / gocryptfs), so what a session can see is decided by architecture, not discipline.",
+        "z": null,
+        "group": null,
+        "weight": null
+      },
+      {
+        "id": "librarian",
+        "label": "Librarian",
+        "sublabel": "nightly headless Claude · systemd",
+        "kind": "agent",
+        "x": 60,
+        "y": 72,
+        "detail": "A scheduled headless Claude Code agent that curates the vault every night: routes new material to the right tier, shelves atomic notes, weaves the link graph, maintains the maps. The design principle: a librarian, not a desk clerk — it organizes, it doesn't gatekeep.",
+        "z": null,
+        "group": null,
+        "weight": null
+      },
+      {
+        "id": "github",
+        "label": "GitHub",
+        "sublabel": "git-crypt sync layer",
+        "kind": "external",
+        "x": 84,
+        "y": 72,
+        "detail": "The sync and backup layer. The vault versions to a private remote with the Private tier encrypted at rest via git-crypt — history and disaster recovery without exposing the contents.",
+        "z": null,
+        "group": null,
+        "weight": null
+      }
+    ],
+    "edges": [
+      {
+        "from": "surfaces",
+        "to": "tunnel",
+        "label": "MCP over HTTPS",
+        "detail": "Every surface speaks the same protocol to the same brain.",
+        "flow": null
+      },
+      {
+        "from": "tunnel",
+        "to": "vps",
+        "label": null,
+        "detail": "Identity-checked traffic rides the outbound tunnel into the server.",
+        "flow": null
+      },
+      {
+        "from": "vps",
+        "to": "vault",
+        "label": "tier-scoped tools",
+        "detail": "Each MCP tool can only touch the tier it was built for.",
+        "flow": null
+      },
+      {
+        "from": "librarian",
+        "to": "vault",
+        "label": "routes · shelves · weaves",
+        "detail": "Nightly curation: new material routed, notes shelved, links woven.",
+        "flow": null
+      },
+      {
+        "from": "vault",
+        "to": "github",
+        "label": "encrypted sync",
+        "detail": "Versioned offsite copy with the Private tier encrypted at rest.",
+        "flow": null
+      }
+    ],
+    "walkthrough": [
+      {
+        "title": "Every surface, one brain",
+        "body": "The problem was fragmentation: each AI surface held its own partial memory. Hermes inverts that — claude.ai, Claude Code, and Desktop all speak MCP to one canonical vault, so knowledge earned anywhere is available everywhere.",
+        "nodes": [
+          "surfaces",
+          "tunnel"
+        ],
+        "edges": [
+          {
+            "from": "surfaces",
+            "to": "tunnel"
+          }
+        ]
+      },
+      {
+        "title": "The hardened path",
+        "body": "The server accepts no inbound connections at all. A Cloudflare Tunnel dials out from inside, and Cloudflare Access gates identity at the edge — a request proves who it is before it ever touches the machine.",
+        "nodes": [
+          "tunnel",
+          "vps"
+        ],
+        "edges": [
+          {
+            "from": "tunnel",
+            "to": "vps"
+          }
+        ]
+      },
+      {
+        "title": "Tier-scoped access to the vault",
+        "body": "The MCP server's tools are scoped per tier: Open, Private (git-crypt), Confidential (gocryptfs). Privacy is structural, not procedural — what a session can reach is decided by which tools exist, not by asking nicely.",
+        "nodes": [
+          "vps",
+          "vault"
+        ],
+        "edges": [
+          {
+            "from": "vps",
+            "to": "vault"
+          }
+        ]
+      },
+      {
+        "title": "The nightly librarian",
+        "body": "A scheduled headless agent curates the vault while nobody's watching: routes new material to the right tier, shelves atomic notes, weaves the link graph, maintains the Maps of Content. The vault stays organized because organizing is someone's whole job.",
+        "nodes": [
+          "librarian",
+          "vault"
+        ],
+        "edges": [
+          {
+            "from": "librarian",
+            "to": "vault"
+          }
+        ]
+      },
+      {
+        "title": "Encrypted sync layer",
+        "body": "The vault versions to a private GitHub remote with sensitive tiers encrypted at rest. Full history and an offsite copy, without the contents ever being readable in the clear off the box.",
+        "nodes": [
+          "vault",
+          "github"
+        ],
+        "edges": [
+          {
+            "from": "vault",
+            "to": "github"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "arch-aiq-box",
+    "title": "The demo box",
+    "tagline": "One small server, many live demos — a mirror-first deploy contract with zero inbound ports.",
+    "story": "The business site's live demos need a real backend somewhere, and that somewhere is deliberately boring: one small Hetzner VPS running many Docker containers, with **Cloudflare Tunnel as the only door**. The box dials out to the edge; nothing on the internet can dial in — no open ports, SSH included.\n\nThe operating rule is **the mirror is the source of truth**. Every file on the box exists as `deploy/<absolute-path>` in a private repo; changes are authored in the mirror, shipped over the tunnel, and the box is only ever a deploy target. Nobody edits the box directly, so the box is always rebuildable from the repo.\n\nTwo hard lessons are baked into the contract. Every published container port is loopback-bound — a bare `host:container` port punches through the firewall no matter what the firewall says, so the firewall is never load-bearing. And every change ends with a **24-check acceptance suite** that must also pass after a cold reboot with no human help — a demo that only works until the next restart isn't deployed, it's balanced.\n\nSecrets live only on the box, root-owned, outside the repo. Adding a new demo is three declarative blocks: a compose service, a tunnel ingress rule, a DNS route. The first tenant is the Confirmation Outlook live demo.",
+    "nodes": [
+      {
+        "id": "operator",
+        "label": "Operator",
+        "sublabel": "authors the mirror, never the box",
+        "kind": "operator",
+        "x": 8,
+        "y": 45,
+        "detail": "All changes start here — in the local mirror repo, never in an SSH session on the box. The discipline is the architecture: because nobody edits the box, the box can always be rebuilt from the repo.",
+        "z": null,
+        "group": null,
+        "weight": null
+      },
+      {
+        "id": "mirror",
+        "label": "Deploy mirror",
+        "sublabel": "repo = source of truth",
+        "kind": "store",
+        "x": 28,
+        "y": 45,
+        "detail": "A private repo where every box file lives as deploy/<absolute-path> — the compose file, the tunnel router config, the SSH hardening, the acceptance suite. The box's entire configuration is a reviewable git history.",
+        "z": null,
+        "group": null,
+        "weight": null
+      },
+      {
+        "id": "box",
+        "label": "The box",
+        "sublabel": "one VPS · many containers",
+        "kind": "engine",
+        "x": 50,
+        "y": 30,
+        "detail": "A single small Hetzner VPS running Docker: log-capped daemon, live-restore, every published container port bound to loopback so the firewall is never the thing keeping a service private. One box, many demo tenants.",
+        "z": null,
+        "group": null,
+        "weight": null
+      },
+      {
+        "id": "verify",
+        "label": "Acceptance suite",
+        "sublabel": "24 checks · reboot-proof",
+        "kind": "engine",
+        "x": 50,
+        "y": 68,
+        "detail": "A 24-check verify script that must pass after every change — and after a cold reboot with no compose invocation. Ports, containers, tunnel health, SSH hardening, secrets permissions: if any check fails, the change isn't done.",
+        "z": null,
+        "group": null,
+        "weight": null
+      },
+      {
+        "id": "tunnel",
+        "label": "Cloudflare Tunnel",
+        "sublabel": "outbound-only router",
+        "kind": "external",
+        "x": 72,
+        "y": 30,
+        "detail": "The box's only connection to the world is a tunnel it opens outward to Cloudflare's edge. Hostname routing happens there; zero inbound ports exist on the box, including SSH, which rides the same tunnel behind access control.",
+        "z": null,
+        "group": null,
+        "weight": null
+      },
+      {
+        "id": "demo",
+        "label": "Live demos",
+        "sublabel": "demo.appliediqsolutions.com",
+        "kind": "surface",
+        "x": 92,
+        "y": 45,
+        "detail": "The public face: each demo gets a hostname routed at the edge to its loopback-bound container. First tenant is the Confirmation Outlook live demo; adding another is a compose block, an ingress rule, and a DNS route.",
+        "z": null,
+        "group": null,
+        "weight": null
+      }
+    ],
+    "edges": [
+      {
+        "from": "operator",
+        "to": "mirror",
+        "label": "author",
+        "detail": "Every change is a commit in the mirror first — the box never holds unversioned state.",
+        "flow": null
+      },
+      {
+        "from": "mirror",
+        "to": "box",
+        "label": "ship + restart",
+        "detail": "Files ship to their absolute paths; only the affected service restarts.",
+        "flow": null
+      },
+      {
+        "from": "box",
+        "to": "verify",
+        "label": "must pass",
+        "detail": "After any change, and after a reboot with no human help — both, always.",
+        "flow": null
+      },
+      {
+        "from": "box",
+        "to": "tunnel",
+        "label": "dials out",
+        "detail": "The box initiates the connection; the internet cannot initiate one back.",
+        "flow": null
+      },
+      {
+        "from": "tunnel",
+        "to": "demo",
+        "label": "routes",
+        "detail": "Hostname routing at the edge maps each demo domain to its container.",
+        "flow": null
+      }
+    ],
+    "walkthrough": [
+      {
+        "title": "The mirror contract",
+        "body": "Every file on the box lives in a private repo as deploy/<absolute-path>. Changes are authored there, shipped over, and the affected service restarted by name. The box is a deploy target, never an editor — which means it is always rebuildable, and its whole history is a git log.",
+        "nodes": [
+          "operator",
+          "mirror",
+          "box"
+        ],
+        "edges": [
+          {
+            "from": "operator",
+            "to": "mirror"
+          },
+          {
+            "from": "mirror",
+            "to": "box"
+          }
+        ]
+      },
+      {
+        "title": "Zero inbound ports",
+        "body": "The box opens an outbound tunnel to Cloudflare's edge and everything — demo traffic, even SSH — rides it. No port is open to the internet. And inside the box, every published container port is loopback-bound, because a bare host:container port bypasses the firewall entirely; the firewall is never the thing keeping a service private.",
+        "nodes": [
+          "box",
+          "tunnel"
+        ],
+        "edges": [
+          {
+            "from": "box",
+            "to": "tunnel"
+          }
+        ]
+      },
+      {
+        "title": "Reboot-proof verification",
+        "body": "Every change ends with a 24-check acceptance suite — containers, ports, tunnel health, hardening, secrets permissions. The same suite must also pass after a cold reboot with no compose command typed: a demo that needs a human after a restart isn't deployed, it's balanced.",
+        "nodes": [
+          "box",
+          "verify"
+        ],
+        "edges": [
+          {
+            "from": "box",
+            "to": "verify"
+          }
+        ]
+      },
+      {
+        "title": "Many tenants, one pattern",
+        "body": "Adding a demo is three declarative blocks: a compose service with a loopback-bound port, a tunnel ingress rule before the catch-all, and a DNS route. The first tenant is the Confirmation Outlook live demo; the pattern is the point — the platform was built for the fleet, not the first app.",
+        "nodes": [
+          "tunnel",
+          "demo"
+        ],
+        "edges": [
+          {
+            "from": "tunnel",
+            "to": "demo"
+          }
+        ]
+      }
+    ]
+  },
+  {
+    "id": "arch-headless-agents",
+    "title": "Headless agents — the overnight fleet",
+    "tagline": "Two autonomous Claude agents on a sandboxed box — sealed in containers, walled behind an allowlisted proxy, growing their own capabilities, and one of them holding a real wallet.",
+    "story": "The premise: work should continue while the operator sleeps. Two headless Claude agents live on a dedicated sandbox server, each with a persona and a job. Professor X is a coding agent — file an issue from a phone and he answers it with a pull request, self-merged. Consigliere is a Telegram personal assistant with a work-order queue. Each agent's durable self — persona, memory, journal, skills, goals — lives in its own private repo, so the box itself stays disposable.\n\nAutonomy is earned through structure, not trust. Every wake is bounded: host timers fire a wake ladder whose every rung sits behind a zero-token pre-check (an idle box costs nothing), model and effort are pinned at every invocation so an agent can't remodel itself, and a wall-clock timeout backstops every run. The containers are sealed — non-root, capability-dropped, no route to the internet and no DNS. The only way out is each agent's own proxy, which enforces a per-agent domain allowlist.\n\nThe interesting part: agents extend their own reach. A capability broker screens their requests for new domains — deterministic gates first, then an isolated LLM judge with no tools and no credentials. Reputable read-only content is granted automatically; anything involving payment, credentials, or posting escalates to the operator's phone as a one-tap Approve/Deny. The same pattern covers petitions for host changes and goal budget extensions — three decision surfaces, one tap each.\n\nAnd the frontier experiment: Professor X holds a real wallet. Custody stays with a TEE-backed service (no keys ever touch the box), spending autonomy is total inside a $20 float — the float IS the blast radius — and a standing rule keeps the agent's LLM out of any paid request path. The whole build is held together by an acceptance suite of 172 checks that must pass after every change and every reboot.",
+    "nodes": [
+      {
+        "id": "operator",
+        "label": "Operator",
+        "sublabel": "one tap from the phone",
+        "kind": "operator",
+        "x": 11,
+        "y": 24,
+        "detail": "Files tasks from anywhere — a terminal one-liner or a plain mobile issue — and answers escalations with a single tap. Everything else runs without him: the design goal is that his attention is spent on decisions, never on babysitting.",
+        "z": null,
+        "group": null,
+        "weight": null
+      },
+      {
+        "id": "approvals",
+        "label": "Chat + approvals",
+        "sublabel": "per-agent bots · one-tap buttons",
+        "kind": "surface",
+        "x": 37,
+        "y": 24,
+        "detail": "Each agent has its own chat bot, gated to the operator — strangers are dropped before a model ever runs. A third, dedicated broker bot carries Approve/Deny buttons for every escalation; a tap applies in about a second. Replies carry deterministic cost footers the model never writes, so telemetry can't hallucinate.",
+        "z": null,
+        "group": null,
+        "weight": null
+      },
+      {
+        "id": "queues",
+        "label": "Task queues",
+        "sublabel": "each agent's own private repo",
+        "kind": "surface",
+        "x": 63,
+        "y": 24,
+        "detail": "Work arrives as labeled issues in each agent's own repo. A repo action labels plain phone-filed issues automatically; pickup is within five minutes. The same repos hold the agents' durable selves, so filing work and growing the agent happen in one place.",
+        "z": null,
+        "group": null,
+        "weight": null
+      },
+      {
+        "id": "broker",
+        "label": "Capability broker",
+        "sublabel": "gates + isolated LLM judge",
+        "kind": "engine",
+        "x": 89,
+        "y": 24,
+        "detail": "Agents request new egress domains themselves. Deterministic gates run first — strict syntax, a hard-deny list of exfiltration classes, spend caps — then an isolated judge: a tool-less, credential-less model call in a throwaway container. Reputable read-only content auto-grants; payment, credential, and posting destinations always escalate. A host-side ledger makes tampering and replay inert.",
+        "z": null,
+        "group": null,
+        "weight": null
+      },
+      {
+        "id": "harness",
+        "label": "Wake ladder",
+        "sublabel": "host timers · zero-token pre-checks",
+        "kind": "engine",
+        "x": 11,
+        "y": 52,
+        "detail": "Host timers fire every five minutes, but a wake ladder of pure-bash pre-checks — schedule, watchers, issues, goals, discretionary self-time, evolution, reflection — decides whether a model runs at all. An idle box costs nothing. When a rung fires, the wake is bounded: turn caps, a wall-clock timeout, and model + effort pinned at the invocation so an agent can never remodel itself.",
+        "z": null,
+        "group": null,
+        "weight": null
+      },
+      {
+        "id": "profx",
+        "label": "Professor X",
+        "sublabel": "coding agent · issues → PRs",
+        "kind": "agent",
+        "x": 37,
+        "y": 52,
+        "detail": "The task worker: one issue per wake becomes a pull request, self-merged — the operator reopens or reverts only on disagreement. Also a conversationalist: chat wakes write durable outcomes to memory before replying, because talking to him is how he grows. He files his own follow-up work to his own queue, sets his own goals, and holds the fleet's one wallet.",
+        "z": null,
+        "group": null,
+        "weight": null
+      },
+      {
+        "id": "consigliere",
+        "label": "Consigliere",
+        "sublabel": "personal assistant · reminders + research",
+        "kind": "agent",
+        "x": 63,
+        "y": 52,
+        "detail": "The PA: reminders, research, and a work-order queue, all over chat. Same harness, same sealed container, own bot, own repo, no wallet. The two agents never interact, share nothing, and don't know the other exists — cross-agent channels are a deliberate decision the operator has explicitly not made.",
+        "z": null,
+        "group": null,
+        "weight": null
+      },
+      {
+        "id": "proxy",
+        "label": "Egress wall",
+        "sublabel": "per-agent proxy · allowlist only",
+        "kind": "engine",
+        "x": 89,
+        "y": 52,
+        "detail": "The containers have no route to the internet and no DNS — structurally, not by policy. The single door is an HTTP CONNECT proxy per agent enforcing that agent's domain allowlist and refusing private ranges, odd ports, and raw-IP connections. Because a payment destination is also just a domain, the same wall doubles as the payment allowlist.",
+        "z": null,
+        "group": null,
+        "weight": null
+      },
+      {
+        "id": "memory",
+        "label": "Agent memory",
+        "sublabel": "journal · skills · goals · outcomes",
+        "kind": "store",
+        "x": 11,
+        "y": 80,
+        "detail": "Each agent's repo is its durable self: append-only memory, a searchable journal of every run, self-authored skills that activate on the next wake, and persistent goals. A recall index injects the most relevant past into each wake, and a nightly sensor records which merged work later got reverted — the agents learn from what didn't hold, not just what shipped.",
+        "z": null,
+        "group": null,
+        "weight": null
+      },
+      {
+        "id": "verify",
+        "label": "Acceptance suite",
+        "sublabel": "172 checks · must stay green",
+        "kind": "engine",
+        "x": 37,
+        "y": 80,
+        "detail": "One script asserts the whole build: containers sealed, egress allowed and denied where it should be, agents isolated from each other, pollers alive, wallet rails reachable from exactly one agent, wake contracts honored, brokers passing adversarial self-tests. It must pass after every change and after every reboot — regression is loud, never silent.",
+        "z": null,
+        "group": null,
+        "weight": null
+      },
+      {
+        "id": "wallet",
+        "label": "Wallet + x402",
+        "sublabel": "USDC on Base · $20 float",
+        "kind": "external",
+        "x": 63,
+        "y": 80,
+        "detail": "Professor X's wallet lives in a TEE-backed custody service — no seed phrase or private key ever touches the box. Inside a $20 float he has full spending autonomy: no per-transaction cap, by explicit decision, because the float itself is the blast radius. His first paid x402 purchase settled on-chain the day the wallet went live. Standing rule: the agent's LLM never sits in a paid request path.",
+        "z": null,
+        "group": null,
+        "weight": null
+      },
+      {
+        "id": "internet",
+        "label": "The allowlisted web",
+        "sublabel": "only through the proxy",
+        "kind": "external",
+        "x": 89,
+        "y": 80,
+        "detail": "Everything outside the wall — docs, registries, news, APIs, and the x402 marketplace. Reachable domain by domain, each one either base-listed, auto-granted as reputable read-only content, or explicitly approved by the operator. The allowlist is deliberately unbounded in size: real work needs breadth, and every domain still passes the gates individually.",
+        "z": null,
+        "group": null,
+        "weight": null
+      }
+    ],
+    "edges": [
+      {
+        "from": "operator",
+        "to": "queues",
+        "label": "files a task",
+        "detail": "A terminal one-liner or a plain phone-filed issue — labeled automatically, picked up within five minutes.",
+        "flow": "control"
+      },
+      {
+        "from": "operator",
+        "to": "approvals",
+        "label": "one-tap decisions",
+        "detail": "Approve/Deny buttons on every escalation — websites, host-change petitions, goal budgets. A tap applies in about a second.",
+        "flow": "control"
+      },
+      {
+        "from": "queues",
+        "to": "harness",
+        "label": "work waiting",
+        "detail": "The wake ladder's zero-token pre-check counts actionable issues; the model only runs when there's something to do.",
+        "flow": "event"
+      },
+      {
+        "from": "harness",
+        "to": "profx",
+        "label": "bounded wake",
+        "detail": "Turn-capped, wall-clock-limited, model and effort pinned at the invocation.",
+        "flow": "control"
+      },
+      {
+        "from": "harness",
+        "to": "consigliere",
+        "label": "bounded wake",
+        "detail": "The same dispatcher serves both agents — one code path, per-agent prompts.",
+        "flow": "control"
+      },
+      {
+        "from": "approvals",
+        "to": "profx",
+        "label": "chat in",
+        "detail": "Chat wakes share the work lock, keep their own session thread, and write durable outcomes to memory before replying.",
+        "flow": "event"
+      },
+      {
+        "from": "approvals",
+        "to": "consigliere",
+        "label": "the PA's surface",
+        "detail": "Reminders, research, and work orders arrive as messages; a crash-resilient poller journals every message before acting so nothing is silently lost.",
+        "flow": "event"
+      },
+      {
+        "from": "profx",
+        "to": "queues",
+        "label": "issues → PRs",
+        "detail": "The work product: a pull request per task, self-merged, with the reasoning in the trail.",
+        "flow": "data"
+      },
+      {
+        "from": "profx",
+        "to": "memory",
+        "label": "journals · skills · goals",
+        "detail": null,
+        "flow": "data"
+      },
+      {
+        "from": "consigliere",
+        "to": "memory",
+        "label": "same convention",
+        "detail": null,
+        "flow": "data"
+      },
+      {
+        "from": "profx",
+        "to": "proxy",
+        "label": "every byte out",
+        "detail": "No route and no DNS exist inside the container — the proxy is not a policy, it's the only physics.",
+        "flow": "data"
+      },
+      {
+        "from": "consigliere",
+        "to": "proxy",
+        "label": "own wall, own list",
+        "detail": "Per-agent proxies: the wallet service is reachable from exactly one agent's wall and absent from the other's.",
+        "flow": "data"
+      },
+      {
+        "from": "proxy",
+        "to": "internet",
+        "label": "allowlisted CONNECT",
+        "detail": "Domain-by-domain, port 443 only, no raw IPs, no private ranges.",
+        "flow": "data"
+      },
+      {
+        "from": "profx",
+        "to": "broker",
+        "label": "requests new domains",
+        "detail": "Up to a handful of exact hostnames per request, with the task and reason attached.",
+        "flow": "event"
+      },
+      {
+        "from": "broker",
+        "to": "approvals",
+        "label": "escalations",
+        "detail": "Payment, credential, and posting destinations always reach the operator; agents structurally cannot approve their own requests.",
+        "flow": "event"
+      },
+      {
+        "from": "broker",
+        "to": "proxy",
+        "label": "grants reshape the wall",
+        "detail": "Auto-grants land as a live proxy reconfigure — never a restart — and are recorded in the host-side ledger.",
+        "flow": "control"
+      },
+      {
+        "from": "profx",
+        "to": "wallet",
+        "label": "pays — and will get paid",
+        "detail": "Buyer capability is live and proven on-chain; the seller storefront is the next phase, hosted off-box so the sandbox adds no inbound surface.",
+        "flow": "data"
+      },
+      {
+        "from": "operator",
+        "to": "verify",
+        "label": "green or it didn't happen",
+        "detail": "Run after every change and every reboot; the suite reports its own count and fails loudly.",
+        "flow": "control"
+      }
+    ],
+    "walkthrough": [
+      {
+        "title": "Work arrives while the operator sleeps",
+        "body": "A task filed from a phone becomes a labeled issue in the agent's own repo within seconds; chat requests land the same way. The operator's other interface is a set of Approve/Deny buttons — his attention is reserved for decisions, not supervision.",
+        "nodes": [
+          "operator",
+          "queues",
+          "approvals"
+        ],
+        "edges": [
+          {
+            "from": "operator",
+            "to": "queues"
+          },
+          {
+            "from": "operator",
+            "to": "approvals"
+          }
+        ]
+      },
+      {
+        "title": "The zero-token wake ladder",
+        "body": "Host timers fire every five minutes, but bash decides whether a model runs: schedule due? issues waiting? goals open? earned self-time? Each rung is a free pre-check, so an idle fleet costs nothing. When a rung fires, the wake is bounded — turn caps, a hard timeout, and the model pinned at the call site so an agent can't quietly upgrade itself.",
+        "nodes": [
+          "queues",
+          "harness",
+          "profx",
+          "consigliere"
+        ],
+        "edges": [
+          {
+            "from": "queues",
+            "to": "harness"
+          },
+          {
+            "from": "harness",
+            "to": "profx"
+          },
+          {
+            "from": "harness",
+            "to": "consigliere"
+          }
+        ]
+      },
+      {
+        "title": "Two agents, sealed apart",
+        "body": "Professor X turns issues into self-merged pull requests and holds the wallet; Consigliere runs reminders, research, and work orders over chat. Each lives in its own capability-dropped, non-root container with its own repo as its durable self — and neither knows the other exists. Isolation is a standing rule, not a default.",
+        "nodes": [
+          "profx",
+          "consigliere",
+          "memory"
+        ],
+        "edges": [
+          {
+            "from": "profx",
+            "to": "memory"
+          },
+          {
+            "from": "consigliere",
+            "to": "memory"
+          }
+        ]
+      },
+      {
+        "title": "The only door is a proxy",
+        "body": "Inside the containers there is no route out and no DNS — egress control is physics, not policy. Each agent's proxy enforces its own domain allowlist and refuses private ranges, odd ports, and raw IPs. The wallet service sits on exactly one agent's list, so wallet isolation is enforced by the same wall.",
+        "nodes": [
+          "profx",
+          "consigliere",
+          "proxy",
+          "internet"
+        ],
+        "edges": [
+          {
+            "from": "profx",
+            "to": "proxy"
+          },
+          {
+            "from": "consigliere",
+            "to": "proxy"
+          },
+          {
+            "from": "proxy",
+            "to": "internet"
+          }
+        ]
+      },
+      {
+        "title": "Agents grow their own reach",
+        "body": "Need a new domain? Ask. Deterministic gates screen the request, then an isolated judge — no tools, no credentials, throwaway container — rules on it. Reputable read-only content grants automatically and reshapes the wall live; payment, credential, and posting destinations always escalate to a one-tap decision. A host-side ledger makes tampering and replay inert.",
+        "nodes": [
+          "profx",
+          "broker",
+          "proxy",
+          "approvals"
+        ],
+        "edges": [
+          {
+            "from": "profx",
+            "to": "broker"
+          },
+          {
+            "from": "broker",
+            "to": "proxy"
+          },
+          {
+            "from": "broker",
+            "to": "approvals"
+          }
+        ]
+      },
+      {
+        "title": "A real wallet, a bounded blast radius",
+        "body": "Professor X holds USDC on Base in TEE-backed custody — no key material ever touches the box. Within a $20 float his autonomy is total: no per-transaction cap, by explicit decision, because the float is the blast radius. His first paid API purchase settled on-chain the day the wallet went live. The standing rule that matters: the agent's LLM never sits inside a paid request path.",
+        "nodes": [
+          "profx",
+          "wallet"
+        ],
+        "edges": [
+          {
+            "from": "profx",
+            "to": "wallet"
+          }
+        ]
+      },
+      {
+        "title": "Proven green, and learning",
+        "body": "An acceptance suite of 172 checks asserts the entire build — isolation, egress, brokers, wake contracts, wallet rails — after every change and every reboot. Meanwhile the agents learn: every wake recalls the most relevant past, a nightly sensor records which work later got reverted, and a bi-weekly evolution wake proposes changes to their own harness as pull requests the operator reviews.",
+        "nodes": [
+          "verify",
+          "memory",
+          "operator"
+        ],
+        "edges": [
+          {
+            "from": "operator",
+            "to": "verify"
+          }
+        ]
+      }
+    ]
+  }
+]

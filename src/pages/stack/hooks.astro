@@ -1,0 +1,86 @@
+---
+/**
+ * /stack/hooks — the five Claude Code hooks that wire the doctrine + register in
+ * and keep the whole setup reproducible. Generalized (src/data/stack.ts): the
+ * private repos are referred to by role, never by path/name.
+ */
+import PageLayout from '../../layouts/PageLayout.astro';
+import Icon from '../../components/Icon.astro';
+import PipelineFlow from '../../components/PipelineFlow.astro';
+import { hooks } from '../../data/stack';
+
+const origin = new URL(Astro.site!).origin;
+const description =
+  'Five Claude Code hooks that keep the operating doctrine and execution register live automatically — and make the whole environment reproducible from git.';
+
+const schema = [
+  {
+    '@type': 'BreadcrumbList',
+    '@id': `${origin}/stack/hooks/#breadcrumb`,
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: `${origin}/` },
+      { '@type': 'ListItem', position: 2, name: 'Operating Stack', item: `${origin}/stack/` },
+      { '@type': 'ListItem', position: 3, name: 'The hooks', item: `${origin}/stack/hooks/` },
+    ],
+  },
+];
+---
+<PageLayout title="The hooks" description={description} image="/og/stack-hooks.png?v=1" schema={schema}>
+  <section class="mx-auto max-w-4xl px-6 pt-16 pb-6 sm:pt-20">
+    <a href="/stack/" class="inline-flex items-center gap-1.5 text-sm text-ink-faint transition-colors hover:text-ink">
+      <Icon name="arrow-right" size={14} class="rotate-180" /> Operating Stack
+    </a>
+    <p class="mono-label mt-6">The hooks · Claude Code</p>
+    <h1 class="mt-3 font-display text-4xl font-semibold tracking-tight text-ink sm:text-5xl">
+      Five hooks that run the discipline for me.
+    </h1>
+    <p class="mt-5 max-w-2xl text-lg leading-relaxed text-ink-muted">
+      A hook is a shell command Claude Code fires on an event — a prompt, a tool call, the start
+      or end of a session. Mine turn the operating doctrine and the execution register from
+      “things I have to remember” into automatic behavior, and keep the entire environment
+      reproducible across machines.
+    </p>
+    <div class="mt-8">
+      <PipelineFlow
+        label="One session, start to end — the hooks firing"
+        stages={[
+          { name: 'session start', note: 'pull doctrine + skills' },
+          { name: 'load', note: 'into every turn', lit: true },
+          { name: 'run', note: 'the work' },
+          { name: 'session end', note: 'commit config back' },
+          { name: 'self-refresh', note: 'reproducible anywhere', lit: true },
+        ]}
+      />
+    </div>
+  </section>
+
+  <section class="mx-auto max-w-4xl px-6 pb-20">
+    <div class="mt-4 flex flex-col gap-4">
+      {hooks.map((h) => (
+        <div class="reveal panel p-6">
+          <div class="flex items-center gap-3">
+            <span class="grid h-9 w-9 shrink-0 place-items-center rounded-lg border border-line bg-surface-2 text-cyan">
+              <Icon name={h.icon} size={17} />
+            </span>
+            <div>
+              <h2 class="font-display text-base font-semibold tracking-tight text-ink">{h.name}</h2>
+              <code class="font-mono text-xs text-cyan-deep">{h.event}</code>
+            </div>
+          </div>
+          <dl class="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-[auto_1fr] sm:gap-x-5">
+            <dt class="mono-label text-ink-faint">What it does</dt>
+            <dd class="text-sm leading-relaxed text-ink-muted">{h.does}</dd>
+            <dt class="mono-label text-ink-faint sm:mt-1">Why</dt>
+            <dd class="text-sm leading-relaxed text-ink-muted">{h.why}</dd>
+          </dl>
+        </div>
+      ))}
+    </div>
+    <p class="mt-8 max-w-2xl text-sm leading-relaxed text-ink-faint">
+      The doctrine and skills live in private repos, referred to here by role. One of these hooks
+      keeps the <a href="/stack/status-line/" class="text-cyan-deep hover:underline">status line</a> in
+      sync; the other four keep the <a href="/stack/doctrine/" class="text-cyan-deep hover:underline">doctrine</a>
+      and <a href="/stack/fable/" class="text-cyan-deep hover:underline">register</a> live and the setup portable.
+    </p>
+  </section>
+</PageLayout>

@@ -1,0 +1,263 @@
+---
+/**
+ * /anthropic — a comprehensive, curated board of the resources Anthropic publishes
+ * directly (docs, courses, certifications, tools, cookbook, research, policies,
+ * news) plus a tight set of reputable third-party resources. Same grouped,
+ * filterable board as Favorites, but split into two tiers and sourced from a
+ * hand-authored, VERIFIED data file (src/data/anthropic-resources.json).
+ */
+import PageLayout from '../../layouts/PageLayout.astro';
+import Icon from '../../components/Icon.astro';
+import { bySlug } from '../../data/sections';
+import { anthropicByTier, anthropicResources, hostOf } from '../../data/anthropic';
+
+const section = bySlug.get('anthropic')!;
+const tiers = anthropicByTier();
+const total = anthropicResources.length;
+const origin = new URL(Astro.site!).origin;
+
+// Category chips = the union of categories present, in canonical order.
+const catMap = new Map<string, { label: string; icon: string; accent: string }>();
+for (const t of tiers) for (const g of t.groups) if (!catMap.has(g.category)) catMap.set(g.category, g.meta);
+const catChips = [...catMap.entries()];
+
+// Curated tag chips = the most common tags (long tail → top-N).
+const tagCounts = new Map<string, number>();
+for (const r of anthropicResources) for (const t of r.tags) tagCounts.set(t, (tagCounts.get(t) ?? 0) + 1);
+const topTags = [...tagCounts.entries()]
+  .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
+  .slice(0, 14)
+  .map(([t]) => t);
+
+const haystack = (r: (typeof anthropicResources)[number]) =>
+  `${r.title} ${hostOf(r.url)} ${r.description ?? ''} ${r.tags.join(' ')}`.toLowerCase();
+
+const schema = [
+  {
+    '@type': 'CollectionPage',
+    '@id': `${origin}/anthropic/#collectionpage`,
+    name: 'Anthropic Resources',
+    url: `${origin}/anthropic/`,
+    description: section.description,
+    isPartOf: { '@id': `${origin}/#website` },
+    about: { '@id': `${origin}/#person` },
+  },
+  {
+    '@type': 'BreadcrumbList',
+    '@id': `${origin}/anthropic/#breadcrumb`,
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: `${origin}/` },
+      { '@type': 'ListItem', position: 2, name: 'Anthropic', item: `${origin}/anthropic/` },
+    ],
+  },
+];
+---
+<PageLayout title="Anthropic" description={section.description} image="/og/anthropic.png?v=1" schema={schema}>
+  <section class="section">
+    <div class="mx-auto max-w-6xl px-6" data-anthropic-board>
+      <div class="max-w-2xl">
+        <p class="mono-label">Anthropic · <span data-af-total>{total}</span> resources</p>
+        <h1 class="mt-2 font-display text-4xl font-semibold tracking-tight text-ink">
+          Everything Anthropic publishes, in one place
+        </h1>
+        <p class="mt-4 text-base leading-relaxed text-ink-muted">
+          Claude is the engine behind everything I build. This is the comprehensive, verified index of
+          what Anthropic ships directly — docs, courses, certifications, tools, the cookbook, research,
+          and policies — plus the few third-party resources worth your time. Every link is checked.
+        </p>
+      </div>
+
+      {/* Filter bar — text + category chips + curated tag chips (progressive: works only with JS). */}
+      <div class="mt-8" data-af-filter>
+        <div class="flex max-w-xl items-center gap-2 rounded-lg border border-line bg-surface px-3 py-2 focus-within:border-line-2">
+          <Icon name="search" size={16} class="shrink-0 text-ink-faint" />
+          <input
+            type="search"
+            data-af-input
+            aria-label="Filter Anthropic resources"
+            placeholder={`Filter ${total} resources…`}
+            autocomplete="off"
+            class="min-w-0 flex-1 bg-transparent text-sm text-ink placeholder:text-ink-faint focus:outline-none"
+          />
+        </div>
+
+        <div class="mt-4 flex flex-wrap items-center gap-2">
+          <button type="button" data-af-cat="all" aria-pressed="true" class="nav-chip">
+            <span>All</span>
+          </button>
+          {catChips.map(([cat, meta]) => (
+            <button type="button" data-af-cat={cat} aria-pressed="false" class="nav-chip" style={`--chip-accent: ${meta.accent}`}>
+              <span class="chip-icon"><Icon name={meta.icon} size={14} /></span>
+              <span>{meta.label}</span>
+            </button>
+          ))}
+        </div>
+
+        <div class="mt-3 flex flex-wrap items-center gap-2">
+          <span class="mono-label mr-1 text-ink-faint">Tags</span>
+          {topTags.map((t) => (
+            <button type="button" data-af-tag={t} aria-pressed="false" class="chip">{t}</button>
+          ))}
+          <button type="button" data-af-clear class="btn btn-secondary ml-1 hidden px-2.5 py-1 text-xs">Clear filters</button>
+        </div>
+      </div>
+
+      <p data-af-empty class="mt-10 hidden text-sm text-ink-muted">
+        No resources match your filter.
+        <button type="button" data-af-clear class="text-cyan-deep hover:text-cyan">Clear filters →</button>
+      </p>
+      {/* SR announcement for filter results — mirrors SearchOverlay's liveMsg pattern. */}
+      <p data-af-live aria-live="polite" class="sr-only"></p>
+
+      {tiers.map((tier) => (
+        <div class="mt-14" data-af-tier={tier.tier}>
+          <div class="flex items-center gap-3">
+            <h2 class="font-display text-xl font-semibold tracking-tight text-ink">{tier.label}</h2>
+            <span class="h-px flex-1 bg-line-2"></span>
+          </div>
+
+          {tier.groups.map((g) => (
+            <div class="mt-10" data-af-group={g.category}>
+              <div class="flex items-center gap-3">
+                <span class="grid h-8 w-8 place-items-center rounded-lg border border-line bg-surface-2" style={`color:${g.meta.accent}`}>
+                  <Icon name={g.meta.icon} size={16} />
+                </span>
+                <h3 class="font-display text-lg font-semibold tracking-tight text-ink">{g.meta.label}</h3>
+                <span class="h-px flex-1 bg-line"></span>
+                <span class="font-mono text-xs text-ink-faint" data-af-count>{g.items.length}</span>
+              </div>
+              <div class="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-3">
+                {g.items.map((r) => (
+                  <a href={r.url}
+                    target="_blank"
+                    rel="noopener"
+                    data-af-card
+                    data-cat={r.category}
+                    data-tags={r.tags.join('|')}
+                    data-search={haystack(r)}
+                    class="reveal panel group flex items-start gap-3 p-4 transition-colors duration-200 hover:border-line-2">
+                    <span class="mt-0.5 grid h-9 w-9 shrink-0 place-items-center rounded-lg border border-line bg-surface-2 font-display text-sm font-semibold"
+                      style={`color:${g.meta.accent}`}>
+                      {r.title.slice(0, 1)}
+                    </span>
+                    <div class="min-w-0">
+                      <h4 class="truncate font-display text-sm font-semibold tracking-tight text-ink group-hover:text-accent-2">
+                        {r.title}
+                      </h4>
+                      <p class="truncate font-mono text-[0.6rem] text-ink-faint">{hostOf(r.url)}</p>
+                      {r.description && (
+                        <p class="mt-1.5 text-xs leading-relaxed text-ink-muted">{r.description}</p>
+                      )}
+                    </div>
+                  </a>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      ))}
+    </div>
+  </section>
+
+  {/* Client-side board filter: text + category chips + tag chips. Progressive — the
+      full board is server-rendered; this only narrows what's already there, and hides
+      any group or tier that ends up empty. */}
+  <script is:inline>
+  (() => {
+    const root = document.querySelector('[data-af-filter]');
+    if (!root) return;
+    const board = document.querySelector('[data-anthropic-board]');
+    const input = root.querySelector('[data-af-input]');
+    const catBtns = [...root.querySelectorAll('[data-af-cat]')];
+    const tagBtns = [...root.querySelectorAll('[data-af-tag]')];
+    const clearBtns = [...document.querySelectorAll('[data-af-clear]')];
+    const tiers = [...document.querySelectorAll('[data-af-tier]')];
+    const groups = [...document.querySelectorAll('[data-af-group]')];
+    const totalEl = document.querySelector('[data-af-total]');
+    const emptyEl = document.querySelector('[data-af-empty]');
+    const liveEl = document.querySelector('[data-af-live]');
+
+    const selCats = new Set();
+    const selTags = new Set();
+    let q = '';
+
+    const apply = () => {
+      const hasFilter = q !== '' || selCats.size > 0 || selTags.size > 0;
+      // Cards are .reveal targets (opacity: 0 until the IntersectionObserver fires). A
+      // card filtered back into view BELOW THE FOLD has never been observed, so it would
+      // render blank — .fav-filtering is the shared escape hatch (see global.css).
+      board && board.classList.toggle('fav-filtering', hasFilter);
+
+      let total = 0;
+      for (const g of groups) {
+        let visible = 0;
+        for (const card of g.querySelectorAll('[data-af-card]')) {
+          const cardCat = card.getAttribute('data-cat');
+          const cardTags = (card.getAttribute('data-tags') || '').split('|').filter(Boolean);
+          const hay = card.getAttribute('data-search') || '';
+          const show =
+            (!q || hay.includes(q)) &&
+            (selCats.size === 0 || selCats.has(cardCat)) &&
+            (selTags.size === 0 || cardTags.some((t) => selTags.has(t)));
+          card.style.display = show ? '' : 'none';
+          if (show) visible++;
+        }
+        const countEl = g.querySelector('[data-af-count]');
+        if (countEl) countEl.textContent = String(visible);
+        g.style.display = visible ? '' : 'none';
+        total += visible;
+      }
+      for (const tier of tiers) {
+        const anyVisible = [...tier.querySelectorAll('[data-af-group]')].some((g) => g.style.display !== 'none');
+        tier.style.display = anyVisible ? '' : 'none';
+      }
+      if (totalEl) totalEl.textContent = String(total);
+      if (emptyEl) emptyEl.classList.toggle('hidden', total > 0);
+      if (liveEl) liveEl.textContent = total > 0 ? `${total} resources shown` : 'No resources match your filter';
+      for (const b of clearBtns) b.classList.toggle('hidden', !hasFilter);
+    };
+
+    input &&
+      input.addEventListener('input', () => {
+        q = input.value.trim().toLowerCase();
+        apply();
+      });
+
+    for (const btn of catBtns) {
+      btn.addEventListener('click', () => {
+        const cat = btn.getAttribute('data-af-cat');
+        if (cat === 'all') selCats.clear();
+        else if (selCats.has(cat)) selCats.delete(cat);
+        else selCats.add(cat);
+        for (const b of catBtns) {
+          const c = b.getAttribute('data-af-cat');
+          const on = c === 'all' ? selCats.size === 0 : selCats.has(c);
+          b.setAttribute('aria-pressed', on ? 'true' : 'false');
+        }
+        apply();
+      });
+    }
+
+    for (const btn of tagBtns) {
+      btn.addEventListener('click', () => {
+        const tag = btn.getAttribute('data-af-tag');
+        if (selTags.has(tag)) selTags.delete(tag);
+        else selTags.add(tag);
+        btn.setAttribute('aria-pressed', selTags.has(tag) ? 'true' : 'false');
+        apply();
+      });
+    }
+
+    const clearAll = () => {
+      q = '';
+      if (input) input.value = '';
+      selCats.clear();
+      selTags.clear();
+      for (const b of catBtns) b.setAttribute('aria-pressed', b.getAttribute('data-af-cat') === 'all' ? 'true' : 'false');
+      for (const b of tagBtns) b.setAttribute('aria-pressed', 'false');
+      apply();
+    };
+    for (const b of clearBtns) b.addEventListener('click', clearAll);
+  })();
+  </script>
+</PageLayout>

@@ -1,0 +1,56 @@
+---
+import Icon from './Icon.astro';
+import { site, socials } from '../data/site';
+import { navSections } from '../data/sections';
+const year = new Date().getFullYear();
+---
+{/*
+  The footer is on every page, so it gets the same three atmosphere layers the hero
+  surfaces use — an accent hairline on the top edge, the radial .accent-glow bleeding
+  down from it, and the faint data-grid (its mask fades top→down, which is exactly the
+  direction a footer wants). Content sits in a `relative` wrapper so it stays above them.
+
+  The section links reuse .nav-chip — the same icon-coded, accent-per-section chip the
+  header runs. One nav convention, two places, zero new CSS.
+*/}
+<footer class="relative overflow-hidden border-t border-line bg-surface/40">
+  <div
+    aria-hidden="true"
+    class="pointer-events-none absolute inset-x-0 top-0 h-px"
+    style="background: linear-gradient(to right, transparent, color-mix(in oklab, var(--color-accent) 60%, transparent), transparent)"
+  ></div>
+  <div aria-hidden="true" class="accent-glow opacity-70"></div>
+  <div aria-hidden="true" class="bg-grid bg-grid-fade pointer-events-none absolute inset-0 opacity-30"></div>
+
+  <div class="relative mx-auto max-w-6xl px-6 py-12">
+    <div class="flex flex-col gap-8 sm:flex-row sm:items-start sm:justify-between">
+      <div class="max-w-sm">
+        <p class="font-display text-lg font-semibold text-ink">{site.name}</p>
+        <p class="mt-2 text-sm leading-relaxed text-ink-muted">{site.tagline}</p>
+      </div>
+      <nav class="grid grid-cols-2 gap-x-6 gap-y-0.5" aria-label="Footer">
+        {navSections.map((s) => (
+          <a
+            href={`/${s.slug}/`}
+            class="nav-chip min-h-10"
+            style={`--chip-accent: var(--color-${s.accent ?? 'accent'})`}
+          >
+            <span class="chip-icon"><Icon name={s.icon} size={14} /></span>
+            <span>{s.navLabel ?? s.title}</span>
+          </a>
+        ))}
+      </nav>
+    </div>
+    <hr class="rule-flow my-8" />
+    <div class="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+      <p class="mono-label">© {year} {site.name}</p>
+      <div class="flex items-center gap-4 text-sm">
+        {socials.map((s) => (
+          <a href={s.href} class="link-sweep text-ink-muted" rel="me">
+            {s.label}
+          </a>
+        ))}
+      </div>
+    </div>
+  </div>
+</footer>

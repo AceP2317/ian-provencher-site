@@ -1,0 +1,1432 @@
+[
+  {
+    "id": "ashby-openrouter-1wl01uo",
+    "title": "Applied AI Engineer",
+    "company": "OpenRouter",
+    "location": "Remote (US)",
+    "url": "https://jobs.ashbyhq.com/openrouter",
+    "salary": null,
+    "salaryMin": null,
+    "postedAt": "2026-07-15",
+    "score": 93,
+    "why": "Applied AI Engineer building internal agentic tooling for support/GTM is a direct match to his applied-AI, agent-building, ownership profile.",
+    "flags": [
+      "remote",
+      "genuine-fit",
+      "applied-ai",
+      "agentic"
+    ],
+    "source": "Ashby"
+  },
+  {
+    "id": "gh-fourkites-7981512",
+    "title": "Senior AI Engineer",
+    "company": "FourKites",
+    "location": "Chennai or Remote, India",
+    "url": "https://job-boards.greenhouse.io/fourkites/jobs/7981512",
+    "salary": null,
+    "salaryMin": null,
+    "postedAt": "2026-07-07",
+    "score": 92,
+    "why": "Applied AI engineer building agentic systems (LangGraph, Python) for supply-chain/logistics customers—directly matches his domain expertise and technical stack.",
+    "flags": [
+      "remote",
+      "genuine-fit",
+      "applied-ai",
+      "supply-chain",
+      "agentic"
+    ],
+    "source": "Greenhouse"
+  },
+  {
+    "id": "gh-omadahealth-8008825",
+    "title": "Senior Applied AI Engineer",
+    "company": "Omada Health",
+    "location": "Remote, USA",
+    "url": "https://job-boards.greenhouse.io/omadahealth/jobs/8008825",
+    "salary": null,
+    "salaryMin": null,
+    "postedAt": "2026-07-16",
+    "score": 92,
+    "why": "Senior Applied AI Engineer role deploying generative AI, prompt engineering and LLM tooling in production is squarely his profile.",
+    "flags": [
+      "remote",
+      "genuine-fit",
+      "applied-ai",
+      "llm"
+    ],
+    "source": "Greenhouse"
+  },
+  {
+    "id": "jsearch-Tt2oE4TmJO7XD2UFAAAAAA",
+    "title": "AI Engineers",
+    "company": "Toptal",
+    "location": "Remote",
+    "url": "https://remotejobs.org/remote-jobs/ai-engineers-toptal",
+    "salary": null,
+    "salaryMin": null,
+    "postedAt": "2026-06-29",
+    "score": 90,
+    "why": "AI Engineer role building agentic systems, RAG pipelines, LLM integrations directly matches his core skill set.",
+    "flags": [
+      "remote",
+      "genuine-fit",
+      "applied-ai",
+      "agentic"
+    ],
+    "source": "JSearch"
+  },
+  {
+    "id": "ashby-writer-1onp1fb",
+    "title": "AI engineer",
+    "company": "Writer",
+    "location": "San Francisco, CA",
+    "url": "https://jobs.ashbyhq.com/writer",
+    "salary": "$187k–$329k",
+    "salaryMin": 186500,
+    "postedAt": "2026-05-18",
+    "score": 90,
+    "why": "AI engineer role building tangible generative AI solutions for enterprise customers, a direct match to his applied-AI/LLM building experience.",
+    "flags": [
+      "remote",
+      "applied-ai",
+      "llm",
+      "genuine-fit"
+    ],
+    "source": "Ashby"
+  },
+  {
+    "id": "ashby-perplexity-6c020v",
+    "title": "Member of Technical Staff (Forward Deployed Engineer, Applied AI)",
+    "company": "Perplexity",
+    "location": "New York City",
+    "url": "https://jobs.ashbyhq.com/perplexity",
+    "salary": "$205k–$335k",
+    "salaryMin": 205000,
+    "postedAt": "2025-08-15",
+    "score": 90,
+    "why": "Forward-deployed applied-AI engineer role embedding with customers to deploy AI workflow integrations is a near-perfect match for his applied-AI/ops delivery skillset.",
+    "flags": [
+      "remote",
+      "genuine-fit",
+      "applied-ai",
+      "forward-deployed"
+    ],
+    "source": "Ashby"
+  },
+  {
+    "id": "gh-smartsheet-8027418",
+    "title": "Senior Software Engineer II - AI Engineering (Remote Eligible)",
+    "company": "Smartsheet",
+    "location": "-REMOTE, USA-",
+    "url": "https://job-boards.greenhouse.io/smartsheet/jobs/8027418",
+    "salary": null,
+    "salaryMin": null,
+    "postedAt": "2026-07-22",
+    "score": 90,
+    "why": "Senior Software Engineer building production-grade LLM-powered agents and workflows is a strong match for his applied-AI/agentic engineering background.",
+    "flags": [
+      "remote",
+      "genuine-fit",
+      "applied-ai",
+      "llm",
+      "agentic"
+    ],
+    "source": "Greenhouse"
+  },
+  {
+    "id": "jsearch-_2VJuzOlGtaKk6G1AAAAAA",
+    "title": "[Remote] Senior Generative AI / LLM Engineer (RAG, Python, SQL)",
+    "company": "Pyramid Consulting, Inc",
+    "location": "Remote",
+    "url": "https://jobright.ai/jobs/info/6a623e16c28982326de956b7?visit=gen-ai-engineer-with-python-jobs-in-united-states",
+    "salary": "$129k–$146k",
+    "salaryMin": 128960,
+    "postedAt": "2026-07-23",
+    "score": 88,
+    "why": "Direct applied-AI/LLM/RAG engineering role in Python with prompt engineering, matching his core skill set.",
+    "flags": [
+      "remote",
+      "genuine-fit",
+      "applied-ai"
+    ],
+    "source": "JSearch"
+  },
+  {
+    "id": "adzuna-5778419336",
+    "title": "Agentic AI Integration Engineer (Remote)",
+    "company": "Blue Acorn iCi",
+    "location": "US",
+    "url": "https://www.adzuna.com/details/5778419336?utm_medium=api&utm_source=e7a28f48",
+    "salary": "$170k+",
+    "salaryMin": 169548,
+    "postedAt": "2026-06-26",
+    "score": 88,
+    "why": "Agentic AI Integration Engineer building production agentic systems and automating enterprise workflows is a direct match for his applied-AI and automation expertise.",
+    "flags": [
+      "remote",
+      "genuine-fit",
+      "applied-ai",
+      "agentic",
+      "automation"
+    ],
+    "source": "Adzuna"
+  },
+  {
+    "id": "jsearch-3dUz9Bdc3fFekE4EAAAAAA",
+    "title": "LLM / GenAI Engineer",
+    "company": "Scale.jobs",
+    "location": "Remote",
+    "url": "https://www.linkedin.com/jobs/view/llm-genai-engineer-at-scale-jobs-4441526455",
+    "salary": null,
+    "salaryMin": null,
+    "postedAt": "2026-07-23",
+    "score": 88,
+    "why": "Direct match building production RAG pipelines, agentic workflows, and LLM orchestration—core to his applied-AI skillset.",
+    "flags": [
+      "remote",
+      "genuine-fit",
+      "applied-ai",
+      "rag"
+    ],
+    "source": "JSearch"
+  },
+  {
+    "id": "ashby-ramp-tmbci7",
+    "title": "Applied AI Engineer, Fullstack",
+    "company": "Ramp",
+    "location": "New York, NY (HQ)",
+    "url": "https://jobs.ashbyhq.com/ramp",
+    "salary": "$204k–$352k",
+    "salaryMin": 204400,
+    "postedAt": "2026-06-24",
+    "score": 88,
+    "why": "Fullstack Applied AI Engineer role building agentic financial analysis products directly matches his applied-AI/full-stack skill set.",
+    "flags": [
+      "remote",
+      "genuine-fit",
+      "applied-ai",
+      "agentic",
+      "full-stack"
+    ],
+    "source": "Ashby"
+  },
+  {
+    "id": "ashby-ramp-1x0u6gj",
+    "title": "Applied AI Engineer",
+    "company": "Ramp",
+    "location": "New York, NY (HQ)",
+    "url": "https://jobs.ashbyhq.com/ramp",
+    "salary": "$204k–$352k",
+    "salaryMin": 204400,
+    "postedAt": "2026-01-12",
+    "score": 88,
+    "why": "Full-stack Applied AI role building AI-driven features on financial infrastructure, squarely matches his applied-AI/full-stack profile.",
+    "flags": [
+      "remote",
+      "genuine-fit",
+      "applied-ai",
+      "full-stack"
+    ],
+    "source": "Ashby"
+  },
+  {
+    "id": "gh-smartsheet-7798778",
+    "title": "Senior Principal Forward Deployed AI Engineer (Remote Eligible)",
+    "company": "Smartsheet",
+    "location": "-REMOTE, USA-",
+    "url": "https://job-boards.greenhouse.io/smartsheet/jobs/7798778",
+    "salary": null,
+    "salaryMin": null,
+    "postedAt": "2026-07-22",
+    "score": 88,
+    "why": "Senior Forward Deployed AI Engineer role owning end-to-end AI deployments, multi-agent architecture, and client integrations closely matches his applied-AI/agentic builder profile.",
+    "flags": [
+      "remote",
+      "genuine-fit",
+      "applied-ai",
+      "agentic"
+    ],
+    "source": "Greenhouse"
+  },
+  {
+    "id": "gh-smartsheet-7849785",
+    "title": "Senior Software Engineer II - Applied AI (Remote Eligible)",
+    "company": "Smartsheet",
+    "location": "-REMOTE, USA-",
+    "url": "https://job-boards.greenhouse.io/smartsheet/jobs/7849785",
+    "salary": null,
+    "salaryMin": null,
+    "postedAt": "2026-07-22",
+    "score": 88,
+    "why": "Applied AI engineering role building AI platform features aligns directly with his hands-on LLM/agent engineering experience.",
+    "flags": [
+      "remote",
+      "genuine-fit",
+      "applied-ai"
+    ],
+    "source": "Greenhouse"
+  },
+  {
+    "id": "jsearch-b0cwm9JqeSgjUZosAAAAAA",
+    "title": "Generative AI (GEN AI) Engineer | Python",
+    "company": "Bramkas Inc.",
+    "location": "Remote",
+    "url": "https://www.dice.com/job-detail",
+    "salary": null,
+    "salaryMin": null,
+    "postedAt": "2026-07-11",
+    "score": 85,
+    "why": "Senior AI Full Stack Engineer building RAG/agentic/LLM applications with Python and full-stack tech is a strong match for his applied-AI builder profile.",
+    "flags": [
+      "remote",
+      "applied-ai",
+      "genuine-fit",
+      "full-stack"
+    ],
+    "source": "JSearch"
+  },
+  {
+    "id": "adzuna-5808677816",
+    "title": "Full Stack AI Engineer (Generative AI)",
+    "company": "Momento USA",
+    "location": "US",
+    "url": "https://www.adzuna.com/details/5808677816?utm_medium=api&utm_source=e7a28f48",
+    "salary": "$117k+",
+    "salaryMin": 117313,
+    "postedAt": "2026-07-20",
+    "score": 85,
+    "why": "Full-stack AI engineer building generative AI apps with agents, RAG, and LLMs — strong direct match to his skills and experience.",
+    "flags": [
+      "remote",
+      "genuine-fit",
+      "applied-ai"
+    ],
+    "source": "Adzuna"
+  },
+  {
+    "id": "jobicy-147334",
+    "title": "Sr. Software Engineer II - AI",
+    "company": "iHerb",
+    "location": "USA",
+    "url": "https://jobicy.com/jobs/147334-sr-software-engineer-ii-ai",
+    "salary": null,
+    "salaryMin": null,
+    "postedAt": "2026-07-22",
+    "score": 85,
+    "why": "Building GenAI product features, RAG pipelines, agentic workflows and evals is squarely his applied-AI engineering wheelhouse.",
+    "flags": [
+      "remote",
+      "genuine-fit",
+      "applied-ai",
+      "rag",
+      "agentic"
+    ],
+    "source": "Jobicy"
+  },
+  {
+    "id": "ashby-gamma-jm0sqn",
+    "title": "Software Engineer, Full Stack",
+    "company": "Gamma",
+    "location": "San Francisco",
+    "url": "https://jobs.ashbyhq.com/gamma",
+    "salary": null,
+    "salaryMin": null,
+    "postedAt": "2025-11-10",
+    "score": 85,
+    "why": "Full-stack engineer building AI features with LLMs and prompt engineering directly matches his applied-AI and full-stack builder profile.",
+    "flags": [
+      "remote",
+      "applied-ai",
+      "genuine-fit",
+      "full-stack",
+      "prompt-engineering"
+    ],
+    "source": "Ashby"
+  },
+  {
+    "id": "ashby-replit-1cwte8l",
+    "title": "Senior AI Builder",
+    "company": "Replit",
+    "location": "Foster City, CA",
+    "url": "https://jobs.ashbyhq.com/replit",
+    "salary": "$200k–$275k",
+    "salaryMin": 200000,
+    "postedAt": "2026-07-17",
+    "score": 85,
+    "why": "Senior AI Builder role shipping AI-powered internal platforms across departments strongly matches his full-stack applied-AI builder profile.",
+    "flags": [
+      "remote",
+      "genuine-fit",
+      "applied-ai",
+      "automation",
+      "full-stack"
+    ],
+    "source": "Ashby"
+  },
+  {
+    "id": "adzuna-5794939565",
+    "title": "AI Integration Engineer (W2 Contract to Hire)",
+    "company": "Tandym",
+    "location": "New York, US",
+    "url": "https://www.adzuna.com/details/5794939565?utm_medium=api&utm_source=e7a28f48",
+    "salary": "$146k–$156k",
+    "salaryMin": 145600,
+    "postedAt": "2026-07-09",
+    "score": 85,
+    "why": "AI Integration Engineer role building AI-powered solutions, APIs, and automations across systems is squarely his applied-AI/automation wheelhouse.",
+    "flags": [
+      "remote",
+      "genuine-fit",
+      "applied-ai",
+      "automation"
+    ],
+    "source": "Adzuna"
+  },
+  {
+    "id": "ashby-baseten-19wncyh",
+    "title": "Solution Architect (AI/LLM Inference)",
+    "company": "Baseten",
+    "location": "San Francisco",
+    "url": "https://jobs.ashbyhq.com/baseten",
+    "salary": "$165k–$330k",
+    "salaryMin": 165000,
+    "postedAt": "2026-05-10",
+    "score": 85,
+    "why": "Solution Architect for AI/LLM inference doing technical discovery, demos, and deployments is squarely his forward-deployed AI engineering strength.",
+    "flags": [
+      "remote",
+      "genuine-fit",
+      "applied-ai",
+      "solutions-architect"
+    ],
+    "source": "Ashby"
+  },
+  {
+    "id": "arbeitnow-machine-learning-engineer-stuttgart-382224",
+    "title": "Machine Learning Engineer (m/w/d)",
+    "company": "Rockstardevelopers GmbH",
+    "location": "Stuttgart",
+    "url": "https://www.arbeitnow.com/jobs/companies/rockstardevelopers-gmbh/machine-learning-engineer-stuttgart-382224",
+    "salary": null,
+    "salaryMin": null,
+    "postedAt": "2026-07-23",
+    "score": 85,
+    "why": "Builds production LLM/RAG/agent systems for enterprise clients in regulated public sector, closely matches his applied-AI shipping profile.",
+    "flags": [
+      "remote",
+      "genuine-fit",
+      "applied-ai",
+      "rag",
+      "agentic"
+    ],
+    "source": "Arbeitnow"
+  },
+  {
+    "id": "gh-fourkites-7667786",
+    "title": "Senior Customer Engineer",
+    "company": "FourKites",
+    "location": "Chennai OR Remote, India",
+    "url": "https://job-boards.greenhouse.io/fourkites/jobs/7667786",
+    "salary": null,
+    "salaryMin": null,
+    "postedAt": "2026-07-23",
+    "score": 85,
+    "why": "Senior Customer Engineer role designing agentic workflow architectures and deploying integration solutions for enterprise supply-chain customers is a strong match for his forward-deployed engineering and supply-chain background.",
+    "flags": [
+      "remote",
+      "genuine-fit",
+      "applied-ai",
+      "supply-chain",
+      "forward-deployed"
+    ],
+    "source": "Greenhouse"
+  },
+  {
+    "id": "gh-samsara-8052685",
+    "title": "Senior Software Engineer- Agentic Platform & Integrations (Full Stack)",
+    "company": "Samsara",
+    "location": "Remote - Poland",
+    "url": "https://www.samsara.com/company/careers/roles/8052685?gh_jid=8052685",
+    "salary": null,
+    "salaryMin": null,
+    "postedAt": "2026-07-17",
+    "score": 85,
+    "why": "Senior full-stack engineer building an agentic platform and integrations for physical operations, directly aligned with his applied-AI, agentic, full-stack, and ops-tech background.",
+    "flags": [
+      "remote",
+      "genuine-fit",
+      "applied-ai",
+      "agentic"
+    ],
+    "source": "Greenhouse"
+  },
+  {
+    "id": "gh-snorkelai-5709067004",
+    "title": "Applied AI Engineer - Enterprise Solutions",
+    "company": "Snorkel AI",
+    "location": "New York City, NY (Hybrid); Redwood City, CA (Hybrid); San Francisco, CA (Hybrid); United States (Remote)",
+    "url": "https://job-boards.greenhouse.io/snorkelai/jobs/5709067004",
+    "salary": null,
+    "salaryMin": null,
+    "postedAt": "2026-06-26",
+    "score": 85,
+    "why": "Applied AI Engineer role delivering Gen AI solutions directly to enterprise customers matches his applied-AI builder profile very well.",
+    "flags": [
+      "remote",
+      "genuine-fit",
+      "applied-ai"
+    ],
+    "source": "Greenhouse"
+  },
+  {
+    "id": "ashby-writer-1nvteiy",
+    "title": "Software engineer, generative AI",
+    "company": "Writer",
+    "location": "San Francisco, CA",
+    "url": "https://jobs.ashbyhq.com/writer",
+    "salary": "$124k–$304k",
+    "salaryMin": 124000,
+    "postedAt": "2026-06-03",
+    "score": 85,
+    "why": "Software engineer, generative AI role at an enterprise LLM/agent platform company, directly matches his applied-AI and full-stack building experience.",
+    "flags": [
+      "remote",
+      "genuine-fit",
+      "applied-ai",
+      "llm",
+      "agentic"
+    ],
+    "source": "Ashby"
+  },
+  {
+    "id": "ashby-writer-m19k73",
+    "title": "Software engineer, generative AI (UK)",
+    "company": "Writer",
+    "location": "London, UK",
+    "url": "https://jobs.ashbyhq.com/writer",
+    "salary": null,
+    "salaryMin": null,
+    "postedAt": "2026-06-03",
+    "score": 85,
+    "why": "Same generative AI software engineering role as the SF posting but based in London, strong applied-AI fit if location works.",
+    "flags": [
+      "remote",
+      "genuine-fit",
+      "applied-ai",
+      "llm",
+      "agentic"
+    ],
+    "source": "Ashby"
+  },
+  {
+    "id": "ashby-commure-od9237",
+    "title": "Software Engineer, AI Integrations",
+    "company": "Commure",
+    "location": "Mountain View, CA",
+    "url": "https://jobs.ashbyhq.com/commure",
+    "salary": "$130k–$190k",
+    "salaryMin": 130000,
+    "postedAt": "2026-07-17",
+    "score": 85,
+    "why": "Software engineering role building AI agents/integrations for healthcare workflows, strong applied-AI and full-stack builder match.",
+    "flags": [
+      "remote",
+      "genuine-fit",
+      "applied-ai",
+      "automation"
+    ],
+    "source": "Ashby"
+  },
+  {
+    "id": "ashby-langchain-1jam8z7",
+    "title": "Solutions Architect (Remote)",
+    "company": "LangChain",
+    "location": "Los Angeles, CA",
+    "url": "https://jobs.ashbyhq.com/langchain",
+    "salary": null,
+    "salaryMin": null,
+    "postedAt": "2026-07-24",
+    "score": 85,
+    "why": "Solutions Architect at LangChain building/deploying production AI agents aligns directly with his applied-AI, agentic, full-stack builder background.",
+    "flags": [
+      "remote",
+      "genuine-fit",
+      "applied-ai",
+      "agentic"
+    ],
+    "source": "Ashby"
+  },
+  {
+    "id": "ashby-clickup-3gej50",
+    "title": "Senior AI Engineer - AI Product",
+    "company": "ClickUp",
+    "location": "United States",
+    "url": "https://jobs.ashbyhq.com/clickup",
+    "salary": "$200k–$250k",
+    "salaryMin": 200000,
+    "postedAt": "2026-06-17",
+    "score": 83,
+    "why": "Product-focused AI engineering building LLM-powered user features, strong match to his LLM/product building experience.",
+    "flags": [
+      "remote",
+      "genuine-fit",
+      "applied-ai"
+    ],
+    "source": "Ashby"
+  },
+  {
+    "id": "adzuna-5804051374",
+    "title": "Generative AI Engineer",
+    "company": "Technodeed",
+    "location": "US",
+    "url": "https://www.adzuna.com/details/5804051374?utm_medium=api&utm_source=e7a28f48",
+    "salary": "$130k+",
+    "salaryMin": 130286,
+    "postedAt": "2026-07-16",
+    "score": 82,
+    "why": "Gen AI engineer building production LLM/RAG/agent solutions with Python and React, well aligned with his skills.",
+    "flags": [
+      "remote",
+      "genuine-fit",
+      "applied-ai"
+    ],
+    "source": "Adzuna"
+  },
+  {
+    "id": "ashby-writer-14fmbpt",
+    "title": "AI deployment engineer (West)",
+    "company": "Writer",
+    "location": "San Francisco, CA",
+    "url": "https://jobs.ashbyhq.com/writer",
+    "salary": "$146k–$185k",
+    "salaryMin": 146400,
+    "postedAt": "2026-05-06",
+    "score": 82,
+    "why": "AI deployment engineer role hands-on implementing generative AI for customers aligns closely with his applied-AI, integration, and automation skillset.",
+    "flags": [
+      "remote",
+      "genuine-fit",
+      "applied-ai",
+      "automation"
+    ],
+    "source": "Ashby"
+  },
+  {
+    "id": "ashby-writer-1b73ef",
+    "title": "AI deployment engineer (Central)",
+    "company": "Writer",
+    "location": "Chicago, IL",
+    "url": "https://jobs.ashbyhq.com/writer",
+    "salary": "$132k–$166k",
+    "salaryMin": 131800,
+    "postedAt": "2026-05-06",
+    "score": 82,
+    "why": "AI deployment engineer (Central) mirrors the same hands-on customer AI implementation work that fits his profile well.",
+    "flags": [
+      "remote",
+      "genuine-fit",
+      "applied-ai",
+      "automation"
+    ],
+    "source": "Ashby"
+  },
+  {
+    "id": "ashby-writer-hjf7js",
+    "title": "AI deployment engineer (East)",
+    "company": "Writer",
+    "location": "New York City, NY",
+    "url": "https://jobs.ashbyhq.com/writer",
+    "salary": "$146k–$185k",
+    "salaryMin": 146400,
+    "postedAt": "2026-05-06",
+    "score": 82,
+    "why": "AI deployment engineer (East) is the same strong-fit hands-on AI implementation role as its sibling postings.",
+    "flags": [
+      "remote",
+      "genuine-fit",
+      "applied-ai",
+      "automation"
+    ],
+    "source": "Ashby"
+  },
+  {
+    "id": "ashby-baseten-1iilr7k",
+    "title": "Software Engineer - AI Enablement",
+    "company": "Baseten",
+    "location": "San Francisco",
+    "url": "https://jobs.ashbyhq.com/baseten",
+    "salary": "$165k–$330k",
+    "salaryMin": 165000,
+    "postedAt": "2026-02-24",
+    "score": 82,
+    "why": "AI Enablement Engineer building internal LLM agents and automation tooling is a direct match for his applied-AI/automation builder profile.",
+    "flags": [
+      "remote",
+      "applied-ai",
+      "automation",
+      "genuine-fit"
+    ],
+    "source": "Ashby"
+  },
+  {
+    "id": "gh-smartsheet-7874013",
+    "title": "Sr. Forward Deployed AI Engineer (Remote Eligible in Germany)",
+    "company": "Smartsheet",
+    "location": "Munich, DE",
+    "url": "https://job-boards.greenhouse.io/smartsheet/jobs/7874013",
+    "salary": null,
+    "salaryMin": null,
+    "postedAt": "2026-07-22",
+    "score": 82,
+    "why": "Forward Deployed AI Engineer role (Germany) matches his end-to-end AI deployment and agentic building skills, though location may require relocation/remote-EU eligibility.",
+    "flags": [
+      "remote",
+      "genuine-fit",
+      "applied-ai",
+      "agentic"
+    ],
+    "source": "Greenhouse"
+  },
+  {
+    "id": "gh-smartsheet-7930145",
+    "title": "Sr. Forward Deployed AI Engineer (Remote Eligible in the UK)",
+    "company": "Smartsheet",
+    "location": "London, UK",
+    "url": "https://job-boards.greenhouse.io/smartsheet/jobs/7930145",
+    "salary": null,
+    "salaryMin": null,
+    "postedAt": "2026-07-22",
+    "score": 82,
+    "why": "Forward Deployed AI Engineer role (UK) matches his applied-AI deployment and agentic engineering profile.",
+    "flags": [
+      "remote",
+      "genuine-fit",
+      "applied-ai",
+      "agentic"
+    ],
+    "source": "Greenhouse"
+  },
+  {
+    "id": "ashby-openai-1v72r16",
+    "title": "AI Deployment Engineer, Digital Natives",
+    "company": "OpenAI",
+    "location": "New York City",
+    "url": "https://jobs.ashbyhq.com/openai",
+    "salary": "$197k–$278k",
+    "salaryMin": 197000,
+    "postedAt": "2026-07-08",
+    "score": 82,
+    "why": "AI Deployment Engineer role driving customers from prototype to production with frontier AI use cases, strong match for forward-deployed applied-AI solutions work.",
+    "flags": [
+      "remote",
+      "genuine-fit",
+      "applied-ai",
+      "forward-deployed"
+    ],
+    "source": "Ashby"
+  },
+  {
+    "id": "ashby-clickup-nzmz79",
+    "title": "Senior AI Engineer - AI Platform",
+    "company": "ClickUp",
+    "location": "United States",
+    "url": "https://jobs.ashbyhq.com/clickup",
+    "salary": "$200k–$250k",
+    "salaryMin": 200000,
+    "postedAt": "2026-06-17",
+    "score": 82,
+    "why": "Hands-on LLM platform engineering building AI-powered features, squarely in his applied-AI wheelhouse though senior-leveled.",
+    "flags": [
+      "remote",
+      "genuine-fit",
+      "applied-ai"
+    ],
+    "source": "Ashby"
+  },
+  {
+    "id": "ashby-montecarlodata-1w2a3hm",
+    "title": "Applied Forward Deployed Engineer (FDE)",
+    "company": "Monte Carlo",
+    "location": "Remote, US",
+    "url": "https://jobs.ashbyhq.com/montecarlodata",
+    "salary": "$140k–$180k",
+    "salaryMin": 140000,
+    "postedAt": "2026-05-18",
+    "score": 82,
+    "why": "Forward Deployed Engineer prototyping AI agent integrations directly with customers is a strong match for his full-stack, applied-AI, ownership-driven profile.",
+    "flags": [
+      "remote",
+      "genuine-fit",
+      "applied-ai",
+      "forward-deployed"
+    ],
+    "source": "Ashby"
+  },
+  {
+    "id": "ashby-vanta-1w5l6kx",
+    "title": "Senior Software Engineer, AI Product",
+    "company": "Vanta",
+    "location": "Remote U.S.",
+    "url": "https://jobs.ashbyhq.com/vanta",
+    "salary": "$215k–$260k",
+    "salaryMin": 215000,
+    "postedAt": "2025-11-21",
+    "score": 82,
+    "why": "Senior Applied AI Engineer building AI-enabled product features with cross-functional teams is a strong match for his applied-AI, full-stack builder profile.",
+    "flags": [
+      "remote",
+      "genuine-fit",
+      "applied-ai"
+    ],
+    "source": "Ashby"
+  },
+  {
+    "id": "jsearch-oJ0hDTKC2dYP7OlLAAAAAA",
+    "title": "AI Engineer (LLM / Generative AI)",
+    "company": "Computer Task Group, Inc",
+    "location": "Remote",
+    "url": "https://www.monster.com/job-openings",
+    "salary": "$146k–$166k",
+    "salaryMin": 145600,
+    "postedAt": "2026-07-21",
+    "score": 80,
+    "why": "AI Engineer role building LLM/RAG/agentic automation applications directly matches his applied-AI and automation engineering skill set.",
+    "flags": [
+      "remote",
+      "applied-ai",
+      "automation",
+      "genuine-fit"
+    ],
+    "source": "JSearch"
+  },
+  {
+    "id": "gh-stackblitz-4005254009",
+    "title": "Senior Applied AI Engineer",
+    "company": "StackBlitz",
+    "location": "Remote",
+    "url": "https://job-boards.greenhouse.io/stackblitz/jobs/4005254009",
+    "salary": null,
+    "salaryMin": null,
+    "postedAt": "2026-07-23",
+    "score": 80,
+    "why": "Senior Applied AI Engineer at an AI-powered app builder, squarely in his applied-AI/full-stack wheelhouse.",
+    "flags": [
+      "remote",
+      "genuine-fit",
+      "applied-ai"
+    ],
+    "source": "Greenhouse"
+  },
+  {
+    "id": "adzuna-5811980240",
+    "title": "AI Solutions Engineer (Contractor) - Fully Remote",
+    "company": "Superior Executive Legal Recruiting",
+    "location": "Los Angeles, Los Angeles County",
+    "url": "https://www.adzuna.com/details/5811980240?utm_medium=api&utm_source=e7a28f48",
+    "salary": "$120k+",
+    "salaryMin": 120291,
+    "postedAt": "2026-07-23",
+    "score": 80,
+    "why": "AI Solutions Engineer consulting role designing and implementing firm-wide AI/automation strategy matches his builder, ownership, and automation strengths well.",
+    "flags": [
+      "remote",
+      "applied-ai",
+      "automation",
+      "genuine-fit"
+    ],
+    "source": "Adzuna"
+  },
+  {
+    "id": "adzuna-5813271711",
+    "title": "Applied AI Engineer",
+    "company": "Bright Vision Technologies",
+    "location": "Cary, Wake County",
+    "url": "https://www.adzuna.com/details/5813271711?utm_medium=api&utm_source=e7a28f48",
+    "salary": "$137k+",
+    "salaryMin": 137162,
+    "postedAt": "2026-07-23",
+    "score": 80,
+    "why": "Applied AI Engineer role directly matches his applied-AI, full-remote profile and comp band.",
+    "flags": [
+      "remote",
+      "genuine-fit",
+      "applied-ai"
+    ],
+    "source": "Adzuna"
+  },
+  {
+    "id": "gh-gleanwork-4717716005",
+    "title": "Resident Solutions Architect",
+    "company": "Glean",
+    "location": "Remote",
+    "url": "https://job-boards.greenhouse.io/gleanwork/jobs/4717716005",
+    "salary": null,
+    "salaryMin": null,
+    "postedAt": "2026-07-23",
+    "score": 80,
+    "why": "Resident Solutions Architect at an AI/agentic enterprise search platform is exactly the kind of applied-AI implementation/deployment role that fits his profile.",
+    "flags": [
+      "remote",
+      "genuine-fit",
+      "applied-ai",
+      "solutions-architect"
+    ],
+    "source": "Greenhouse"
+  },
+  {
+    "id": "adzuna-5808281402",
+    "title": "Healthcare AI Solution Engineer / Mid-FDE",
+    "company": "Exatech Inc",
+    "location": "Dallas, Luzerne County",
+    "url": "https://www.adzuna.com/land/ad/5808281402?se=qGfBZEqH8RGyieqxKrFBSw&utm_medium=api&utm_source=e7a28f48&v=77FEE0C568D6C218A0BA5425305A07FFB2D2FE74",
+    "salary": "$122k+",
+    "salaryMin": 121713,
+    "postedAt": "2026-07-20",
+    "score": 80,
+    "why": "Healthcare AI Solution Engineer/FDE role blending hands-on AI solution engineering with operational domain problems closely matches his forward-deployed, applied-AI, ops-driven profile.",
+    "flags": [
+      "remote",
+      "genuine-fit",
+      "applied-ai",
+      "forward-deployed",
+      "high-comp"
+    ],
+    "source": "Adzuna"
+  },
+  {
+    "id": "ashby-montecarlodata-ow5wz5",
+    "title": "AI Marketing Operations Manager",
+    "company": "Monte Carlo",
+    "location": "Remote, Americas",
+    "url": "https://jobs.ashbyhq.com/montecarlodata",
+    "salary": null,
+    "salaryMin": null,
+    "postedAt": "2026-06-24",
+    "score": 80,
+    "why": "AI Marketing Operations Manager who designs and ships AI agents/automations for marketing workflows is a strong match for his automation-and-ownership builder profile.",
+    "flags": [
+      "remote",
+      "genuine-fit",
+      "automation",
+      "ai-adjacent"
+    ],
+    "source": "Ashby"
+  },
+  {
+    "id": "ashby-writer-1fza7p5",
+    "title": "Software engineer, agents",
+    "company": "Writer",
+    "location": "New York City, NY",
+    "url": "https://jobs.ashbyhq.com/writer",
+    "salary": "$124k–$218k",
+    "salaryMin": 124000,
+    "postedAt": "2026-05-18",
+    "score": 80,
+    "why": "Fullstack agent engineering role with disclosed strong salary, NYC-based, closely matches his agentic/full-stack AI building experience.",
+    "flags": [
+      "remote",
+      "genuine-fit",
+      "applied-ai",
+      "agentic",
+      "fullstack"
+    ],
+    "source": "Ashby"
+  },
+  {
+    "id": "ashby-montecarlodata-15valtj",
+    "title": "Applied Forward Deployed Engineer",
+    "company": "Monte Carlo",
+    "location": "Remote, Americas",
+    "url": "https://jobs.ashbyhq.com/montecarlodata",
+    "salary": null,
+    "salaryMin": null,
+    "postedAt": "2026-05-11",
+    "score": 80,
+    "why": "Forward-deployed post-sale technical role focused on deploying/adopting an AI observability platform - strong match for his hands-on AI deployment and ownership profile.",
+    "flags": [
+      "remote",
+      "applied-ai",
+      "genuine-fit"
+    ],
+    "source": "Ashby"
+  },
+  {
+    "id": "ashby-commure-1636htb",
+    "title": "Fullstack Engineer, Ambient AI",
+    "company": "Commure",
+    "location": "Mountain View, CA",
+    "url": "https://jobs.ashbyhq.com/commure",
+    "salary": "$130k–$180k",
+    "salaryMin": 130000,
+    "postedAt": "2026-07-08",
+    "score": 80,
+    "why": "Fullstack Engineer on Ambient AI/agents platform is a strong applied-AI, full-stack IC role matching his skill set.",
+    "flags": [
+      "remote",
+      "genuine-fit",
+      "applied-ai",
+      "full-stack"
+    ],
+    "source": "Ashby"
+  },
+  {
+    "id": "ashby-baseten-1goy163",
+    "title": "Solution Architect",
+    "company": "Baseten",
+    "location": "San Francisco",
+    "url": "https://jobs.ashbyhq.com/baseten",
+    "salary": "$165k–$330k",
+    "salaryMin": 165000,
+    "postedAt": "2026-02-25",
+    "score": 80,
+    "why": "Solution Architect role doing technical discovery, demos, and hands-on deployment of AI inference products for customers matches his applied-AI/solutions engineering profile well.",
+    "flags": [
+      "remote",
+      "applied-ai",
+      "solutions-architect",
+      "genuine-fit",
+      "customer-facing"
+    ],
+    "source": "Ashby"
+  },
+  {
+    "id": "ashby-openai-1sx6epg",
+    "title": "AI Deployment Engineer, Startups",
+    "company": "OpenAI",
+    "location": "New York City",
+    "url": "https://jobs.ashbyhq.com/openai",
+    "salary": "$198k–$280k",
+    "salaryMin": 198000,
+    "postedAt": "2025-11-03",
+    "score": 80,
+    "why": "AI Deployment Engineer guiding startups from prototype to production GenAI use cases is squarely applied-AI/solutions work he could excel at.",
+    "flags": [
+      "remote",
+      "genuine-fit",
+      "applied-ai",
+      "ai-adjacent"
+    ],
+    "source": "Ashby"
+  },
+  {
+    "id": "gh-mercury-6122476004",
+    "title": "AI Context Operations Lead",
+    "company": "Mercury",
+    "location": "San Francisco, CA, New York, NY, Portland, OR, or Remote within Canada or United States",
+    "url": "https://job-boards.greenhouse.io/mercury/jobs/6122476004",
+    "salary": null,
+    "salaryMin": null,
+    "postedAt": "2026-07-22",
+    "score": 80,
+    "why": "AI Context Operations Lead building internal knowledge infrastructure and AI agent context layers is a strong match for his applied-AI, automation, and operations background.",
+    "flags": [
+      "remote",
+      "genuine-fit",
+      "applied-ai",
+      "ops-ai",
+      "automation"
+    ],
+    "source": "Greenhouse"
+  },
+  {
+    "id": "ashby-openai-1cnhjuj",
+    "title": "Product Engineer, Enterprise AI Platform",
+    "company": "OpenAI",
+    "location": "San Francisco",
+    "url": "https://jobs.ashbyhq.com/openai",
+    "salary": "$230k–$385k",
+    "salaryMin": 230000,
+    "postedAt": "2026-07-21",
+    "score": 78,
+    "why": "Product Engineer role building internal AI-enabled supply chain/finance tools with React/TypeScript/Python and agentic workflows strongly matches his supply-chain domain and full-stack applied-AI skills, though at a top-tier company with likely high bar.",
+    "flags": [
+      "remote",
+      "applied-ai",
+      "supply-chain",
+      "full-stack",
+      "genuine-fit"
+    ],
+    "source": "Ashby"
+  },
+  {
+    "id": "ashby-clickup-8puydl",
+    "title": "Business Systems Engineer",
+    "company": "ClickUp",
+    "location": "United States",
+    "url": "https://jobs.ashbyhq.com/clickup",
+    "salary": "$144k–$181k",
+    "salaryMin": 144000,
+    "postedAt": "2026-06-09",
+    "score": 78,
+    "why": "Business systems engineer building LLM-powered automations and agentic workflows for GTM, strongly matches his automation/AI builder profile.",
+    "flags": [
+      "remote",
+      "genuine-fit",
+      "automation",
+      "ai-adjacent"
+    ],
+    "source": "Ashby"
+  },
+  {
+    "id": "jobicy-144246",
+    "title": "AI Engineer (Latam, Remote)",
+    "company": "Kubikware",
+    "location": "LATAM",
+    "url": "https://jobicy.com/jobs/144246-ai-engineer-latam-remote",
+    "salary": null,
+    "salaryMin": null,
+    "postedAt": "2026-07-21",
+    "score": 78,
+    "why": "AI engineer role building LLM integrations, prompt engineering, and workflow automation (n8n) — closely matches his applied-AI and automation skill set.",
+    "flags": [
+      "remote",
+      "genuine-fit",
+      "applied-ai",
+      "automation"
+    ],
+    "source": "Jobicy"
+  },
+  {
+    "id": "adzuna-5812680262",
+    "title": "Looking for AI Engineer - remote - W2 Visa Independent candidate",
+    "company": "Saksoft",
+    "location": "US",
+    "url": "https://www.adzuna.com/land/ad/5812680262?se=dmeNYUqH8RGlu8FcJJTwKw&utm_medium=api&utm_source=e7a28f48&v=4CB6DEA3D473049FF168D7907A94C926A3F26F09",
+    "salary": "$122k+",
+    "salaryMin": 121928,
+    "postedAt": "2026-07-23",
+    "score": 78,
+    "why": "AI Engineer contract role building RAG, agentic multi-agent workflows with LangChain/LangGraph and LLM integration directly matches his core applied-AI skill set.",
+    "flags": [
+      "remote",
+      "applied-ai",
+      "agentic",
+      "genuine-fit"
+    ],
+    "source": "Adzuna + JSearch"
+  },
+  {
+    "id": "gh-coinbase-8031260",
+    "title": "Machine Learning Engineer, CX Intelligence",
+    "company": "Coinbase",
+    "location": "Remote - Brazil",
+    "url": "https://www.coinbase.com/careers/positions/8031260?gh_jid=8031260",
+    "salary": null,
+    "salaryMin": null,
+    "postedAt": "2026-07-07",
+    "score": 78,
+    "why": "ML Engineer building agentic multi-agent systems connecting LLMs to internal APIs for CX automation matches his applied-AI/agent skillset well.",
+    "flags": [
+      "remote",
+      "genuine-fit",
+      "agentic",
+      "llm",
+      "stretch-title"
+    ],
+    "source": "Greenhouse"
+  },
+  {
+    "id": "adzuna-5785766191",
+    "title": "Applied AI Engineer, Work From Home",
+    "company": "Parallel Partners",
+    "location": "San Francisco, California",
+    "url": "https://www.adzuna.com/details/5785766191?utm_medium=api&utm_source=e7a28f48",
+    "salary": "$117k+",
+    "salaryMin": 117277,
+    "postedAt": "2026-07-02",
+    "score": 78,
+    "why": "Applied AI Engineer building AI-powered product features and automation, directly matches his applied-AI builder profile.",
+    "flags": [
+      "remote",
+      "genuine-fit",
+      "applied-ai"
+    ],
+    "source": "Adzuna"
+  },
+  {
+    "id": "ashby-vanta-vszeee",
+    "title": "People Automation & AI Partner",
+    "company": "Vanta",
+    "location": "Remote U.S.",
+    "url": "https://jobs.ashbyhq.com/vanta",
+    "salary": "$130k–$170k",
+    "salaryMin": 130000,
+    "postedAt": "2026-07-21",
+    "score": 78,
+    "why": "Hands-on builder role designing AI agents and automations for People/Recruiting ops matches his automation+AI builder profile well.",
+    "flags": [
+      "remote",
+      "automation",
+      "ai-adjacent",
+      "genuine-fit"
+    ],
+    "source": "Ashby"
+  },
+  {
+    "id": "ashby-harvey-yp30t9",
+    "title": "Sr. AI Enablement Engineer",
+    "company": "Harvey",
+    "location": "New York",
+    "url": "https://jobs.ashbyhq.com/harvey",
+    "salary": "$134k–$200k",
+    "salaryMin": 133500,
+    "postedAt": "2026-07-16",
+    "score": 78,
+    "why": "AI enablement engineering at an agentic-AI legal-tech company aligns well with his applied-AI, LLM, and integration skillset.",
+    "flags": [
+      "remote",
+      "genuine-fit",
+      "applied-ai"
+    ],
+    "source": "Ashby"
+  },
+  {
+    "id": "adzuna-5797688233",
+    "title": "Solution Architect, Agentic AI (Bay Area Remote)",
+    "company": "Lavendo",
+    "location": "San Francisco, California",
+    "url": "https://www.adzuna.com/details/5797688233?utm_medium=api&utm_source=e7a28f48",
+    "salary": "$275k–$350k",
+    "salaryMin": 275000,
+    "postedAt": "2026-07-12",
+    "score": 78,
+    "why": "Solution Architect, Agentic AI role directly matches his agentic/LLM production deployment experience for enterprise clients.",
+    "flags": [
+      "remote",
+      "genuine-fit",
+      "agentic",
+      "applied-ai"
+    ],
+    "source": "Adzuna"
+  },
+  {
+    "id": "ashby-writer-hggcgb",
+    "title": "Solutions architect (East)",
+    "company": "Writer",
+    "location": "New York City, NY",
+    "url": "https://jobs.ashbyhq.com/writer",
+    "salary": "$183k–$273k",
+    "salaryMin": 183000,
+    "postedAt": "2026-05-06",
+    "score": 78,
+    "why": "Solutions architect role driving AI deployments and technical solutions for customers matches his forward-deployed applied-AI strengths well.",
+    "flags": [
+      "remote",
+      "genuine-fit",
+      "applied-ai",
+      "solutions-architect"
+    ],
+    "source": "Ashby"
+  },
+  {
+    "id": "ashby-llamaindex-1jsdrcq",
+    "title": "Member of Technical Staff, Frontend Product",
+    "company": "LlamaIndex",
+    "location": "San Francisco",
+    "url": "https://jobs.ashbyhq.com/llamaindex",
+    "salary": "$180k–$250k",
+    "salaryMin": 180000,
+    "postedAt": "2025-12-01",
+    "score": 78,
+    "why": "Full-stack product engineering shipping AI apps (Next.js/Python) at an AI document-understanding company, strong builder fit.",
+    "flags": [
+      "remote",
+      "genuine-fit",
+      "applied-ai",
+      "full-stack"
+    ],
+    "source": "Ashby"
+  },
+  {
+    "id": "gh-databricks-8593713002",
+    "title": "AI Engineer - FDE (Forward Deployed Engineer)",
+    "company": "Databricks",
+    "location": "Remote - United Kingdom",
+    "url": "https://databricks.com/company/careers/open-positions/job?gh_jid=8593713002",
+    "salary": null,
+    "salaryMin": null,
+    "postedAt": "2026-07-21",
+    "score": 78,
+    "why": "Forward Deployed AI Engineer role building GenAI/LLMOps solutions for customers matches his applied-AI, agentic, and customer-facing builder profile well.",
+    "flags": [
+      "remote",
+      "genuine-fit",
+      "applied-ai",
+      "forward-deployed"
+    ],
+    "source": "Greenhouse"
+  },
+  {
+    "id": "jobicy-144481",
+    "title": "Solutions Architect, Scaled Operations AI Accelerator Team",
+    "company": "Meta",
+    "location": "USA",
+    "url": "https://jobicy.com/jobs/144481-solutions-architect-scaled-operations-ai-accelerator-team",
+    "salary": null,
+    "salaryMin": null,
+    "postedAt": "2026-07-20",
+    "score": 78,
+    "why": "Solutions Architect role designing AI-powered automation for scaled operations, directly matching his ops+automation+AI background.",
+    "flags": [
+      "remote",
+      "applied-ai",
+      "automation",
+      "ops-ai",
+      "genuine-fit"
+    ],
+    "source": "Jobicy"
+  },
+  {
+    "id": "gh-coinbase-8070574",
+    "title": "Senior Software Engineer, Full Stack (Coinbase Advisor - Agentic Trading)",
+    "company": "Coinbase",
+    "location": "Remote - USA",
+    "url": "https://www.coinbase.com/careers/positions/8070574?gh_jid=8070574",
+    "salary": null,
+    "salaryMin": null,
+    "postedAt": "2026-07-17",
+    "score": 78,
+    "why": "Senior full-stack engineer building AI-powered agentic trading experiences with conversational interfaces, a strong applied-AI/agentic full-stack match.",
+    "flags": [
+      "remote",
+      "genuine-fit",
+      "applied-ai",
+      "agentic"
+    ],
+    "source": "Greenhouse"
+  },
+  {
+    "id": "gh-launchdarkly-7792046003",
+    "title": "Senior Solutions Architect",
+    "company": "LaunchDarkly",
+    "location": "Remote - US",
+    "url": "https://job-boards.greenhouse.io/launchdarkly/jobs/7792046003",
+    "salary": null,
+    "salaryMin": null,
+    "postedAt": "2026-07-16",
+    "score": 78,
+    "why": "Solutions Architect role centered on helping customers operationalize AI/LLM/agentic workflows, matching his implementation/integration strengths.",
+    "flags": [
+      "remote",
+      "applied-ai",
+      "ai-adjacent",
+      "genuine-fit"
+    ],
+    "source": "Greenhouse"
+  },
+  {
+    "id": "gh-launchdarkly-7798078003",
+    "title": "Solutions Architect",
+    "company": "LaunchDarkly",
+    "location": "Remote - US",
+    "url": "https://job-boards.greenhouse.io/launchdarkly/jobs/7798078003",
+    "salary": null,
+    "salaryMin": null,
+    "postedAt": "2026-07-16",
+    "score": 78,
+    "why": "Duplicate Solutions Architect - AI role, strong genuine fit for customer-facing AI implementation work.",
+    "flags": [
+      "remote",
+      "applied-ai",
+      "ai-adjacent",
+      "genuine-fit"
+    ],
+    "source": "Greenhouse"
+  },
+  {
+    "id": "remotive-2090986",
+    "title": "Senior AI Engineer",
+    "company": "Lemon.io",
+    "location": "Northern America, LATAM, Europe, APAC",
+    "url": "https://remotive.com/remote-jobs/artificial-intelligence/senior-ai-engineer-2090986",
+    "salary": null,
+    "salaryMin": null,
+    "postedAt": "2026-07-02",
+    "score": 78,
+    "why": "Senior AI Engineer role with Python, vector DBs, applied AI for startups matches his applied-AI builder profile well.",
+    "flags": [
+      "remote",
+      "genuine-fit",
+      "applied-ai",
+      "python"
+    ],
+    "source": "Remotive"
+  },
+  {
+    "id": "ashby-clickup-d5edti",
+    "title": "Professional Services Consultant, AI Solutions",
+    "company": "ClickUp",
+    "location": "United Kingdom - London Office",
+    "url": "https://jobs.ashbyhq.com/clickup",
+    "salary": null,
+    "salaryMin": null,
+    "postedAt": "2026-06-16",
+    "score": 78,
+    "why": "Professional Services Consultant deploying AI agents hands-on for customers is a strong match for his applied-AI/automation builder profile.",
+    "flags": [
+      "remote",
+      "genuine-fit",
+      "applied-ai",
+      "automation"
+    ],
+    "source": "Ashby"
+  },
+  {
+    "id": "ashby-linear-14wwhqw",
+    "title": "Product Engineer",
+    "company": "Linear",
+    "location": "North America",
+    "url": "https://jobs.ashbyhq.com/linear",
+    "salary": null,
+    "salaryMin": null,
+    "postedAt": "2026-06-09",
+    "score": 78,
+    "why": "Full-stack TypeScript product engineer role at a fast-moving small team with high autonomy, closely matches his builder profile though AI angle is secondary.",
+    "flags": [
+      "remote",
+      "genuine-fit",
+      "full-stack",
+      "typescript"
+    ],
+    "source": "Ashby"
+  },
+  {
+    "id": "ashby-writer-12cfuoy",
+    "title": "Software engineer, agents (UK)",
+    "company": "Writer",
+    "location": "London, UK",
+    "url": "https://jobs.ashbyhq.com/writer",
+    "salary": null,
+    "salaryMin": null,
+    "postedAt": "2026-05-18",
+    "score": 78,
+    "why": "Fullstack engineer building AI agent systems/autonomous workflows—very close alignment with his agentic/full-stack skillset.",
+    "flags": [
+      "remote",
+      "genuine-fit",
+      "applied-ai",
+      "agentic",
+      "fullstack"
+    ],
+    "source": "Ashby"
+  },
+  {
+    "id": "gh-gleanwork-4651991005",
+    "title": "Founding Forward Deployed Engineer",
+    "company": "Glean",
+    "location": "Remote - US",
+    "url": "https://job-boards.greenhouse.io/gleanwork/jobs/4651991005",
+    "salary": null,
+    "salaryMin": null,
+    "postedAt": "2026-05-14",
+    "score": 78,
+    "why": "Forward-deployed engineer role at an AI agent platform fits his applied-AI/solutions-engineering profile well, though 'founding' suggests high ownership expectations.",
+    "flags": [
+      "remote",
+      "applied-ai",
+      "genuine-fit"
+    ],
+    "source": "Greenhouse"
+  }
+]

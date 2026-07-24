@@ -1,0 +1,402 @@
+---
+// Self-hosted type (Fontsource) — no external font CDN.
+//
+// The two VARIABLE families have no per-subset entrypoint (the package ships only
+// index.css / wght.css), so they must be imported whole. That is dist weight, not runtime
+// weight: each @font-face carries a `unicode-range`, so a browser never actually fetches
+// the cyrillic/greek/vietnamese files for an English page.
+import '@fontsource-variable/inter';
+import '@fontsource-variable/space-grotesk';
+// IBM Plex Mono is a static family and DOES ship latin-only entrypoints — taking them
+// drops the cyrillic/greek/vietnamese faces for all three weights from the build.
+import '@fontsource/ibm-plex-mono/latin-400.css';
+import '@fontsource/ibm-plex-mono/latin-500.css';
+import '@fontsource/ibm-plex-mono/latin-600.css';
+import '../styles/global.css';
+import { site, sameAs } from '../data/site';
+
+// Preload the two faces that render above the fold. The hero headline is the LCP element
+// and it is set in the display face, so without this it cannot paint until the CSS has
+// been parsed AND the font fetched — a serial round-trip on the critical path.
+// `?url` hands back the hashed, bundled asset path, so this never breaks on a rebuild.
+import interLatin from '@fontsource-variable/inter/files/inter-latin-wght-normal.woff2?url';
+import displayLatin from '@fontsource-variable/space-grotesk/files/space-grotesk-latin-wght-normal.woff2?url';
+import { ClientRouter } from 'astro:transitions';
+
+interface Props {
+  title?: string;
+  description?: string;
+  image?: string;
+  /** OpenGraph type — 'website' (default) or 'article' for blog posts. */
+  ogType?: 'website' | 'article';
+  /** When ogType='article', the post's dates + author for article:* tags. */
+  article?: { publishedTime?: string; modifiedTime?: string; author?: string };
+  /** Extra JSON-LD nodes for this page, merged into the site-wide @graph. */
+  schema?: Record<string, unknown>[];
+  /** Keep this page out of search indexes (shareable, but not crawled). */
+  noindex?: boolean;
+  /** RSS feed for this page (e.g. /blog/rss.xml) — emits <link rel="alternate">. */
+  rssHref?: string;
+  /** Feed name in that <link title> — the site has more than one feed. */
+  rssTitle?: string;
+}
+
+const {
+  title = site.name,
+  description = site.description,
+  // ?v=N cache-busts social scrapers (LinkedIn pins og:image by URL for ~7 days)
+  image = '/og/default.png?v=3',
+  ogType = 'website',
+  article,
+  schema = [],
+  noindex = false,
+  rssHref,
+  rssTitle = 'Field notes',
+} = Astro.props;
+
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const ogImage = new URL(image, Astro.site);
+const isHome = Astro.url.pathname === '/';
+const fullTitle = isHome ? `${site.name} — Builder` : `${title} · ${site.name}`;
+
+// ── Structured data ──────────────────────────────────────────────────────
+const origin = new URL(Astro.site!).origin;
+const personId = `${origin}/#person`;
+const siteGraph: Record<string, unknown>[] = [
+  {
+    '@type': 'Person',
+    '@id': personId,
+    name: site.name,
+    jobTitle: site.role,
+    description: site.tagline,
+    url: `${origin}/`,
+    image: new URL('/og/default.png', Astro.site).href,
+    sameAs,
+    knowsAbout: [
+      'Supply chain operations', 'MRP', 'Bill of materials',
+      'Production planning', 'Applied AI', 'Custom software', 'Systems architecture',
+    ],
+  },
+  {
+    '@type': 'WebSite',
+    '@id': `${origin}/#website`,
+    name: site.name,
+    description: site.description,
+    inLanguage: 'en-US',
+    url: `${origin}/`,
+    publisher: { '@id': personId },
+  },
+];
+const jsonLdStr = JSON.stringify({
+  '@context': 'https://schema.org',
+  '@graph': [...siteGraph, ...schema],
+}).replace(/</g, '\\u003c');
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    <meta name="theme-color" content="#f2a33c" />
+
+    <link rel="preload" as="font" type="font/woff2" href={displayLatin} crossorigin="anonymous" />
+    <link rel="preload" as="font" type="font/woff2" href={interLatin} crossorigin="anonymous" />
+    <link rel="canonical" href={canonical} />
+    {rssHref && (
+      <link rel="alternate" type="application/rss+xml" title={`${site.name} — ${rssTitle}`} href={rssHref} />
+    )}
+
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+
+    <!-- OpenGraph / social -->
+    <meta property="og:type" content={ogType} />
+    <meta property="og:site_name" content={site.name} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={fullTitle} />
+    <meta property="og:locale" content="en_US" />
+    {ogType === 'article' && article?.publishedTime && (
+      <meta property="article:published_time" content={article.publishedTime} />
+    )}
+    {ogType === 'article' && article?.modifiedTime && (
+      <meta property="article:modified_time" content={article.modifiedTime} />
+    )}
+    {ogType === 'article' && article?.author && (
+      <meta property="article:author" content={article.author} />
+    )}
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={fullTitle} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+
+    <meta name="robots" content={noindex ? 'noindex, follow' : 'index, follow, max-image-preview:large, max-snippet:-1'} />
+    <meta name="generator" content={Astro.generator} />
+
+    <script type="application/ld+json" is:inline set:html={jsonLdStr} />
+
+    <ClientRouter />
+
+    {/*
+      Scroll-reveal gate.
+
+      THIS SCRIPT DECIDES WHETHER CONTENT IS VISIBLE, so it is the one place on the site
+      where a bug does not degrade a flourish — it blanks the page. Everything here is
+      built to fail OPEN.
+
+      It adds `reveal-on` to <html> only when JS runs AND motion is allowed. The CSS rule
+      that hides content is `.reveal-on .reveal`, so if this script never runs, or throws,
+      the class is simply absent and every `.reveal` renders normally.
+
+      Two halves, deliberately split:
+        · this inline head script runs BEFORE FIRST PAINT, so the initial page never
+          flashes its content and then hides it, and
+        · the observer itself is bound to `astro:page-load` further down, because a view
+          transition swaps the whole body — the elements this would have observed are gone,
+          and the new ones have never been seen.
+
+      A view transition also resets <html>'s attributes from the incoming document, which
+      strips `reveal-on`. `astro:after-swap` re-adds it before paint. If that listener ever
+      failed to fire, the class would just be missing and the content would show — which is
+      the correct direction to fail in.
+    */}
+    <script is:inline>
+      (function () {
+        try {
+          if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+          document.documentElement.classList.add('reveal-on');
+        } catch (e) {
+          /* fail open: no class, no hiding */
+        }
+      })();
+    </script>
+  </head>
+  <body class="min-h-screen antialiased">
+    <a href="#main" class="skip-link">Skip to content</a>
+    <slot />
+
+    {/*
+      Decorative flourishes. Deliberately a plain inline script and NOT an island
+      (DECISIONS.md D7 — islands are rationed).
+
+      Two rules govern everything below:
+        1. Progressive enhancement. With JS off, every effect is ABSENT and nothing is
+           BROKEN. Nothing here is load-bearing.
+        2. It NEVER touches the scroll-reveal gate above. That gate decides whether content
+           is VISIBLE; a bug introduced there doesn't degrade a flourish, it hides the page.
+           The count-up gets its own IntersectionObserver — a second observer is a rounding
+           error, a blank page is not.
+    */}
+    <script is:inline>
+      (function () {
+        try {
+          var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+          var fine = window.matchMedia('(pointer: fine)').matches;
+
+          // ══ Per-page work — must re-run after every view transition ═══════════
+          //
+          // A view transition swaps the entire <body>. Anything bound to elements in the
+          // OLD body is gone, and the elements in the NEW body have never been seen. So
+          // the reveal observer and the count-up are bound to `astro:page-load`, which
+          // fires on the initial load AND after every navigation.
+
+          function revealAll(els) {
+            for (var i = 0; i < els.length; i++) els[i].classList.add('is-visible');
+          }
+
+          function initReveal() {
+            try {
+              if (!document.documentElement.classList.contains('reveal-on')) return;
+              var els = document.querySelectorAll('.reveal:not(.is-visible)');
+              if (!('IntersectionObserver' in window)) { revealAll(els); return; }
+              var io = new IntersectionObserver(function (entries) {
+                entries.forEach(function (e) {
+                  if (e.isIntersecting) { e.target.classList.add('is-visible'); io.unobserve(e.target); }
+                });
+              }, { rootMargin: '0px 0px -8% 0px', threshold: 0.08 });
+              for (var i = 0; i < els.length; i++) io.observe(els[i]);
+            } catch (e) {
+              // Never leave content hidden because a reveal failed. Drop the gate entirely.
+              try {
+                document.documentElement.classList.remove('reveal-on');
+              } catch (e2) { /* nothing left to do */ }
+            }
+          }
+
+          // Count-up. Its OWN observer — never the reveal gate's. A second observer is a
+          // rounding error; a blank page is not.
+          function initCountUp() {
+            if (reduced || !('IntersectionObserver' in window)) return;
+            var stats = document.querySelectorAll('[data-countup]:not([data-counted])');
+            if (!stats.length) return;
+            var io2 = new IntersectionObserver(function (entries) {
+              entries.forEach(function (entry) {
+                if (!entry.isIntersecting) return;
+                var el = entry.target;
+                io2.unobserve(el);
+                el.setAttribute('data-counted', '');
+
+                var final = el.textContent;
+                var target = parseFloat(String(final).replace(/[^0-9.]/g, ''));
+                if (!isFinite(target) || target <= 0) return; // not a number: leave it alone
+
+                var start = performance.now();
+                (function step(now) {
+                  var p = Math.min(1, (now - start) / 900);
+                  var eased = 1 - Math.pow(1 - p, 3);
+                  if (p < 1) {
+                    el.textContent = String(Math.round(target * eased));
+                    requestAnimationFrame(step);
+                  } else {
+                    el.textContent = final; // land on the AUTHORED string, exactly
+                  }
+                })(start);
+              });
+            }, { threshold: 0.5 });
+            for (var i = 0; i < stats.length; i++) io2.observe(stats[i]);
+          }
+
+          // A swap resets <html>'s attributes from the incoming document, which strips
+          // `reveal-on`. Put it back BEFORE paint, or the new page's cards flash in fully
+          // visible and then animate.
+          document.addEventListener('astro:after-swap', function () {
+            if (!reduced) document.documentElement.classList.add('reveal-on');
+          });
+
+          document.addEventListener('astro:page-load', function () {
+            initReveal();
+            initCountUp();
+          });
+
+          // ══ One-time setup ════════════════════════════════════════════════════
+          //
+          // This inline script RE-EXECUTES on every view transition, so everything below —
+          // which attaches window-level listeners and builds persistent DOM — must run
+          // exactly once, or each navigation would add another comet and another console
+          // signature.
+          if (window.__ipFx) return;
+          window.__ipFx = true;
+
+          // ── Cursor comet ──────────────────────────────────────────────────────
+          // Gated on `pointer: fine`, which gates the CREATION of the nodes, not just the
+          // behaviour: a phone can never fire a mousemove, so it should never pay to build
+          // DOM it cannot animate.
+          if (fine && !reduced) {
+            var dots = [];
+            var cx = 0, cy = 0, speed = 0, running = false;
+
+            // A view transition REPLACES <body>, which takes the comet layer with it. The
+            // listeners below are attached once and survive, so without re-mounting the DOM
+            // the comet would simply vanish after the first navigation and never come back
+            // (the one-time guard above would stop it rebuilding). Caught by measuring
+            // `.comet-layer` count after a real click-through: it was 1, then 0.
+            //
+            // So: listeners once, DOM per page. `dots` is reassigned, and the frame loop
+            // closes over the variable rather than the array, so it always animates the
+            // live nodes.
+            function mountComet() {
+              if (document.querySelector('.comet-layer')) return;
+
+              var layer = document.createElement('div');
+              layer.className = 'comet-layer';
+              layer.setAttribute('aria-hidden', 'true');
+
+              dots = [];
+              for (var i = 0; i < 7; i++) {
+                var el = document.createElement('span');
+                el.className = 'comet-dot';
+                // Taper size and easing along the chain: the head is biggest and fastest,
+                // the tail smallest and laggiest.
+                var size = 15 - i * 1.7;
+                el.style.width = size + 'px';
+                el.style.height = size + 'px';
+                el.style.marginLeft = -size / 2 + 'px';
+                el.style.marginTop = -size / 2 + 'px';
+                layer.appendChild(el);
+                dots.push({ el: el, x: cx, y: cy, ease: 0.34 - i * 0.032, alpha: 0.5 - i * 0.06 });
+              }
+              document.body.appendChild(layer);
+            }
+
+            mountComet();
+            document.addEventListener('astro:page-load', mountComet);
+
+            function frame() {
+              if (!dots.length) { running = false; return; } // mid-swap; the next mount re-arms it
+
+              // Opacity is driven by SPEED, not by presence. That single choice is the
+              // whole difference between "a thing following my cursor" (naff) and a comet:
+              // absent when still, swelling as you move, dissolving when you stop.
+              speed *= 0.9;
+
+              var lead = { x: cx, y: cy };
+              for (var j = 0; j < dots.length; j++) {
+                var d = dots[j];
+                // Each dot eases toward the one IN FRONT of it. This one line gives all
+                // three behaviours for free: moving → the tail stretches (each dot chases a
+                // target that keeps running away); stopping → the tail catches up and
+                // collapses into the head; still → invisible.
+                d.x += (lead.x - d.x) * d.ease;
+                d.y += (lead.y - d.y) * d.ease;
+                d.el.style.transform = 'translate3d(' + d.x + 'px,' + d.y + 'px,0)';
+                d.el.style.opacity = Math.min(1, speed) * d.alpha;
+                lead = d;
+              }
+
+              // Park the loop when it is done. An idle cursor must cost ZERO frames; it
+              // restarts on the next move.
+              var head = dots[0];
+              var settled = speed < 0.01 && Math.abs(head.x - cx) < 0.5 && Math.abs(head.y - cy) < 0.5;
+              if (settled) { running = false; } else { requestAnimationFrame(frame); }
+            }
+
+            window.addEventListener('mousemove', function (e) {
+              var dx = e.clientX - cx, dy = e.clientY - cy;
+              cx = e.clientX; cy = e.clientY;
+              speed = Math.min(1, speed + Math.hypot(dx, dy) / 42);
+              if (!running) { running = true; requestAnimationFrame(frame); }
+            }, { passive: true });
+          }
+
+          // ── Tap ripple ────────────────────────────────────────────────────────
+          // Touch has no pointer, so the comet can never fire there. It still deserves an
+          // acknowledgement. `pointerdown`, not `click`: it has to land WITH the finger —
+          // waiting for click feels laggy and disconnected from the touch.
+          if (!fine && !reduced) {
+            window.addEventListener('pointerdown', function (e) {
+              if (e.pointerType === 'mouse') return;
+              var r = document.createElement('span');
+              r.className = 'tap-ripple';
+              r.setAttribute('aria-hidden', 'true');
+              r.style.left = e.clientX + 'px';
+              r.style.top = e.clientY + 'px';
+              r.addEventListener('animationend', function () { r.remove(); }, { once: true });
+              document.body.appendChild(r);
+            }, { passive: true }); // passive so it can never delay a scroll
+          }
+
+          // ── Console signature ─────────────────────────────────────────────────
+          // Zero risk, and the people who open devtools are reliably the audience worth
+          // talking to. A real invitation, not a joke.
+          console.log(
+            '%cIan Provencher%c\nI build the operational software big systems leave out.\n\nThe diagrams are real — exported from my Command Center, scrubbed, and gated before they ship.\nThe 3D scenes are three.js. The site is Astro. Nothing here is a mockup.\n\nHiring, or just curious how a piece of it works?\n' + window.location.origin + '/about/\n',
+            'font: 600 20px ui-sans-serif, system-ui; color: #f2a33c',
+            'font: 13px ui-monospace, monospace; color: #a4abbd'
+          );
+        } catch (e) {
+          /* A flourish must never take the page down with it. */
+        }
+      })();
+    </script>
+  </body>
+</html>
