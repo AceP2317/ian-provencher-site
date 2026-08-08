@@ -1,0 +1,79 @@
+---
+import PageLayout from '../../layouts/PageLayout.astro';
+import PipelineFlow from '../../components/PipelineFlow.astro';
+import { repos, LANG_COLOR } from '../../data/repos';
+import { bySlug } from '../../data/sections';
+
+const section = bySlug.get('repos')!;
+const fmtDate = (iso: string) =>
+  new Date(iso).toLocaleDateString('en-US', { year: 'numeric', month: 'short' });
+---
+<PageLayout title="Repositories" description={section.description} image="/og/repos.png?v=1">
+  <section class="section">
+    <div class="mx-auto max-w-6xl px-6">
+      <div class="max-w-2xl">
+        <p class="mono-label">Repositories · {repos.length} public</p>
+        <h1 class="mt-2 font-display text-4xl font-semibold tracking-tight text-ink">
+          What I build in the open
+        </h1>
+        <p class="mt-4 text-base leading-relaxed text-ink-muted">
+          Auto-pulled from GitHub — every public repo on
+          <a href="https://github.com/AceP2317" class="text-cyan-deep hover:text-cyan">@AceP2317</a>.
+          Most of what I run is private; this is the openly-shared slice.
+        </p>
+      </div>
+
+      <div class="mt-8">
+        <PipelineFlow
+          label="How this gallery stays current"
+          stages={[
+            { name: 'github', note: 'public repos' },
+            { name: 'fetch', note: 'scheduled pull' },
+            { name: 'safe-export', note: 'public-safe only', lit: true },
+            { name: 'gallery', note: 'rebuilt on commit', lit: true },
+          ]}
+        />
+      </div>
+
+      {repos.length === 0 ? (
+        <div class="panel mt-10 p-8 text-center text-ink-muted">
+          <p class="text-sm">No public repositories yet — the openly-shared work will surface here.</p>
+        </div>
+      ) : (
+        <div class="mt-10 grid grid-cols-1 gap-4 md:grid-cols-2 lg:grid-cols-3">
+          {repos.map((r) => (
+            <a href={r.url}
+              class={`reveal panel group flex flex-col gap-3 p-5 transition-colors duration-200 hover:border-line-2 ${r.featured ? 'ring-1 ring-accent/30' : ''}`}>
+              <div class="flex items-start justify-between gap-2">
+                <h2 class="inline-flex items-center gap-1.5 font-display text-base font-semibold tracking-tight text-ink group-hover:text-accent-2">
+                  {r.name}
+                  {r.isFork && <span class="chip">fork</span>}
+                  {r.archived && <span class="chip">archived</span>}
+                </h2>
+                <span class="shrink-0 text-ink-faint transition-colors group-hover:text-accent-2" aria-hidden="true">↗</span>
+              </div>
+              {r.description && <p class="text-sm leading-relaxed text-ink-muted">{r.description}</p>}
+              {r.topics.length > 0 && (
+                <div class="flex flex-wrap gap-1.5">
+                  {r.topics.slice(0, 5).map((t) => (
+                    <span class="rounded-full border border-line bg-surface-2 px-2 py-0.5 font-mono text-[0.6rem] text-ink-faint">{t}</span>
+                  ))}
+                </div>
+              )}
+              <div class="mt-auto flex items-center gap-4 pt-1 font-mono text-[0.65rem] text-ink-faint">
+                {r.language && (
+                  <span class="inline-flex items-center gap-1.5">
+                    <span class="h-2 w-2 rounded-full" style={`background:${LANG_COLOR[r.language] || 'var(--color-ink-faint)'}`}></span>
+                    {r.language}
+                  </span>
+                )}
+                {r.stars > 0 && <span>★ {r.stars}</span>}
+                <span class="ml-auto">updated {fmtDate(r.pushedAt)}</span>
+              </div>
+            </a>
+          ))}
+        </div>
+      )}
+    </div>
+  </section>
+</PageLayout>

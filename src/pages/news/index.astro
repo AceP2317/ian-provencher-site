@@ -1,0 +1,53 @@
+---
+import { getCollection } from 'astro:content';
+import PageLayout from '../../layouts/PageLayout.astro';
+import { bySlug } from '../../data/sections';
+import { sortNews, hostOf, pinnedLabel } from '../../data/news';
+
+const section = bySlug.get('news')!;
+const items = (await getCollection('news')).sort(sortNews);
+---
+<PageLayout title="Signal" description={section.description} image="/og/news.png?v=1">
+  <section class="section">
+    <div class="mx-auto max-w-4xl px-6">
+      <div class="max-w-2xl">
+        <p class="mono-label">Signal · {items.length}</p>
+        <h1 class="mt-2 font-display text-4xl font-semibold tracking-tight text-ink">
+          Articles worth keeping
+        </h1>
+        <p class="mt-4 text-base leading-relaxed text-ink-muted">
+          Things I found useful and never want to lose — each with a note on why it
+          mattered or how I used it. Pinned items stay on top.
+        </p>
+      </div>
+
+      <div class="mt-10 grid grid-cols-1 gap-4 sm:grid-cols-2">
+        {items.length === 0 ? (
+          <p class="panel col-span-full p-8 text-center text-sm text-ink-muted">Nothing pinned yet.</p>
+        ) : items.map((n) => (
+          <a href={n.data.url}
+            class={`reveal panel group flex flex-col gap-3 p-5 transition-colors duration-200 hover:border-line-2 ${n.data.pinned ? 'ring-1 ring-accent/25' : ''}`}>
+            <div class="flex items-center justify-between gap-2">
+              <span class="mono-label">{n.data.source ?? hostOf(n.data.url)}</span>
+              <span class="font-mono text-[0.65rem] text-ink-faint">
+                {n.data.pinned ? '★ pinned · ' : ''}{pinnedLabel(n.data.pinnedAt)}
+              </span>
+            </div>
+            <h2 class="font-display text-lg font-semibold leading-snug tracking-tight text-ink group-hover:text-accent-2">
+              {n.data.title}
+            </h2>
+            <p class="text-sm leading-relaxed text-ink-muted">{n.data.summary}</p>
+            <div class="mt-auto flex items-center justify-between gap-2 pt-1">
+              <div class="flex flex-wrap gap-1.5">
+                {n.data.tags.slice(0, 3).map((t) => (
+                  <span class="rounded-full border border-line bg-surface-2 px-2 py-0.5 font-mono text-[0.6rem] text-ink-faint">{t}</span>
+                ))}
+              </div>
+              <span class="shrink-0 text-xs font-medium text-cyan-deep group-hover:text-cyan">Open ↗</span>
+            </div>
+          </a>
+        ))}
+      </div>
+    </div>
+  </section>
+</PageLayout>

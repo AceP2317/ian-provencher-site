@@ -1,0 +1,223 @@
+---
+import { getCollection } from 'astro:content';
+import PageLayout from '../../layouts/PageLayout.astro';
+import Icon from '../../components/Icon.astro';
+import { bySlug } from '../../data/sections';
+import { learnCategories, CATEGORY_META, LEVELS, mergeLearn } from '../../data/learn';
+import { glossaryTerms } from '../../data/glossary';
+
+const section = bySlug.get('learn')!;
+const cats = learnCategories();
+
+// Bulk JSON base + any topics authored through the admin console (content collection).
+const additions = (await getCollection('learn')).map((e) => e.data);
+const topics = mergeLearn(additions);
+
+// Related links only render when the guessed glossary slug actually exists.
+const glossaryBySlug = new Map(glossaryTerms.map((t) => [t.slug, t.term]));
+
+const LEVEL_LABEL: Record<(typeof LEVELS)[number], string> = {
+  beginner: 'Beginner',
+  intermediate: 'Intermediate',
+  advanced: 'Advanced',
+};
+
+const haystack = (t: (typeof topics)[number]) =>
+  `${t.title} ${t.tagline} ${CATEGORY_META[t.category].label} ${LEVELS.map((l) => t.levels[l].primer).join(' ')}`.toLowerCase();
+---
+<PageLayout title="Learn" description={section.description} image="/og/learn.png?v=1">
+  <section class="section">
+    <div class="mx-auto max-w-6xl px-6" data-learn>
+      <div class="max-w-2xl">
+        <p class="mono-label">Learn · <span data-learn-total>{topics.length}</span> crash courses</p>
+        <h1 class="mt-2 font-display text-4xl font-semibold tracking-tight text-ink">
+          Get up to speed, at your level
+        </h1>
+        <p class="mt-4 text-base leading-relaxed text-ink-muted">
+          A short primer on each topic plus the 2-3 best resources to go further — tuned to
+          where you're starting from. Pick a level, then filter by field or search.
+        </p>
+      </div>
+
+      {/* Controls — level toggle (global) + category chips + text (progressive: needs JS). */}
+      <div class="mt-8" data-learn-controls>
+        <div class="flex flex-wrap items-center gap-2">
+          <span class="mono-label mr-1 text-ink-faint">Level</span>
+          {LEVELS.map((lvl, i) => (
+            <button
+              type="button"
+              data-learn-level={lvl}
+              aria-pressed={i === 0 ? 'true' : 'false'}
+              class="nav-chip"
+            >
+              <span>{LEVEL_LABEL[lvl]}</span>
+            </button>
+          ))}
+        </div>
+
+        <div class="mt-4 flex max-w-xl items-center gap-2 rounded-lg border border-line bg-surface px-3 py-2 focus-within:border-line-2">
+          <Icon name="search" size={16} class="shrink-0 text-ink-faint" />
+          <input
+            type="search"
+            data-learn-input
+            aria-label="Search topics"
+            placeholder="Search topics…"
+            autocomplete="off"
+            class="min-w-0 flex-1 bg-transparent text-sm text-ink placeholder:text-ink-faint focus:outline-none"
+          />
+        </div>
+
+        <div class="mt-4 flex flex-wrap items-center gap-2">
+          <button type="button" data-learn-cat="all" aria-pressed="true" class="nav-chip">
+            <span>All</span>
+          </button>
+          {cats.map((c) => (
+            <button
+              type="button"
+              data-learn-cat={c.category}
+              aria-pressed="false"
+              class="nav-chip"
+              style={`--chip-accent: ${c.meta.accent}`}
+            >
+              <span class="chip-icon"><Icon name={c.meta.icon} size={14} /></span>
+              <span>{c.meta.label}</span>
+            </button>
+          ))}
+          <button type="button" data-learn-clear class="btn btn-secondary ml-1 hidden px-2.5 py-1 text-xs">
+            Clear
+          </button>
+        </div>
+      </div>
+
+      <p data-learn-empty class="mt-10 hidden text-sm text-ink-muted">
+        No topics match your filter.
+        <button type="button" data-learn-clear class="text-cyan-deep hover:text-cyan">Clear →</button>
+      </p>
+      {/* SR announcement for filter results — mirrors SearchOverlay's liveMsg pattern. */}
+      <p data-learn-live aria-live="polite" class="sr-only"></p>
+
+      <div class="mt-10 grid grid-cols-1 gap-4 lg:grid-cols-2">
+        {topics.map((t) => {
+          const meta = CATEGORY_META[t.category];
+          const related = t.related.filter((s) => glossaryBySlug.has(s)).slice(0, 6);
+          return (
+            <article id={t.slug} data-learn-card data-cat={t.category} data-search={haystack(t)} class="group relative panel scroll-mt-24 flex flex-col overflow-hidden p-5 pl-6 transition-colors hover:border-line-2">
+              <span class="absolute inset-y-0 left-0 w-1" style={`background:${meta.accent}`} aria-hidden="true"></span>
+              <div class="flex items-center gap-2">
+                <span class="grid h-6 w-6 place-items-center rounded-md border border-line bg-surface-2" style={`color:${meta.accent}`}>
+                  <Icon name={meta.icon} size={13} />
+                </span>
+                <span class="mono-label text-ink-faint">{meta.label}</span>
+              </div>
+              <h2 class="mt-3 font-display text-lg font-semibold tracking-tight text-ink transition-colors group-hover:text-accent-2">{t.title}</h2>
+              <p class="mt-1 text-sm text-ink-muted">{t.tagline}</p>
+
+              {LEVELS.map((lvl) => (
+                <div data-level={lvl} hidden={lvl !== 'beginner'} class="mt-4">
+                  <p class="text-sm leading-relaxed text-ink-muted">{t.levels[lvl].primer}</p>
+                  {t.levels[lvl].resources.length > 0 && (
+                    <ul class="mt-3 flex flex-col gap-2">
+                      {t.levels[lvl].resources.map((r) => (
+                        <li class="text-sm">
+                          <a href={r.url} target="_blank" rel="noopener noreferrer" class="font-medium text-cyan-deep hover:text-cyan">
+                            {r.label} <span aria-hidden="true">↗</span>
+                          </a>
+                          {r.note && <span class="text-ink-faint"> — {r.note}</span>}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </div>
+              ))}
+
+              {related.length > 0 && (
+                <div class="mt-4 flex flex-wrap items-center gap-x-2 gap-y-1 border-t border-line pt-3">
+                  <span class="mono-label text-ink-faint">Terms</span>
+                  {related.map((s) => (
+                    <a href={`/glossary/#${s}`} class="font-mono text-xs text-ink-muted hover:text-accent-2">{glossaryBySlug.get(s)}</a>
+                  ))}
+                </div>
+              )}
+            </article>
+          );
+        })}
+      </div>
+    </div>
+  </section>
+
+  {/* Client-side: global level toggle + category filter + text search. Progressive. */}
+  <script is:inline>
+  (() => {
+    const root = document.querySelector('[data-learn-controls]');
+    if (!root) return;
+    const input = root.querySelector('[data-learn-input]');
+    const levelBtns = [...root.querySelectorAll('[data-learn-level]')];
+    const catBtns = [...root.querySelectorAll('[data-learn-cat]')];
+    const clearBtns = [...document.querySelectorAll('[data-learn-clear]')];
+    const cards = [...document.querySelectorAll('[data-learn-card]')];
+    const totalEl = document.querySelector('[data-learn-total]');
+    const emptyEl = document.querySelector('[data-learn-empty]');
+    const liveEl = document.querySelector('[data-learn-live]');
+
+    const selCats = new Set();
+    let q = '';
+
+    const applyFilter = () => {
+      const hasFilter = q !== '' || selCats.size > 0;
+      let visible = 0;
+      for (const card of cards) {
+        const cat = card.getAttribute('data-cat');
+        const hay = card.getAttribute('data-search') || '';
+        const show = (!q || hay.includes(q)) && (selCats.size === 0 || selCats.has(cat));
+        card.style.display = show ? '' : 'none';
+        if (show) visible++;
+      }
+      if (totalEl) totalEl.textContent = String(visible);
+      if (emptyEl) emptyEl.classList.toggle('hidden', visible > 0);
+      if (liveEl) liveEl.textContent = visible > 0 ? `${visible} topics shown` : 'No topics match your filter';
+      for (const b of clearBtns) b.classList.toggle('hidden', !hasFilter);
+    };
+
+    const setLevel = (lvl) => {
+      for (const card of cards) {
+        for (const block of card.querySelectorAll('[data-level]')) {
+          block.hidden = block.getAttribute('data-level') !== lvl;
+        }
+      }
+      for (const b of levelBtns) b.setAttribute('aria-pressed', b.getAttribute('data-learn-level') === lvl ? 'true' : 'false');
+    };
+
+    for (const b of levelBtns) b.addEventListener('click', () => setLevel(b.getAttribute('data-learn-level')));
+
+    input &&
+      input.addEventListener('input', () => {
+        q = input.value.trim().toLowerCase();
+        applyFilter();
+      });
+
+    for (const btn of catBtns) {
+      btn.addEventListener('click', () => {
+        const cat = btn.getAttribute('data-learn-cat');
+        if (cat === 'all') selCats.clear();
+        else if (selCats.has(cat)) selCats.delete(cat);
+        else selCats.add(cat);
+        for (const b of catBtns) {
+          const c = b.getAttribute('data-learn-cat');
+          const on = c === 'all' ? selCats.size === 0 : selCats.has(c);
+          b.setAttribute('aria-pressed', on ? 'true' : 'false');
+        }
+        applyFilter();
+      });
+    }
+
+    const clearAll = () => {
+      q = '';
+      if (input) input.value = '';
+      selCats.clear();
+      for (const b of catBtns) b.setAttribute('aria-pressed', b.getAttribute('data-learn-cat') === 'all' ? 'true' : 'false');
+      applyFilter();
+    };
+    for (const b of clearBtns) b.addEventListener('click', clearAll);
+  })();
+  </script>
+</PageLayout>

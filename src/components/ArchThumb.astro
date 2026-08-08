@@ -1,0 +1,73 @@
+---
+/**
+ * ArchThumb — a real, build-time miniature of an architecture's node graph.
+ *
+ * WHY: the architectures index was the weakest surface in the flagship section — six
+ * identical flat cards with a row of coloured dots, a title and a tagline. Nothing on it
+ * signalled that these are interactive 3D exhibits; a visitor's first impression of the
+ * best work on the site was a generic card grid.
+ *
+ * This renders each system's ACTUAL topology — the same x/y coordinates and the same kind
+ * colours the real diagram uses — so every card is visibly a different machine.
+ *
+ * Pure inline SVG, computed in the Astro frontmatter at build time: zero JavaScript, zero
+ * island (DECISIONS.md D7 — islands are rationed), zero runtime cost. It's the laziest
+ * possible way to get the biggest win on the page.
+ */
+import { KIND_META, type Architecture } from '../data/architectures';
+
+interface Props {
+  arch: Architecture;
+}
+const { arch } = Astro.props;
+
+const PAD = 10;
+const xs = arch.nodes.map((n) => n.x);
+const ys = arch.nodes.map((n) => n.y);
+const minX = Math.min(...xs) - PAD;
+const minY = Math.min(...ys) - PAD;
+const w = Math.max(...xs) - Math.min(...xs) + PAD * 2;
+const h = Math.max(...ys) - Math.min(...ys) + PAD * 2;
+
+const at = new Map(arch.nodes.map((n) => [n.id, n]));
+const links = arch.edges
+  .map((e) => ({ a: at.get(e.from), b: at.get(e.to) }))
+  .filter((l) => l.a && l.b);
+---
+
+<svg
+  class="arch-thumb"
+  viewBox={`${minX} ${minY} ${w} ${h}`}
+  preserveAspectRatio="xMidYMid meet"
+  role="img"
+  aria-label={`${arch.title} — ${arch.nodes.length} nodes, ${arch.edges.length} connections`}
+>
+  {
+    links.map((l) => (
+      <line
+        x1={l.a!.x}
+        y1={l.a!.y}
+        x2={l.b!.x}
+        y2={l.b!.y}
+        style="stroke: var(--color-line-2)"
+        stroke-width="0.7"
+        vector-effect="non-scaling-stroke"
+      />
+    ))
+  }
+  {
+    arch.nodes.map((n) => (
+      <>
+        {/* the halo — invisible at rest, blooms in on card hover */}
+        <circle
+          class="arch-thumb-halo"
+          cx={n.x}
+          cy={n.y}
+          r="5"
+          style={`fill: ${KIND_META[n.kind].color}`}
+        />
+        <circle cx={n.x} cy={n.y} r="2.4" style={`fill: ${KIND_META[n.kind].color}`} />
+      </>
+    ))
+  }
+</svg>

@@ -1,0 +1,76 @@
+---
+import PageLayout from '../../layouts/PageLayout.astro';
+import Icon from '../../components/Icon.astro';
+import PipelineFlow from '../../components/PipelineFlow.astro';
+import { bySlug } from '../../data/sections';
+import { cronJobs, cadence } from '../../data/cron';
+
+const section = bySlug.get('cron')!;
+// Group by cadence bucket, in a natural order.
+const order = ['Every few minutes', 'Hourly', 'Daily', 'Weekly', 'Scheduled'];
+const groups = order
+  .map((c) => ({ cadence: c, items: cronJobs.filter((j) => cadence(j.schedule) === c) }))
+  .filter((g) => g.items.length > 0);
+---
+<PageLayout title="Cron jobs" description={section.description} image="/og/cron.png?v=1">
+  <section class="section">
+    <div class="mx-auto max-w-4xl px-6">
+      <div class="max-w-2xl">
+        <p class="mono-label">Cron jobs · {cronJobs.length}</p>
+        <h1 class="mt-2 font-display text-4xl font-semibold tracking-tight text-ink">
+          The machinery that runs itself
+        </h1>
+        <p class="mt-4 text-base leading-relaxed text-ink-muted">
+          Scheduled jobs across my estate — curation passes, syncs, and housekeeping that
+          keep the system current without me tending it. Pulled public-safe from my
+          infrastructure-as-code (box detail redacted at the source).
+        </p>
+      </div>
+
+      <div class="mt-8">
+        <PipelineFlow
+          label="What each scheduled job does, unattended"
+          stages={[
+            { name: 'schedule', note: 'a timer fires' },
+            { name: 'trigger', note: 'the job wakes' },
+            { name: 'run', note: 'curate · sync · tidy', lit: true },
+            { name: 'publish', note: 'public-safe out' },
+            { name: 'live', note: 'no hands needed', lit: true },
+          ]}
+        />
+      </div>
+
+      {cronJobs.length === 0 ? (
+        <p class="panel mt-10 p-8 text-center text-sm text-ink-muted">No scheduled jobs published yet.</p>
+      ) : (
+        <div class="mt-10 space-y-10">
+          {groups.map((g) => (
+            <div>
+              <div class="flex items-center gap-3">
+                <h2 class="section-index">{g.cadence}</h2>
+                <span class="h-px flex-1 bg-line"></span>
+                <span class="font-mono text-xs text-ink-faint">{g.items.length}</span>
+              </div>
+              <div class="mt-4 space-y-3">
+                {g.items.map((j) => (
+                  <div class="reveal panel flex items-start gap-4 p-4">
+                    <span class="mt-0.5 grid h-9 w-9 shrink-0 place-items-center rounded-lg border border-line bg-surface-2 text-indigo">
+                      <Icon name="timer" size={16} />
+                    </span>
+                    <div class="min-w-0 flex-1">
+                      <div class="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
+                        <h3 class="font-display text-base font-semibold tracking-tight text-ink">{j.label}</h3>
+                        <code class="rounded border border-line bg-surface-2 px-1.5 py-0.5 font-mono text-[0.65rem] text-indigo">{j.schedule}</code>
+                      </div>
+                      <p class="mt-1 text-sm leading-relaxed text-ink-muted">{j.purpose}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          ))}
+        </div>
+      )}
+    </div>
+  </section>
+</PageLayout>

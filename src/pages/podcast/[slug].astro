@@ -1,0 +1,107 @@
+---
+import { getCollection, render, type CollectionEntry } from 'astro:content';
+import PageLayout from '../../layouts/PageLayout.astro';
+import { site } from '../../data/site';
+import {
+  publishedFilter, sortByPublished, episodeSchema, formatEntryDate, isoDate,
+  formatDuration, SHOW, HOST,
+} from '../../data/podcast';
+
+type Neighbor = { id: string; title: string } | null;
+
+export async function getStaticPaths() {
+  const entries = (await getCollection('podcast', publishedFilter)).sort(sortByPublished);
+  return entries.map((entry, i) => ({
+    params: { slug: entry.id },
+    props: {
+      entry,
+      // Newest-first order: the previous index is the newer episode, next is older.
+      newer: entries[i - 1] ? { id: entries[i - 1].id, title: entries[i - 1].data.title } : null,
+      older: entries[i + 1] ? { id: entries[i + 1].id, title: entries[i + 1].data.title } : null,
+    },
+  }));
+}
+
+interface Props { entry: CollectionEntry<'podcast'>; newer: Neighbor; older: Neighbor; }
+const { entry, newer, older } = Astro.props;
+const { data } = entry;
+const { Content } = await render(entry);
+const origin = new URL(Astro.site!).origin;
+const megabytes = (data.audioBytes / 1_000_000).toFixed(1);
+---
+<PageLayout
+  title={data.title}
+  description={data.description}
+  ogType="article"
+  article={{ publishedTime: isoDate(data.publishedAt), author: site.author }}
+  schema={episodeSchema(entry, origin)}
+  rssHref="/podcast/rss.xml"
+  rssTitle={SHOW}
+>
+  <article class="mx-auto max-w-3xl px-6 py-16 sm:py-20">
+    <a href="/podcast/" class="text-sm font-medium text-cyan-deep transition-colors hover:text-cyan">
+      ← All episodes
+    </a>
+
+    <div class="mt-8 flex flex-wrap items-center gap-x-4 gap-y-2">
+      <time datetime={isoDate(data.publishedAt)} class="font-mono text-xs tracking-wide text-ink-faint">
+        {formatEntryDate(data.publishedAt)}
+      </time>
+      <span class="chip">
+        <span class="chip-dot" style="background: var(--color-cyan)"></span>
+        {SHOW}
+      </span>
+      <span class="font-mono text-xs tracking-wide text-ink-faint">{formatDuration(data.durationSec)}</span>
+    </div>
+
+    <h1 class="mt-4 font-display text-3xl font-semibold tracking-tight text-ink sm:text-4xl">
+      {data.title}
+    </h1>
+    <p class="mt-3 text-base text-ink-muted">{data.subtitle}</p>
+    <p class="mt-2 text-sm text-ink-faint">Hosted by {HOST}</p>
+
+    {/* Native <audio>: playback, seek, and speed on every target browser without a
+        React island. Islands are rationed here.
+
+        preload="metadata", NOT "none": with "none" every browser renders the player
+        greyed at 0:00 with a dead scrubber until the first press, which reads as
+        "the audio is broken" — it cost a whole debugging session once. "metadata"
+        costs one small range request and nothing more (the body still waits for a
+        press), and the duration + scrubber populate on load. The listing page keeps
+        "none" on purpose: one player there is one request, and the show is daily. */}
+    <audio
+      controls
+      preload="metadata"
+      src={data.audioUrl}
+      class="mt-6 w-full"
+      aria-label={`Play: ${data.title}`}
+    ></audio>
+    <p class="mt-2 font-mono text-[0.65rem] tracking-wide text-ink-faint">
+      MP3 · {data.duration} · {megabytes} MB ·
+      <a href={data.audioUrl} download class="transition-colors hover:text-ink">download ↓</a>
+    </p>
+
+    <h2 class="mt-12 font-display text-xl font-semibold tracking-tight text-ink">Transcript</h2>
+    <p class="mt-1 text-sm text-ink-faint">The full episode, as read.</p>
+    <div class="post-prose mt-6">
+      <Content />
+    </div>
+
+    {(newer || older) && (
+      <nav class="mt-10 flex flex-col gap-4 border-t border-line pt-6 sm:flex-row sm:justify-between" aria-label="More episodes">
+        {older ? (
+          <a href={`/podcast/${older.id}/`} class="group max-w-[48%]">
+            <span class="mono-label text-ink-faint">← Older</span>
+            <span class="mt-1 block text-sm font-medium text-cyan-deep transition-colors group-hover:text-cyan">{older.title}</span>
+          </a>
+        ) : <span></span>}
+        {newer ? (
+          <a href={`/podcast/${newer.id}/`} class="group max-w-[48%] sm:text-right">
+            <span class="mono-label text-ink-faint">Newer →</span>
+            <span class="mt-1 block text-sm font-medium text-cyan-deep transition-colors group-hover:text-cyan">{newer.title}</span>
+          </a>
+        ) : <span></span>}
+      </nav>
+    )}
+  </article>
+</PageLayout>

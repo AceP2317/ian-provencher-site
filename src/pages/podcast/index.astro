@@ -1,0 +1,108 @@
+---
+import { getCollection } from 'astro:content';
+import PageLayout from '../../layouts/PageLayout.astro';
+import PipelineFlow from '../../components/PipelineFlow.astro';
+import {
+  publishedFilter, sortByPublished, formatEntryDate, isoDate, formatDuration,
+  podcastSchema, SHOW, HOST, SHOW_SUBTITLE, SHOW_DESCRIPTION,
+} from '../../data/podcast';
+
+const entries = (await getCollection('podcast', publishedFilter)).sort(sortByPublished);
+const origin = new URL(Astro.site!).origin;
+---
+<PageLayout
+  title={SHOW}
+  description={SHOW_DESCRIPTION}
+  image="/og/podcast.png?v=1"
+  schema={podcastSchema(origin, entries)}
+  rssHref="/podcast/rss.xml"
+  rssTitle={SHOW}
+>
+  <section class="section">
+    <div class="mx-auto max-w-3xl px-6">
+      <div class="flex items-end justify-between gap-4">
+        <div>
+          <p class="mono-label">Episodes · {entries.length}</p>
+          <h1 class="mt-2 font-display text-4xl font-semibold tracking-tight text-ink">{SHOW}</h1>
+        </div>
+        {/* shrink-0/nowrap: this title is long enough to squeeze the link onto two
+            lines at 375px, which /blog's shorter title never exposed. */}
+        <a href="/podcast/rss.xml" class="mono-label shrink-0 whitespace-nowrap transition-colors hover:text-ink">RSS ↗</a>
+      </div>
+      <p class="mt-4 max-w-xl text-base leading-relaxed text-ink-muted">
+        {SHOW_SUBTITLE} Hosted by {HOST} — an AI voice, not a person.
+      </p>
+      <p class="mt-4 max-w-xl text-base leading-relaxed text-ink-muted">
+        Every episode is produced end to end by <span class="text-ink">Consigliere</span>,
+        the autonomous agent that runs my operation. He gathers the day’s AI news, writes the script,
+        and renders it solo — no human in the loop, and no paid API bill: it runs on OAuth
+        tokens, not metered calls. He then hands the finished episode off to
+        {' '}<span class="text-ink">{HOST}</span>, a separate on-air persona who delivers it.
+        From there the release pipeline takes over — provenance gates, verified audio, a
+        daily publish.
+      </p>
+
+      <div class="mt-8">
+        <PipelineFlow
+          label="How an episode gets made — and reaches the feed"
+          stages={[
+            { name: 'gather', note: 'the day’s AI news' },
+            { name: 'script', note: 'written solo, no human' },
+            { name: 'voice', note: `handed to ${HOST}`, lit: true },
+            { name: 'gate', note: 'never ships red', lit: true },
+            { name: 'sync', note: 'R2 audio, then page' },
+            { name: 'live', note: 'site + podcast apps', lit: true },
+          ]}
+        />
+      </div>
+
+      <div class="mt-10 flex flex-col">
+        {entries.length === 0 ? (
+          <div class="panel p-8 text-center">
+            <p class="font-display text-lg font-semibold text-ink">The first episode is on its way.</p>
+            <p class="mt-2 text-sm text-ink-muted">
+              {SHOW} publishes daily once it starts. Subscribe now and episode one lands
+              in your app the morning it drops.
+            </p>
+            <a href="/podcast/rss.xml" class="mt-4 inline-block text-sm font-medium text-cyan-deep transition-colors hover:text-cyan">
+              Subscribe by RSS →
+            </a>
+          </div>
+        ) : entries.map((e) => {
+          const href = `/podcast/${e.id}/`;
+          return (
+            <article class="reveal border-b border-line py-7 first:pt-0">
+              <div class="flex flex-wrap items-center gap-x-3 gap-y-2">
+                <time datetime={isoDate(e.data.publishedAt)} class="font-mono text-xs tracking-wide text-ink-faint">
+                  {formatEntryDate(e.data.publishedAt)}
+                </time>
+                <span class="chip">
+                  <span class="chip-dot" style="background: var(--color-cyan)"></span>
+                  {formatDuration(e.data.durationSec)}
+                </span>
+                {e.data.draft && <span class="chip" style="border-color: var(--color-warn); color: var(--color-warn)">Draft</span>}
+              </div>
+              <h2 class="mt-3 font-display text-xl font-semibold tracking-tight text-ink">
+                <a href={href} class="transition-colors hover:text-accent-2">{e.data.title}</a>
+              </h2>
+              <p class="mt-2 leading-relaxed text-ink-muted">{e.data.description}</p>
+              {/* preload="none" — a listing page must never pull megabytes of audio. */}
+              <audio
+                controls
+                preload="none"
+                src={e.data.audioUrl}
+                class="mt-4 w-full"
+                aria-label={`Play: ${e.data.title}`}
+              ></audio>
+              <div class="mt-3 flex items-center gap-4">
+                <a href={href} class="text-sm font-medium text-cyan-deep transition-colors hover:text-cyan">
+                  Episode + transcript →
+                </a>
+              </div>
+            </article>
+          );
+        })}
+      </div>
+    </div>
+  </section>
+</PageLayout>

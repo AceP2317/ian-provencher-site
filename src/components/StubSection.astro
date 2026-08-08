@@ -1,0 +1,39 @@
+---
+import Icon from './Icon.astro';
+import { statusLabel, type Section } from '../data/sections';
+
+interface Props { section: Section; }
+const { section } = Astro.props;
+const accentText: Record<string, string> = {
+  cyan: 'text-cyan', indigo: 'text-indigo', green: 'text-green', accent: 'text-accent-2',
+}[section.accent ?? 'accent'] ?? 'text-accent-2';
+const verb = section.status === 'planned' ? 'is planned' : 'is being built';
+---
+<section class="section">
+  <div class="mx-auto max-w-3xl px-6 text-center">
+    <span class={`mx-auto grid h-16 w-16 place-items-center rounded-2xl border border-line bg-surface-2 ${accentText}`}>
+      <Icon name={section.icon} size={30} />
+    </span>
+    <p class="mono-label mt-6">{statusLabel[section.status]}</p>
+    <h1 class="mt-2 font-display text-4xl font-semibold tracking-tight text-ink">{section.title}</h1>
+    <p class="mx-auto mt-4 max-w-xl text-base leading-relaxed text-ink-muted">
+      {section.description}
+    </p>
+
+    <div class="panel mx-auto mt-10 max-w-lg p-6 text-left">
+      <p class="text-sm leading-relaxed text-ink-muted">
+        This section {verb}. It renders from
+        <span class="font-mono text-xs text-cyan-deep">{section.dataSource}</span>.
+        The page is real — it just isn't wired to its data yet. Every section on this
+        site lights up one at a time; check back, or watch the blog.
+      </p>
+    </div>
+
+    <div class="mt-8 flex items-center justify-center gap-3">
+      <a href="/" class="btn btn-secondary text-sm">
+        <Icon name="arrow-right" size={15} class="rotate-180" /> All sections
+      </a>
+      <a href="/blog/" class="btn btn-primary text-sm">Read the blog</a>
+    </div>
+  </div>
+</section>

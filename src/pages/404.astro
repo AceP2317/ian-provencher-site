@@ -1,0 +1,40 @@
+---
+import PageLayout from '../layouts/PageLayout.astro';
+import Icon from '../components/Icon.astro';
+import { gridSections } from '../data/sections';
+const live = gridSections.filter((s) => s.status === 'live');
+---
+<PageLayout title="Not found" description="That page doesn't exist." noindex>
+  {/* The status code IS a readout, so it reads as one (.stat-value), on the same
+      glow + grid atmosphere as the home hero. The live sections reuse the header's
+      .nav-chip, so they arrive icon-coded by section accent instead of flat. */}
+  <section class="section relative overflow-hidden">
+    <div aria-hidden="true" class="accent-glow"></div>
+    <div aria-hidden="true" class="bg-grid bg-grid-fade pointer-events-none absolute inset-0 opacity-40"></div>
+    <div class="relative mx-auto max-w-2xl px-6 text-center">
+      <p class="stat-value">404</p>
+      <h1 class="mt-4 font-display text-4xl font-semibold tracking-tight text-ink">
+        Nothing wired up here
+      </h1>
+      <p class="mx-auto mt-4 max-w-md text-base leading-relaxed text-ink-muted">
+        That page doesn't exist — or hasn't been built yet. Here's what is live:
+      </p>
+      <hr class="rule-flow mx-auto mt-8 max-w-xs" />
+      <div class="mt-8 flex flex-wrap justify-center gap-1.5">
+        {live.map((s) => (
+          <a
+            href={`/${s.slug}/`}
+            class="nav-chip min-h-10"
+            style={`--chip-accent: var(--color-${s.accent ?? 'accent'})`}
+          >
+            <span class="chip-icon"><Icon name={s.icon} size={14} /></span>
+            <span>{s.title}</span>
+          </a>
+        ))}
+      </div>
+      <div class="mt-10">
+        <a href="/" class="btn btn-primary text-sm">← Back home</a>
+      </div>
+    </div>
+  </section>
+</PageLayout>

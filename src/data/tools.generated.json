@@ -1,0 +1,387 @@
+[
+  {
+    "id": "tool-appliediq-site",
+    "name": "AppliedIQ Solutions site",
+    "kind": "site",
+    "status": "deployed",
+    "tech": "Astro 6 + React 19 + Tailwind v4, Cloudflare Workers, streaming 'Ask the tooling' assistant (Anthropic API, SSE), Resend",
+    "description": "17-page consulting/portfolio site: live supply-chain demos, services ladder, engagement-hub contact form, full 'Operational Instrument' brand system.",
+    "links": [
+      {
+        "label": "appliediqsolutions.com",
+        "href": "https://appliediqsolutions.com"
+      }
+    ]
+  },
+  {
+    "id": "tool-bom-explorer",
+    "name": "BOM Explorer",
+    "kind": "demo",
+    "status": "deployed",
+    "tech": "React island, multi-level BOM-explosion engine (per-unit quantities, where-used), synthetic data",
+    "description": "Field-qualified BOM search, reverse where-used, multi-level explosion with true per-unit quantities across every usage path.",
+    "links": [
+      {
+        "label": "Live demo",
+        "href": "https://appliediqsolutions.com/work/bom-explorer/"
+      }
+    ]
+  },
+  {
+    "id": "tool-production-plan-churn",
+    "name": "Production Plan Churn",
+    "kind": "demo",
+    "status": "deployed",
+    "tech": "React island, week-over-week churn diff-engine (noise vs. real reschedules), synthetic data",
+    "description": "Week-over-week production-plan volatility tracker: separates real reschedules from MRP renumbering noise, attributes changes to planner vs system.",
+    "links": [
+      {
+        "label": "Live demo",
+        "href": "https://appliediqsolutions.com/work/production-plan-churn/"
+      }
+    ]
+  },
+  {
+    "id": "tool-order-confirmation-cc",
+    "name": "Order Confirmation Command Center",
+    "kind": "demo",
+    "status": "deployed",
+    "tech": "React island, first-match-wins root-cause waterfall engine, synthetic data",
+    "description": "Roots every unconfirmed unit to a cause via first-match-wins waterfall, drills category→cause→line, exports a ranked worklist.",
+    "links": [
+      {
+        "label": "Live demo",
+        "href": "https://appliediqsolutions.com/work/order-confirmation-command-center/"
+      }
+    ]
+  },
+  {
+    "id": "tool-past-due-order-triage",
+    "name": "Past-Due Order Triage",
+    "kind": "demo",
+    "status": "deployed",
+    "tech": "React island, phantom-demand scoring + action-routing engine, synthetic data",
+    "description": "Finds past-due production orders faking dependent demand, phantom-scores them, and sorts each into one action with where-used BOM impact.",
+    "links": [
+      {
+        "label": "Live demo",
+        "href": "https://appliediqsolutions.com/work/past-due-order-triage/"
+      }
+    ]
+  },
+  {
+    "id": "tool-asn-update-radar",
+    "name": "ASN Update Radar",
+    "kind": "demo",
+    "status": "deployed",
+    "tech": "React island, firmest-date arbitration + four-way triage engine, synthetic data",
+    "description": "Daily inbound worklist: picks the firmest arrival date per open shipment and sorts each into verify/chase/reschedule/drop.",
+    "links": [
+      {
+        "label": "Live demo",
+        "href": "https://appliediqsolutions.com/work/asn-update-radar/"
+      }
+    ]
+  },
+  {
+    "id": "tool-staging-triage-console",
+    "name": "Staging Triage Console",
+    "kind": "demo",
+    "status": "deployed",
+    "tech": "React island, per-bin integrity rules engine (offsetting-error detection), synthetic data",
+    "description": "Per-bin physical-inventory integrity checks: impossible quantities, offsetting errors that net believable, line-side overstaging.",
+    "links": [
+      {
+        "label": "Live demo",
+        "href": "https://appliediqsolutions.com/work/staging-triage-console/"
+      }
+    ]
+  },
+  {
+    "id": "tool-parameter-audit-console",
+    "name": "Parameter Audit Console",
+    "kind": "demo",
+    "status": "deployed",
+    "tech": "React island + Recharts, five-parameter grading engine (tier × ABC × XYZ, dollar exposure), synthetic data",
+    "description": "MRP parameter-governance console: grades five parameters against sourcing-tier × ABC × XYZ targets, dollar exposure on every finding.",
+    "links": [
+      {
+        "label": "Live demo",
+        "href": "https://appliediqsolutions.com/work/parameter-audit-console/"
+      }
+    ]
+  },
+  {
+    "id": "tool-working-identity-kit",
+    "name": "Working identity kit (v3)",
+    "kind": "internal-tool",
+    "status": "shippable",
+    "tech": "Three portable .md artifacts, firewall-clean",
+    "description": "WORKING_IDENTITY, IDENTITY_PRIMER, DEPLOYMENT_KIT — canonical portable context, deployed to the vault, consumed by the site assistant.",
+    "links": []
+  },
+  {
+    "id": "tool-command-center",
+    "name": "Command Center OS",
+    "kind": "internal-tool",
+    "status": "deployed",
+    "tech": "Next.js 16 module system, JSON file-database with live SSE, agent-assignment queue",
+    "description": "Private 13-module operations console this site exports from: file-per-record JSON with live SSE, agent-assignment queue with a human-gated 'done'. Public template available.",
+    "links": [
+      {
+        "label": "Template repo",
+        "href": "https://github.com/AceP2317/command-center-os-template"
+      }
+    ]
+  },
+  {
+    "id": "tool-pdf-pro",
+    "name": "Ian PDF Pro",
+    "kind": "app",
+    "status": "wip",
+    "tech": "Tauri v2, Rust, React 19, TypeScript — Windows + Android",
+    "description": "Cross-platform PDF suite: viewer, page organizer, annotation, forms, OCR. One Tauri codebase shipping to Windows desktop and side-loaded Android.",
+    "links": [
+      {
+        "label": "GitHub repo",
+        "href": "https://github.com/AceP2317/ian-pdf-pro"
+      }
+    ]
+  },
+  {
+    "id": "tool-ask-the-tooling",
+    "name": "'Ask the tooling' live AI assistant",
+    "kind": "web-app",
+    "status": "deployed",
+    "tech": "Cloudflare Worker + Anthropic API (streaming, cached) + React chat island",
+    "description": "Site-embedded assistant in Ian's locked voice on 3 surfaces; rate-limited, spend-capped, 8/8 adversarial angles held including the employer firewall.",
+    "links": [
+      {
+        "label": "Live on site",
+        "href": "https://appliediqsolutions.com"
+      }
+    ]
+  },
+  {
+    "id": "tool-bom-workbench",
+    "name": "bom-workbench",
+    "kind": "cli",
+    "status": "deployed",
+    "tech": "Python 3.12+ (stdlib only, zero runtime deps), pytest ×48, ruff, GitHub Actions CI",
+    "description": "Public BOM/MRP data toolkit: multi-level BOM explosion with quantity roll-up, where-used lookup, and production-plan churn diff over plain CSV. Ships with fictional demo data.",
+    "links": [
+      {
+        "label": "GitHub repo",
+        "href": "https://github.com/AceP2317/bom-workbench"
+      }
+    ]
+  },
+  {
+    "id": "tool-ian-card",
+    "name": "Digital business card (/ian-card)",
+    "kind": "web-app",
+    "status": "deployed",
+    "tech": "Astro + vCard 3.0 + logo-QR generator",
+    "description": "Share-only landscape business card: save-contact vCard, tap rows, QR with the iQ mark baked in; noindex for privacy.",
+    "links": [
+      {
+        "label": "Card",
+        "href": "https://appliediqsolutions.com/ian-card/"
+      }
+    ]
+  },
+  {
+    "id": "tool-hermes-librarian",
+    "name": "Hermes Librarian",
+    "kind": "internal-tool",
+    "status": "deployed",
+    "tech": "Scheduled headless Claude Code + systemd timers + tier-scoped MCP",
+    "description": "Autonomous nightly curation agent over the vault: routes material to sensitivity tiers, shelves atomic notes, weaves the link graph, maintains Maps of Content.",
+    "links": []
+  },
+  {
+    "id": "tool-hermes-vault-infra",
+    "name": "Hermes vault infrastructure",
+    "kind": "internal-tool",
+    "status": "deployed",
+    "tech": "Hardened VPS + Cloudflare Tunnel/Access + MCP filesystem + git-crypt + gocryptfs",
+    "description": "The serving layer of the shared brain: outbound-only tunnel, edge identity gating, three-tier encryption, GitHub sync across all surfaces.",
+    "links": []
+  },
+  {
+    "id": "tool-co-bom-extraction",
+    "name": "co-bom-extraction",
+    "kind": "skill-suite",
+    "status": "deployed",
+    "tech": "Claude skill: SAP CO PDF + ERP master-data extract + BOM extract → 4-sheet xlsx + JSON",
+    "description": "Extracts BOM transition data from SAP Change Order PDFs, enriches with ERP master data, state-aware-validates against current BOM state.",
+    "links": []
+  },
+  {
+    "id": "tool-co-implementation-planner",
+    "name": "co-implementation-planner",
+    "kind": "skill-suite",
+    "status": "deployed",
+    "tech": "Claude skill: enriched JSON + production plan → 5-sheet xlsx",
+    "description": "Computes feasible implementation windows per Change Order with binding constraints, stock projection, multi-CO conflict report, readiness deadlines.",
+    "links": []
+  },
+  {
+    "id": "tool-skill-library-system",
+    "name": "Skill library",
+    "kind": "skill-suite",
+    "status": "deployed",
+    "tech": "SKILL.md packages on claude.ai + Claude Code",
+    "description": "The full house system: cognitive registers, operational skills, deploy machinery, and versioned skill/tool conventions — one library serving every Claude surface.",
+    "links": []
+  },
+  {
+    "id": "tool-confirmation-outlook",
+    "name": "Confirmation Outlook",
+    "kind": "web-app",
+    "status": "deployed",
+    "tech": "Python probability engine + FastAPI + MCP server + React operator console, one Docker container",
+    "description": "Supply-chain order-confirmation risk service, built end to end: risk as a conditional probability table measured from week-to-week transition history, served over an API and an MCP server, with a React operator console on top. Fictional company, synthetic data.",
+    "links": [
+      {
+        "label": "Live demo",
+        "href": "https://demo.appliediqsolutions.com"
+      },
+      {
+        "label": "github.com/AceP2317/confirmation-outlook",
+        "href": "https://github.com/AceP2317/confirmation-outlook"
+      }
+    ]
+  },
+  {
+    "id": "tool-ian-cli",
+    "name": "ian — terminal AI agent",
+    "kind": "cli",
+    "status": "deployed",
+    "tech": "Node 22 + TypeScript + Ink, multi-provider (Anthropic, OpenAI, Google, xAI, OpenRouter, Ollama), MCP client, vitest + biome",
+    "description": "A personal multi-provider CLI coding agent — Claude Code's shape, any model: frontier APIs or free local models behind one terminal UI, with tool use, MCP servers, and a real test suite. In daily use.",
+    "links": []
+  },
+  {
+    "id": "tool-claude-skeleton-map",
+    "name": "Claude skeleton map",
+    "kind": "web-app",
+    "status": "deployed",
+    "tech": "Node + PWA, rebuilt live from disk on every build",
+    "description": "A drillable reference map of the whole Claude Code meta-infrastructure — doctrine, config, hooks, memory, the skills library, plugins and MCP, companion repos, and every dev port. Reads live off disk, so the map cannot go stale on its own.",
+    "links": []
+  },
+  {
+    "id": "tool-review-autopilot",
+    "name": "Review Autopilot",
+    "kind": "web-app",
+    "status": "wip",
+    "tech": "Next.js 16 + React 19 + Tailwind v4 + Anthropic API",
+    "description": "Review-management dashboard for a small business: pulls reviews into one queue, drafts on-voice replies with AI, and tracks response health. Being rebuilt as a public demo on the AppliedIQ site.",
+    "links": []
+  },
+  {
+    "id": "tool-confirmation-forecaster",
+    "name": "Confirmation-rate forecaster",
+    "kind": "internal-tool",
+    "status": "deployed",
+    "tech": "Python engine + FastAPI service + Vite/React consoles",
+    "description": "Genuinely-predictive order-confirmation analytics: forecasts which materials will miss confirmation next week, splits the at-risk book into recoverable vs structural, and hands the operator the specific lever to pull. Backtested across a run of historical weekly snapshots and validated on a held-out week.",
+    "links": []
+  },
+  {
+    "id": "tool-token-metrics",
+    "name": "Token metrics pipeline",
+    "kind": "internal-tool",
+    "status": "deployed",
+    "tech": "JSON snapshots + nightly box-sync ingestion + Command Center console module",
+    "description": "Usage tracking across every Claude surface: per-project token buckets locally, nightly ingestion from the remote boxes, daily snapshots, and a console module that renders spend and usage trends.",
+    "links": []
+  },
+  {
+    "id": "tool-headless-agents",
+    "name": "Headless agent fleet",
+    "kind": "internal-tool",
+    "status": "deployed",
+    "tech": "Always-on VPS, systemd-run agents, issue-driven dispatch, acceptance harness",
+    "description": "An always-on agents box running autonomous Claude agents: a coding agent that answers task issues with pull requests, a Telegram personal assistant, and a shared runtime with its own verify harness — work continues while the operator sleeps.",
+    "links": []
+  },
+  {
+    "id": "tool-status-line",
+    "name": "Claude Code status line",
+    "kind": "internal-tool",
+    "status": "deployed",
+    "tech": "Bash HUD wired into Claude Code settings, 30s refresh, gist-synced on every edit",
+    "description": "The live session instrument: one line rendering model, context pressure, cost, and usage gauges inside every Claude Code session — with a toggle and a quiet mode, and a hook that publishes the script to a public gist the moment it changes.",
+    "links": [
+      {
+        "label": "The script (public gist)",
+        "href": "https://gist.github.com/AceP2317/fa6aa7d0b8c77c57b982553c866c99ed"
+      }
+    ]
+  },
+  {
+    "id": "tool-claude-counter",
+    "name": "Claude Counter (browser extension)",
+    "kind": "app",
+    "status": "deployed",
+    "tech": "MV3 Chrome/Firefox extension, vanilla-JS content scripts + vendored tokenizer, all data local",
+    "description": "Live meters injected into claude.ai: per-conversation token count (exact when the stream exposes usage, a labeled approximation otherwise), a cache countdown timer, cache hit rate, and unrounded session/weekly usage bars. A modified build of the MIT claude-counter extension — this fork adds adaptive usage capture from the SSE stream, model-aware context limits, image/document token estimates, and a fail-visible badge when the page layout shifts.",
+    "links": [
+      {
+        "label": "Source (public gist)",
+        "href": "https://gist.github.com/AceP2317/6406208614fa9944fac45d5e9f3479b3"
+      },
+      {
+        "label": "Upstream (she-llac/claude-counter)",
+        "href": "https://github.com/she-llac/claude-counter"
+      }
+    ]
+  },
+  {
+    "id": "tool-mrp-audit-engine",
+    "name": "MRP Audit Engine",
+    "kind": "internal-tool",
+    "status": "wip",
+    "tech": "Python engine over ERP BOM-explosion exports, versioned with anonymized test fixtures",
+    "description": "Audits MRP master-data parameters across finished goods and components: ABC×XYZ segmentation drives geography-tiered policy targets (just-in-time through overseas), and every parameter that deviates from policy is flagged for analyst review with the dollar exposure attached. The structured migration of a proven console prototype into a version-controlled, distributable local engine — raw ERP exports never leave the machine.",
+    "links": []
+  },
+  {
+    "id": "tool-nexus",
+    "name": "NEXUS operating doctrine",
+    "kind": "internal-tool",
+    "status": "deployed",
+    "tech": "Versioned markdown doctrine in a private git repo + session-start mirror-sync hook",
+    "description": "The operating doctrine as infrastructure: one canonical, versioned NEXUS.md (any edit bumps the version) that a session-start hook pulls and mirrors into every Claude Code session — fail-loud, dropping a visible stale marker whenever the sync chain breaks. How the AI operates is governed from a single source of truth instead of drifting per surface.",
+    "links": []
+  },
+  {
+    "id": "tool-claude-home",
+    "name": "Claude Code home (versioned)",
+    "kind": "internal-tool",
+    "status": "deployed",
+    "tech": "Git-versioned ~/.claude with scheduled auto-sync commits to a private repo",
+    "description": "The entire Claude Code home directory as a maintained, restorable build: session hooks, permission policy, the skill-library mount, the status-line instrument, sync scripts, and written failover + migration runbooks — auto-committed on a schedule so the machine's AI setup survives any single computer. The substrate the Claude skeleton map renders.",
+    "links": []
+  },
+  {
+    "id": "tool-confirmation-rootcause",
+    "name": "Confirmation root-cause console",
+    "kind": "internal-tool",
+    "status": "shippable",
+    "tech": "Single-file React artifact, in-browser XLSX ingestion, ported classification engine",
+    "description": "Root-causes every unconfirmed order line in a weekly snapshot: the ERP's nested-IF classification waterfall ported to JavaScript and validated line-for-line against the reference classification, then ranked by cause category — supply, logistics, master data — with drill-down to the individual order. The proof that the classification logic could live outside the spreadsheet; its engine fed the confirmation tools that followed.",
+    "links": []
+  },
+  {
+    "id": "tool-confirmation-tracker",
+    "name": "Confirmation-rate tracker",
+    "kind": "internal-tool",
+    "status": "shippable",
+    "tech": "Single-file React artifact, embedded snapshot + XLSX ingestion",
+    "description": "The descriptive ancestor of the forecaster: week-over-week order-confirmation tracking with drill-downs across the usual planning dimensions — served from an embedded snapshot or a fresh workbook drop, no backend anywhere. Its interaction patterns graduated into the predictive build; this is where they were proven.",
+    "links": []
+  }
+]

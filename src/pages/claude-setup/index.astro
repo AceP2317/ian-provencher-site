@@ -1,0 +1,87 @@
+---
+/**
+ * /claude-setup — the "Claude Setup" exhibit. A bespoke 3D showcase of how the
+ * whole workflow is wired: the model at the center, the operating system around it.
+ * The scene is a client:visible island (WebGL-gated, lazy-loaded) with an SSR-safe
+ * static fallback, so crawlers + no-JS + no-WebGL still get the full workflow.
+ * All PUBLIC-SAFE (see src/data/claude-code-setup.ts).
+ */
+import PageLayout from '../../layouts/PageLayout.astro';
+import ClaudeSetupExhibit from '../../components/islands/ClaudeSetupExhibit.jsx';
+import { bySlug } from '../../data/sections';
+import { claudeCodeSetup } from '../../data/claude-code-setup';
+
+const section = bySlug.get('claude-setup')!;
+const origin = new URL(Astro.site!).origin;
+
+const schema = [
+  {
+    '@type': 'CreativeWork',
+    '@id': `${origin}/claude-setup/#exhibit`,
+    name: claudeCodeSetup.title,
+    headline: claudeCodeSetup.tagline,
+    url: `${origin}/claude-setup/`,
+    description: section.description,
+    isPartOf: { '@id': `${origin}/#website` },
+    about: { '@id': `${origin}/#person` },
+    creator: { '@id': `${origin}/#person` },
+  },
+  {
+    '@type': 'BreadcrumbList',
+    '@id': `${origin}/claude-setup/#breadcrumb`,
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: `${origin}/` },
+      { '@type': 'ListItem', position: 2, name: 'Claude Setup', item: `${origin}/claude-setup/` },
+    ],
+  },
+];
+---
+<PageLayout
+  title="Claude Setup"
+  description={section.description}
+  image="/og/claude-setup.png?v=1"
+  schema={schema}
+>
+  {/* ── Hero ───────────────────────────────────────────────────────────── */}
+  <section class="relative overflow-hidden border-b border-line">
+    <div class="bg-grid bg-grid-fade pointer-events-none absolute inset-0 -z-10 opacity-60"></div>
+    <div class="relative mx-auto max-w-5xl px-6 pt-20 pb-14 sm:pt-28 sm:pb-16">
+      <p class="mono-label">Claude Setup · the exhibit</p>
+      <h1 class="mt-3 max-w-3xl font-display text-4xl font-semibold tracking-tight text-ink sm:text-5xl">
+        My entire Claude setup, as an exhibit.
+      </h1>
+      <p class="mt-5 max-w-2xl font-display text-lg leading-relaxed text-cyan">
+        {claudeCodeSetup.tagline}
+      </p>
+      <p class="mt-5 max-w-2xl text-lg leading-relaxed text-ink-muted">
+        The model is the engine. Everything around it — the doctrine, hooks, skills, memory,
+        subagents, tools, and instruments — is the operating system I run it with. Rotate the rig,
+        click any module to see what it does and why it’s there, or take the guided tour.
+      </p>
+    </div>
+  </section>
+
+  {/* ── The exhibit ────────────────────────────────────────────────────── */}
+  <section class="section">
+    <div class="mx-auto max-w-6xl px-6">
+      <ClaudeSetupExhibit setup={claudeCodeSetup} client:visible />
+      <p class="mt-6 max-w-2xl text-sm leading-relaxed text-ink-faint">
+        Prefers-reduced-motion and no-WebGL visitors get a full labeled diagram of the same setup.
+        Toggle <span class="font-mono text-cyan-deep">Diagram / 3D</span> any time.
+      </p>
+    </div>
+  </section>
+
+  {/* ── Why it exists ──────────────────────────────────────────────────── */}
+  <section class="section-band">
+    <div class="mx-auto max-w-4xl px-6 py-14 sm:py-16">
+      <p class="mono-label">Why show it</p>
+      <p class="mt-4 max-w-2xl text-lg leading-relaxed text-ink-muted">
+        A frontier model is only as good as the operating system around it. This is that system, made
+        visible — the same layers that turn one operator’s direction into shipped software, including
+        this site. The <a href="/stack/" class="name-accent font-semibold">Operating Stack</a> section
+        writes the method out in words; this is the same thing you can walk around.
+      </p>
+    </div>
+  </section>
+</PageLayout>

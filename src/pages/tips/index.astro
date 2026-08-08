@@ -1,0 +1,73 @@
+---
+import { getCollection } from 'astro:content';
+import PageLayout from '../../layouts/PageLayout.astro';
+import PipelineFlow from '../../components/PipelineFlow.astro';
+import { bySlug } from '../../data/sections';
+import {
+  publishedFilter, sortByPublished, formatEntryDate, isoDate, tipsSchema, CATEGORY_META,
+} from '../../data/tips';
+
+const section = bySlug.get('tips')!;
+const entries = (await getCollection('tips', publishedFilter)).sort(sortByPublished);
+const origin = new URL(Astro.site!).origin;
+---
+<PageLayout
+  title="Tips & Tricks"
+  description={section.description}
+  image="/og/tips.png?v=1"
+  schema={tipsSchema(origin, entries)}
+>
+  <section class="section">
+    <div class="mx-auto max-w-3xl px-6">
+      <p class="mono-label">Tips & Tricks · {entries.length}</p>
+      <h1 class="mt-2 font-display text-4xl font-semibold tracking-tight text-ink">Tips &amp; Tricks</h1>
+      <p class="mt-4 max-w-xl text-base leading-relaxed text-ink-muted">
+        The small optimizations, settings, and ways of working I lean on day to day — the minute
+        things that compound.
+      </p>
+
+      {/* Same publish path as /blog — a tip is authored here or in the admin console, and
+          rides the identical gate → commit → deploy pipeline. */}
+      <div class="mt-8">
+        <PipelineFlow
+          label="How a tip reaches the site"
+          stages={[
+            { name: 'author', note: 'here or the admin console' },
+            { name: 'gate', note: 'never ships red', lit: true },
+            { name: 'commit', note: 'reviewable diff' },
+            { name: 'deploy', note: 'CI, on push' },
+            { name: 'live', note: '~1 min later', lit: true },
+          ]}
+        />
+      </div>
+
+      <div class="mt-10 flex flex-col">
+        {entries.length === 0 ? (
+          <p class="panel p-8 text-center text-sm text-ink-muted">No tips yet.</p>
+        ) : entries.map((e) => {
+          const meta = CATEGORY_META[e.data.category];
+          const href = `/tips/${e.id}/`;
+          return (
+            <article class="reveal border-b border-line py-7 first:pt-0">
+              <div class="flex flex-wrap items-center gap-x-3 gap-y-2">
+                <time datetime={isoDate(e.data.publishedAt)} class="font-mono text-xs tracking-wide text-ink-faint">
+                  {formatEntryDate(e.data.publishedAt)}
+                </time>
+                <span class="chip">
+                  <span class="chip-dot" style={`background:${meta.dot}`}></span>
+                  {meta.label}
+                </span>
+                {e.data.draft && <span class="chip" style="border-color: var(--color-warn); color: var(--color-warn)">Draft</span>}
+              </div>
+              <h2 class="mt-3 font-display text-xl font-semibold tracking-tight text-ink">
+                <a href={href} class="transition-colors hover:text-accent-2">{e.data.title}</a>
+              </h2>
+              <p class="mt-2 leading-relaxed text-ink-muted">{e.data.description}</p>
+              <a href={href} class="mt-3 inline-block text-sm font-medium text-cyan-deep transition-colors hover:text-cyan">Read →</a>
+            </article>
+          );
+        })}
+      </div>
+    </div>
+  </section>
+</PageLayout>

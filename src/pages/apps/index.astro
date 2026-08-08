@@ -1,0 +1,65 @@
+---
+import PageLayout from '../../layouts/PageLayout.astro';
+import Icon from '../../components/Icon.astro';
+import { bySlug } from '../../data/sections';
+import { appGroups } from '../../data/apps';
+
+const section = bySlug.get('apps')!;
+const total = appGroups.reduce((n, g) => n + g.items.length, 0);
+---
+<PageLayout title="Apps & workflows" description={section.description} image="/og/apps.png?v=1">
+  <section class="section">
+    <div class="mx-auto max-w-6xl px-6">
+      <div class="max-w-2xl">
+        <p class="mono-label">Apps & workflows · {total}</p>
+        <h1 class="mt-2 font-display text-4xl font-semibold tracking-tight text-ink">
+          The apps I lean on — and how they connect
+        </h1>
+        <p class="mt-4 text-base leading-relaxed text-ink-muted">
+          Not just a software list — the kit behind the work, grouped by what it's for,
+          with how I actually use each piece. The mobile + alert layer is how the systems
+          reach me when I'm away from the desk.
+        </p>
+      </div>
+
+      {/* House pattern (see /tools): the GROUP is a header rule, the ITEMS are cards.
+          A card that links out is an <a class="panel"> and therefore lifts for free. */}
+      {appGroups.map((g) => (
+        <div class="mt-12">
+          <div class="flex items-center gap-3">
+            <span class="grid h-8 w-8 shrink-0 place-items-center rounded-lg border border-line bg-surface-2" style={`color:${g.accent}`}>
+              <Icon name={g.icon} size={16} />
+            </span>
+            <h2 class="font-display text-lg font-semibold tracking-tight text-ink">{g.label}</h2>
+            <span class="h-px flex-1 bg-line"></span>
+            <span class="font-mono text-xs text-ink-faint">{g.items.length}</span>
+          </div>
+
+          {g.workflow && (
+            <p class="mt-4 border-l-2 pl-3 text-xs italic leading-relaxed text-ink-muted" style={`border-color:${g.accent}`}>
+              {g.workflow}
+            </p>
+          )}
+
+          <div class="mt-5 grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3">
+            {g.items.map((a) => {
+              const Card = a.url ? 'a' : 'div';
+              return (
+                <Card
+                  href={a.url}
+                  class={`reveal panel flex flex-col gap-2 p-5${a.url ? ' group' : ''}`}
+                >
+                  <h3 class="flex items-start gap-1.5 font-display text-base font-semibold leading-snug tracking-tight text-ink">
+                    <span class="min-w-0">{a.name}</span>
+                    {a.url && <span class="shrink-0 text-sm text-accent-2 transition-colors group-hover:text-accent" aria-hidden="true">↗</span>}
+                  </h3>
+                  <p class="text-sm leading-relaxed text-ink-muted">{a.role}</p>
+                </Card>
+              );
+            })}
+          </div>
+        </div>
+      ))}
+    </div>
+  </section>
+</PageLayout>

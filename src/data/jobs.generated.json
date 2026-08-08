@@ -1,0 +1,1720 @@
+[
+  {
+    "id": "hn-49169017",
+    "title": "AI Engineer",
+    "company": "Portless",
+    "location": "",
+    "url": "https://news.ycombinator.com/item?id=49169017",
+    "salary": null,
+    "salaryMin": null,
+    "postedAt": "2026-08-04",
+    "score": 94,
+    "why": "Founding AI engineer shipping agentic workflows with Python/TypeScript, LLM APIs, MCP and RAG using Claude Code — exactly his orchestration profile, at a logistics company.",
+    "flags": [
+      "remote",
+      "genuine-fit",
+      "applied-ai",
+      "agentic",
+      "ownership"
+    ],
+    "source": "HN Who is hiring",
+    "track": "orchestrator"
+  },
+  {
+    "id": "ashby-openai-1v72r16",
+    "title": "AI Deployment Engineer, Digital Natives",
+    "company": "OpenAI",
+    "location": "New York City",
+    "url": "https://jobs.ashbyhq.com/openai",
+    "salary": "$197k–$278k",
+    "salaryMin": 197000,
+    "postedAt": "2026-07-08",
+    "score": 93,
+    "why": "Forward-deployed AI deployment engineer driving customer GenAI use cases from prototype to production — squarely his operator-tier applied-AI archetype.",
+    "flags": [
+      "remote",
+      "genuine-fit",
+      "applied-ai",
+      "forward-deployed"
+    ],
+    "source": "Ashby",
+    "track": "orchestrator"
+  },
+  {
+    "id": "ashby-openai-1vlxmdp",
+    "title": "Forward Deployed Engineer (FDE) - NYC",
+    "company": "OpenAI",
+    "location": "New York City",
+    "url": "https://jobs.ashbyhq.com/openai",
+    "salary": "$162k–$280k",
+    "salaryMin": 162000,
+    "postedAt": "2025-11-07",
+    "score": 93,
+    "why": "Forward-deployed engineering owning end-to-end LLM deployments and full-stack customer builds is precisely the operator-tier archetype he wants.",
+    "flags": [
+      "remote",
+      "genuine-fit",
+      "forward-deployed",
+      "applied-ai"
+    ],
+    "source": "Ashby",
+    "track": "orchestrator"
+  },
+  {
+    "id": "ashby-openrouter-1wl01uo",
+    "title": "Applied AI Engineer",
+    "company": "OpenRouter",
+    "location": "Remote (US)",
+    "url": "https://jobs.ashbyhq.com/openrouter",
+    "salary": "$215k–$280k",
+    "salaryMin": 215000,
+    "postedAt": "2026-07-15",
+    "score": 92,
+    "why": "Unlevelled Applied AI Engineer building internal agentic tooling at a small AI-infra team — exactly his shipping-with-LLMs profile.",
+    "flags": [
+      "remote",
+      "genuine-fit",
+      "applied-ai",
+      "agentic",
+      "internal-tooling"
+    ],
+    "source": "Ashby",
+    "track": "orchestrator"
+  },
+  {
+    "id": "lever-coupa-1n8cvp",
+    "title": "Forward Deployed Engineer (FDE) - 11385",
+    "company": "Coupa",
+    "location": "United Kingdom",
+    "url": "https://jobs.lever.co/coupa",
+    "salary": null,
+    "salaryMin": null,
+    "postedAt": "2026-05-20",
+    "score": 92,
+    "why": "Forward deployed engineer on generative AI at a spend/supply-chain platform — applied AI plus his domain edge.",
+    "flags": [
+      "remote",
+      "genuine-fit",
+      "applied-ai",
+      "forward-deployed",
+      "domain-depth"
+    ],
+    "source": "Lever",
+    "track": "orchestrator"
+  },
+  {
+    "id": "lever-coupa-1mejloq",
+    "title": "Forward Deployed Engineer (FDE) - 11396",
+    "company": "Coupa",
+    "location": "United Kingdom",
+    "url": "https://jobs.lever.co/coupa",
+    "salary": null,
+    "salaryMin": null,
+    "postedAt": "2026-04-08",
+    "score": 92,
+    "why": "Same generative-AI forward-deployed role with spend/supply-chain domain relevance — excellent fit.",
+    "flags": [
+      "remote",
+      "genuine-fit",
+      "applied-ai",
+      "forward-deployed",
+      "domain-depth"
+    ],
+    "source": "Lever",
+    "track": "orchestrator"
+  },
+  {
+    "id": "ashby-openai-1sx6epg",
+    "title": "AI Deployment Engineer, Startups",
+    "company": "OpenAI",
+    "location": "New York City",
+    "url": "https://jobs.ashbyhq.com/openai",
+    "salary": "$198k–$280k",
+    "salaryMin": 198000,
+    "postedAt": "2025-11-03",
+    "score": 92,
+    "why": "AI deployment engineering guiding customers from GenAI use case to production is ideal applied-AI operator work with no research bar.",
+    "flags": [
+      "remote",
+      "genuine-fit",
+      "ai-deployment",
+      "applied-ai"
+    ],
+    "source": "Ashby",
+    "track": "orchestrator"
+  },
+  {
+    "id": "ashby-cohere-1oin18n",
+    "title": "Forward Deployed Engineer, Agentic Platform",
+    "company": "Cohere",
+    "location": "United States",
+    "url": "https://jobs.ashbyhq.com/cohere",
+    "salary": null,
+    "salaryMin": null,
+    "postedAt": "2026-08-01",
+    "score": 92,
+    "why": "Forward deployed engineer deploying an agentic enterprise AI platform for customers — squarely the archetype he's targeting.",
+    "flags": [
+      "remote",
+      "genuine-fit",
+      "forward-deployed",
+      "applied-ai"
+    ],
+    "source": "Ashby",
+    "track": "orchestrator"
+  },
+  {
+    "id": "ashby-openai-6pdmo0",
+    "title": "Forward Deployed Software Engineer - SF",
+    "company": "OpenAI",
+    "location": "San Francisco",
+    "url": "https://jobs.ashbyhq.com/openai",
+    "salary": "$185k–$325k",
+    "salaryMin": 185000,
+    "postedAt": "2025-11-15",
+    "score": 90,
+    "why": "Forward-deployed engineering building customer solutions on OpenAI APIs — the operator-tier archetype he's targeting.",
+    "flags": [
+      "remote",
+      "applied-ai",
+      "forward-deployed",
+      "genuine-fit"
+    ],
+    "source": "Ashby",
+    "track": "orchestrator"
+  },
+  {
+    "id": "ashby-perplexity-6c020v",
+    "title": "Member of Technical Staff (Forward Deployed Engineer, Applied AI)",
+    "company": "Perplexity",
+    "location": "New York City",
+    "url": "https://jobs.ashbyhq.com/perplexity",
+    "salary": "$205k–$335k",
+    "salaryMin": 205000,
+    "postedAt": "2025-08-15",
+    "score": 90,
+    "why": "Forward deployed applied-AI engineer deploying agentic workflows and integrations with customers — ideal fit.",
+    "flags": [
+      "remote",
+      "applied-ai",
+      "forward-deployed",
+      "genuine-fit"
+    ],
+    "source": "Ashby",
+    "track": "orchestrator"
+  },
+  {
+    "id": "ashby-openai-1dzdist",
+    "title": "Forward Deployed Software Engineer - Seattle",
+    "company": "OpenAI",
+    "location": "Seattle",
+    "url": "https://jobs.ashbyhq.com/openai",
+    "salary": "$153k–$325k",
+    "salaryMin": 153000,
+    "postedAt": "2026-03-04",
+    "score": 90,
+    "why": "Building custom solutions on OpenAI APIs with customers — the canonical applied-AI forward-deployed fit.",
+    "flags": [
+      "remote",
+      "genuine-fit",
+      "applied-ai",
+      "forward-deployed",
+      "high-comp"
+    ],
+    "source": "Ashby",
+    "track": "orchestrator"
+  },
+  {
+    "id": "ashby-openai-b565zg",
+    "title": "Forward Deployed Software Engineer - NYC",
+    "company": "OpenAI",
+    "location": "New York City",
+    "url": "https://jobs.ashbyhq.com/openai",
+    "salary": "$153k–$325k",
+    "salaryMin": 153000,
+    "postedAt": "2025-12-10",
+    "score": 90,
+    "why": "Customer-facing engineering on OpenAI APIs — ideal applied-AI forward-deployed role.",
+    "flags": [
+      "remote",
+      "genuine-fit",
+      "applied-ai",
+      "forward-deployed",
+      "high-comp"
+    ],
+    "source": "Ashby",
+    "track": "orchestrator"
+  },
+  {
+    "id": "ashby-openrouter-19e1oo7",
+    "title": "AI Provider Operations & Support Engineer",
+    "company": "OpenRouter",
+    "location": "Remote (US)",
+    "url": "https://jobs.ashbyhq.com/openrouter",
+    "salary": "$215k–$280k",
+    "salaryMin": 215000,
+    "postedAt": "2026-01-29",
+    "score": 90,
+    "why": "Owning model launches, provider onboarding and internal AI tooling is operator-tier applied-AI work with real ownership.",
+    "flags": [
+      "remote",
+      "genuine-fit",
+      "ops-ai",
+      "applied-ai",
+      "automation"
+    ],
+    "source": "Ashby",
+    "track": "orchestrator"
+  },
+  {
+    "id": "ashby-openai-taez9i",
+    "title": "Forward Deployed Engineer (FDE) - SF",
+    "company": "OpenAI",
+    "location": "San Francisco",
+    "url": "https://jobs.ashbyhq.com/openai",
+    "salary": "$162k–$280k",
+    "salaryMin": 162000,
+    "postedAt": "2025-08-06",
+    "score": 90,
+    "why": "Forward deployed engineer owning end-to-end LLM deployments and full-stack customer builds — the exact archetype he targets.",
+    "flags": [
+      "remote",
+      "genuine-fit",
+      "forward-deployed",
+      "applied-ai"
+    ],
+    "source": "Ashby",
+    "track": "orchestrator"
+  },
+  {
+    "id": "ashby-baseten-rffsel",
+    "title": "Forward Deployed Engineer",
+    "company": "Baseten",
+    "location": "San Francisco",
+    "url": "https://jobs.ashbyhq.com/baseten",
+    "salary": "$165k–$330k",
+    "salaryMin": 165000,
+    "postedAt": "2024-03-28",
+    "score": 90,
+    "why": "Forward deployed engineer architecting and deploying production AI applications with customers — ideal operator-tier applied-AI fit.",
+    "flags": [
+      "remote",
+      "genuine-fit",
+      "forward-deployed",
+      "applied-ai"
+    ],
+    "source": "Ashby",
+    "track": "orchestrator"
+  },
+  {
+    "id": "gh-coinbase-8060884",
+    "title": "Forward Deployed Engineer, Legal [Office of the CTO]",
+    "company": "Coinbase",
+    "location": "Remote - USA",
+    "url": "https://www.coinbase.com/careers/positions/8060884?gh_jid=8060884",
+    "salary": null,
+    "salaryMin": null,
+    "postedAt": "2026-08-01",
+    "score": 90,
+    "why": "Forward-deployed founding engineer prototyping AI workflow solutions on an existing AI platform — exactly his operator-tier applied-AI shape.",
+    "flags": [
+      "remote",
+      "genuine-fit",
+      "forward-deployed",
+      "applied-ai"
+    ],
+    "source": "Greenhouse",
+    "track": "orchestrator"
+  },
+  {
+    "id": "ashby-cohere-seuqx1",
+    "title": "Forward Deployed Engineer, Agentic Platform (West Coast)",
+    "company": "Cohere",
+    "location": "San Francisco",
+    "url": "https://jobs.ashbyhq.com/cohere",
+    "salary": null,
+    "salaryMin": null,
+    "postedAt": "2026-08-01",
+    "score": 90,
+    "why": "Same forward-deployed agentic-platform role, West Coast located, strong applied-AI customer delivery fit.",
+    "flags": [
+      "remote",
+      "genuine-fit",
+      "forward-deployed",
+      "applied-ai"
+    ],
+    "source": "Ashby",
+    "track": "orchestrator"
+  },
+  {
+    "id": "gh-shipbobinc-4702571005",
+    "title": "Forward Deployed Engineer III",
+    "company": "ShipBob",
+    "location": "Remote - United States",
+    "url": "https://job-boards.greenhouse.io/shipbobinc/jobs/4702571005",
+    "salary": null,
+    "salaryMin": null,
+    "postedAt": "2026-07-31",
+    "score": 90,
+    "why": "Forward Deployed Engineer at level III inside a logistics/fulfillment company — his exact archetype plus supply-chain domain depth.",
+    "flags": [
+      "remote",
+      "genuine-fit",
+      "forward-deployed",
+      "domain-depth"
+    ],
+    "source": "Greenhouse",
+    "track": "orchestrator"
+  },
+  {
+    "id": "gh-gleanwork-4717716005",
+    "title": "Resident Solutions Architect",
+    "company": "Glean",
+    "location": "Remote",
+    "url": "https://job-boards.greenhouse.io/gleanwork/jobs/4717716005",
+    "salary": null,
+    "salaryMin": null,
+    "postedAt": "2026-07-23",
+    "score": 90,
+    "why": "Resident solutions architect deploying enterprise LLM/agent platform for customers — squarely his forward-deployed operator-tier archetype.",
+    "flags": [
+      "remote",
+      "genuine-fit",
+      "applied-ai",
+      "forward-deployed",
+      "solutions"
+    ],
+    "source": "Greenhouse",
+    "track": "orchestrator"
+  },
+  {
+    "id": "ashby-commure-1enpo0t",
+    "title": "Forward Deployed Engineer",
+    "company": "Commure",
+    "location": "Mountain View, CA",
+    "url": "https://jobs.ashbyhq.com/commure",
+    "salary": "$130k–$190k",
+    "salaryMin": 130000,
+    "postedAt": "2026-06-26",
+    "score": 90,
+    "why": "Forward deployed engineer shipping LLM/agent deployments end to end with ownership — his archetype.",
+    "flags": [
+      "remote",
+      "genuine-fit",
+      "applied-ai",
+      "forward-deployed"
+    ],
+    "source": "Ashby",
+    "track": "orchestrator"
+  },
+  {
+    "id": "ashby-openai-gvwhyw",
+    "title": "Forward Deployed Engineer - Madrid",
+    "company": "OpenAI",
+    "location": "Madrid, Spain",
+    "url": "https://jobs.ashbyhq.com/openai",
+    "salary": null,
+    "salaryMin": null,
+    "postedAt": "2026-06-18",
+    "score": 90,
+    "why": "Forward-deployed engineer owning end-to-end LLM deployments and full-stack builds with customers — exactly his archetype.",
+    "flags": [
+      "remote",
+      "genuine-fit",
+      "applied-ai",
+      "forward-deployed"
+    ],
+    "source": "Ashby",
+    "track": "orchestrator"
+  },
+  {
+    "id": "ashby-openai-1g8sf7u",
+    "title": "Forward Deployed Engineer - Stockholm",
+    "company": "OpenAI",
+    "location": "Stockholm, Sweden",
+    "url": "https://jobs.ashbyhq.com/openai",
+    "salary": null,
+    "salaryMin": null,
+    "postedAt": "2026-06-18",
+    "score": 90,
+    "why": "Same FDE archetype: customer-facing production deployment of frontier models, full-stack ownership.",
+    "flags": [
+      "remote",
+      "genuine-fit",
+      "applied-ai",
+      "forward-deployed"
+    ],
+    "source": "Ashby",
+    "track": "orchestrator"
+  },
+  {
+    "id": "ashby-openai-1v8c9zh",
+    "title": "Forward Deployed Engineer - Singapore",
+    "company": "OpenAI",
+    "location": "Singapore",
+    "url": "https://jobs.ashbyhq.com/openai",
+    "salary": null,
+    "salaryMin": null,
+    "postedAt": "2026-04-21",
+    "score": 90,
+    "why": "Forward deployed engineer owning end-to-end LLM deployments and full-stack builds with customers — the strongest match to his profile.",
+    "flags": [
+      "remote",
+      "genuine-fit",
+      "applied-ai",
+      "forward-deployed"
+    ],
+    "source": "Ashby",
+    "track": "orchestrator"
+  },
+  {
+    "id": "ashby-openai-1tnsadt",
+    "title": "Forward Deployed Software Engineer - Paris",
+    "company": "OpenAI",
+    "location": "Paris, France",
+    "url": "https://jobs.ashbyhq.com/openai",
+    "salary": null,
+    "salaryMin": null,
+    "postedAt": "2025-11-20",
+    "score": 89,
+    "why": "Same OpenAI FDSWE applied-AI delivery role, Paris-based.",
+    "flags": [
+      "remote",
+      "genuine-fit",
+      "applied-ai",
+      "forward-deployed"
+    ],
+    "source": "Ashby",
+    "track": "orchestrator"
+  },
+  {
+    "id": "ashby-lovable-9mh6jn",
+    "title": "Solutions Architect, San Francisco",
+    "company": "Lovable",
+    "location": "Boston",
+    "url": "https://jobs.ashbyhq.com/lovable",
+    "salary": null,
+    "salaryMin": null,
+    "postedAt": "2026-04-09",
+    "score": 89,
+    "why": "Customer-facing Solutions Architect driving adoption of AI-native software creation — solutions engineering on an AI product, his sweet spot.",
+    "flags": [
+      "remote",
+      "genuine-fit",
+      "solutions-engineering",
+      "applied-ai"
+    ],
+    "source": "Ashby",
+    "track": "orchestrator"
+  },
+  {
+    "id": "ashby-firecrawl-1ftysmq",
+    "title": "Implementation Specialist",
+    "company": "Firecrawl",
+    "location": "San Francisco, CA (Hybrid)",
+    "url": "https://jobs.ashbyhq.com/firecrawl",
+    "salary": "$180k–$240k",
+    "salaryMin": 180000,
+    "postedAt": "2026-08-04",
+    "score": 89,
+    "why": "Hands-on implementation/integration engineering deploying an LLM-tooling product into customer environments — ideal operator-tier fit.",
+    "flags": [
+      "remote",
+      "genuine-fit",
+      "implementation",
+      "applied-ai"
+    ],
+    "source": "Ashby",
+    "track": "orchestrator"
+  },
+  {
+    "id": "gh-celonis-7781716003",
+    "title": "Associate Value Engineer (AI-Driven Data Science & Analytics) - Orbit Program",
+    "company": "Celonis",
+    "location": "Raleigh, US, North Carolina",
+    "url": "https://job-boards.greenhouse.io/celonis/jobs/7781716003?gh_jid=7781716003",
+    "salary": null,
+    "salaryMin": null,
+    "postedAt": "2026-08-06",
+    "score": 88,
+    "why": "Associate-level AI-driven analytics/value engineering at an AI process-intelligence vendor, building customer prototypes — ideal operator-tier, early-career-friendly fit.",
+    "flags": [
+      "hybrid",
+      "genuine-fit",
+      "applied-ai",
+      "solutions-engineering"
+    ],
+    "source": "Greenhouse",
+    "track": "orchestrator"
+  },
+  {
+    "id": "ashby-openai-1cnhjuj",
+    "title": "Product Engineer, Enterprise AI Platform",
+    "company": "OpenAI",
+    "location": "San Francisco",
+    "url": "https://jobs.ashbyhq.com/openai",
+    "salary": "$230k–$385k",
+    "salaryMin": 230000,
+    "postedAt": "2026-07-21",
+    "score": 88,
+    "why": "Internal product engineering on Finance/Supply Chain tooling with agentic workflows and TypeScript/Python at an AI lab uniquely combines his domain depth and applied-AI shipping.",
+    "flags": [
+      "remote",
+      "genuine-fit",
+      "applied-ai",
+      "domain-depth",
+      "internal-tools"
+    ],
+    "source": "Ashby",
+    "track": "orchestrator"
+  },
+  {
+    "id": "gh-sambanovasystems-6115604004",
+    "title": "Forward Deployment Engineer",
+    "company": "SambaNova",
+    "location": "Remote - US",
+    "url": "https://sambanova.ai/sambanova-available-positions/?gh_jid=6115604004",
+    "salary": null,
+    "salaryMin": null,
+    "postedAt": "2026-08-04",
+    "score": 88,
+    "why": "Forward deployment engineer at a generative-AI platform company — exactly the deploy-and-apply AI archetype he targets.",
+    "flags": [
+      "remote",
+      "genuine-fit",
+      "forward-deployed",
+      "applied-ai"
+    ],
+    "source": "Greenhouse",
+    "track": "orchestrator"
+  },
+  {
+    "id": "ashby-writer-lhlrww",
+    "title": "Strategic AI adoption lead (Central)",
+    "company": "Writer",
+    "location": "Chicago, IL",
+    "url": "https://jobs.ashbyhq.com/writer",
+    "salary": "$168k–$212k",
+    "salaryMin": 167500,
+    "postedAt": "2026-07-30",
+    "score": 88,
+    "why": "AI adoption and deployment lead at an enterprise LLM platform — exactly the operator-tier AI enablement archetype.",
+    "flags": [
+      "remote",
+      "genuine-fit",
+      "ai-adoption",
+      "customer-facing"
+    ],
+    "source": "Ashby",
+    "track": "orchestrator"
+  },
+  {
+    "id": "ashby-writer-eibqbo",
+    "title": "Strategic AI adoption lead (East)",
+    "company": "Writer",
+    "location": "New York City, NY",
+    "url": "https://jobs.ashbyhq.com/writer",
+    "salary": "$174k–$220k",
+    "salaryMin": 173500,
+    "postedAt": "2026-07-30",
+    "score": 88,
+    "why": "Same AI adoption/deployment ownership role at an enterprise generative-AI platform, strong operator-tier fit.",
+    "flags": [
+      "remote",
+      "genuine-fit",
+      "ai-adoption",
+      "customer-facing"
+    ],
+    "source": "Ashby",
+    "track": "orchestrator"
+  },
+  {
+    "id": "ashby-writer-1ew2x5x",
+    "title": "Strategic AI adoption lead (West)",
+    "company": "Writer",
+    "location": "San Francisco, CA",
+    "url": "https://jobs.ashbyhq.com/writer",
+    "salary": "$174k–$220k",
+    "salaryMin": 173500,
+    "postedAt": "2026-07-30",
+    "score": 88,
+    "why": "Owning customer AI deployment and activation at an enterprise LLM vendor matches his AI-enablement strengths.",
+    "flags": [
+      "remote",
+      "genuine-fit",
+      "ai-adoption",
+      "customer-facing"
+    ],
+    "source": "Ashby",
+    "track": "orchestrator"
+  },
+  {
+    "id": "ashby-openai-16fyxm3",
+    "title": "Demo Experience Engineer, Technical Success",
+    "company": "OpenAI",
+    "location": "San Francisco",
+    "url": "https://jobs.ashbyhq.com/openai",
+    "salary": "$234k–$260k",
+    "salaryMin": 234000,
+    "postedAt": "2026-07-09",
+    "score": 88,
+    "why": "Building agentic prototypes and reusable demo tooling for customer-facing teams is squarely operator-tier applied AI work.",
+    "flags": [
+      "remote",
+      "genuine-fit",
+      "applied-ai",
+      "forward-deployed",
+      "agentic"
+    ],
+    "source": "Ashby",
+    "track": "orchestrator"
+  },
+  {
+    "id": "gh-arizeai-5993755004",
+    "title": "Forward Deployed AI Engineer, East",
+    "company": "Arize AI",
+    "location": "Remote (New York)",
+    "url": "https://job-boards.greenhouse.io/arizeai/jobs/5993755004",
+    "salary": null,
+    "salaryMin": null,
+    "postedAt": "2026-07-16",
+    "score": 88,
+    "why": "Forward-deployed AI engineer at an LLM observability vendor — exactly the applied-AI, customer-facing shipping role he targets.",
+    "flags": [
+      "remote",
+      "genuine-fit",
+      "applied-ai",
+      "forward-deployed"
+    ],
+    "source": "Greenhouse",
+    "track": "orchestrator"
+  },
+  {
+    "id": "gh-arizeai-6030953004",
+    "title": "Forward Deployed AI Engineer, West",
+    "company": "Arize AI",
+    "location": "Remote (San Francisco)",
+    "url": "https://job-boards.greenhouse.io/arizeai/jobs/6030953004",
+    "salary": null,
+    "salaryMin": null,
+    "postedAt": "2026-07-16",
+    "score": 88,
+    "why": "Same strong forward-deployed applied-AI fit, deploying agent evaluation systems with customers.",
+    "flags": [
+      "remote",
+      "genuine-fit",
+      "applied-ai",
+      "forward-deployed"
+    ],
+    "source": "Greenhouse",
+    "track": "orchestrator"
+  },
+  {
+    "id": "ashby-runpod-i6laa4",
+    "title": "Forward Deployed Engineer US",
+    "company": "Runpod",
+    "location": "Remote - USA",
+    "url": "https://jobs.ashbyhq.com/runpod",
+    "salary": null,
+    "salaryMin": null,
+    "postedAt": "2026-07-06",
+    "score": 88,
+    "why": "Forward deployed engineer at an AI cloud, customer-facing technical delivery on AI infrastructure — exactly the operator-tier archetype he wants.",
+    "flags": [
+      "remote",
+      "genuine-fit",
+      "forward-deployed",
+      "applied-ai"
+    ],
+    "source": "Ashby",
+    "track": "orchestrator"
+  },
+  {
+    "id": "gh-gleanwork-4651991005",
+    "title": "Founding Forward Deployed Engineer",
+    "company": "Glean",
+    "location": "Remote - US",
+    "url": "https://job-boards.greenhouse.io/gleanwork/jobs/4651991005",
+    "salary": null,
+    "salaryMin": null,
+    "postedAt": "2026-05-14",
+    "score": 88,
+    "why": "Founding FDE deploying enterprise LLM agents for customers — squarely his operator-tier applied-AI shape.",
+    "flags": [
+      "remote",
+      "genuine-fit",
+      "applied-ai",
+      "forward-deployed"
+    ],
+    "source": "Greenhouse",
+    "track": "orchestrator"
+  },
+  {
+    "id": "ashby-firecrawl-b02u5i",
+    "title": "Forward Deployed Engineer - Revenue",
+    "company": "Firecrawl",
+    "location": "San Francisco, CA (Hybrid)",
+    "url": "https://jobs.ashbyhq.com/firecrawl",
+    "salary": "$180k–$240k",
+    "salaryMin": 180000,
+    "postedAt": "2026-08-03",
+    "score": 88,
+    "why": "Customer-facing forward deployed engineering on an LLM-data product, ownership of shipped integrations — exactly his archetype.",
+    "flags": [
+      "remote",
+      "genuine-fit",
+      "applied-ai",
+      "forward-deployed"
+    ],
+    "source": "Ashby",
+    "track": "orchestrator"
+  },
+  {
+    "id": "ashby-writer-hggcgb",
+    "title": "Solutions architect (East)",
+    "company": "Writer",
+    "location": "New York City, NY",
+    "url": "https://jobs.ashbyhq.com/writer",
+    "salary": "$183k–$273k",
+    "salaryMin": 183000,
+    "postedAt": "2026-05-06",
+    "score": 88,
+    "why": "Solutions architect deploying enterprise LLM/agent platforms for customers — exactly the forward-deployed operator archetype.",
+    "flags": [
+      "remote",
+      "genuine-fit",
+      "solutions-engineering",
+      "applied-ai"
+    ],
+    "source": "Ashby",
+    "track": "orchestrator"
+  },
+  {
+    "id": "ashby-baseten-1iilr7k",
+    "title": "Software Engineer - AI Enablement",
+    "company": "Baseten",
+    "location": "San Francisco",
+    "url": "https://jobs.ashbyhq.com/baseten",
+    "salary": "$165k–$330k",
+    "salaryMin": 165000,
+    "postedAt": "2026-02-24",
+    "score": 88,
+    "why": "Building and operating internal LLM agents and AI tooling — nearly a description of how he already works.",
+    "flags": [
+      "remote",
+      "genuine-fit",
+      "applied-ai",
+      "automation",
+      "ops-ai"
+    ],
+    "source": "Ashby",
+    "track": "orchestrator"
+  },
+  {
+    "id": "ashby-openai-1jfdkpg",
+    "title": "Partner AI Deployment Engineer",
+    "company": "OpenAI",
+    "location": "San Francisco",
+    "url": "https://jobs.ashbyhq.com/openai",
+    "salary": "$197k–$278k",
+    "salaryMin": 197000,
+    "postedAt": "2025-08-27",
+    "score": 88,
+    "why": "Partner AI deployment/adoption engineering with GenAI use cases from prototype to production — operator-tier applied AI squarely in his wheelhouse.",
+    "flags": [
+      "remote",
+      "genuine-fit",
+      "applied-ai",
+      "forward-deployed",
+      "ai-adoption"
+    ],
+    "source": "Ashby",
+    "track": "orchestrator"
+  },
+  {
+    "id": "gh-samsara-8024110",
+    "title": "Applied AI Specialist, Commercial Customer Success",
+    "company": "Samsara",
+    "location": "Remote - US",
+    "url": "https://www.samsara.com/company/careers/roles/8024110?gh_jid=8024110",
+    "salary": null,
+    "salaryMin": null,
+    "postedAt": "2026-08-04",
+    "score": 88,
+    "why": "Applied AI specialist role at an AI-native operations company, customer-facing AI adoption/enablement work — squarely the operator-tier shape he wants.",
+    "flags": [
+      "remote",
+      "genuine-fit",
+      "applied-ai",
+      "ops-ai",
+      "customer-facing"
+    ],
+    "source": "Greenhouse",
+    "track": "orchestrator"
+  },
+  {
+    "id": "ashby-writer-1sz92qh",
+    "title": "AI deployment engineer (Central)",
+    "company": "Writer",
+    "location": "Chicago, IL",
+    "url": "https://jobs.ashbyhq.com/writer",
+    "salary": "$132k–$166k",
+    "salaryMin": 131800,
+    "postedAt": "2026-07-30",
+    "score": 88,
+    "why": "AI deployment engineer at a generative-AI platform — forward-deployed applied-AI delivery is exactly his shape.",
+    "flags": [
+      "remote",
+      "applied-ai",
+      "forward-deployed",
+      "genuine-fit"
+    ],
+    "source": "Ashby",
+    "track": "orchestrator"
+  },
+  {
+    "id": "ashby-writer-1r7f723",
+    "title": "AI deployment engineer (East)",
+    "company": "Writer",
+    "location": "New York City, NY",
+    "url": "https://jobs.ashbyhq.com/writer",
+    "salary": "$146k–$185k",
+    "salaryMin": 146400,
+    "postedAt": "2026-07-30",
+    "score": 88,
+    "why": "Unlevelled AI deployment engineer building and deploying LLM agent solutions for enterprise customers.",
+    "flags": [
+      "remote",
+      "applied-ai",
+      "forward-deployed",
+      "genuine-fit"
+    ],
+    "source": "Ashby",
+    "track": "orchestrator"
+  },
+  {
+    "id": "ashby-writer-1g3hkzy",
+    "title": "AI deployment engineer (West)",
+    "company": "Writer",
+    "location": "San Francisco, CA",
+    "url": "https://jobs.ashbyhq.com/writer",
+    "salary": "$146k–$185k",
+    "salaryMin": 146400,
+    "postedAt": "2026-07-30",
+    "score": 88,
+    "why": "AI deployment engineer role centered on deploying LLM/agent solutions — strong operator-tier applied-AI fit.",
+    "flags": [
+      "remote",
+      "applied-ai",
+      "forward-deployed",
+      "genuine-fit"
+    ],
+    "source": "Ashby",
+    "track": "orchestrator"
+  },
+  {
+    "id": "gh-fourkites-8095407",
+    "title": "Associate Product Manager",
+    "company": "FourKites",
+    "location": "Chicago, IL or Remote, USA",
+    "url": "https://job-boards.greenhouse.io/fourkites/jobs/8095407",
+    "salary": null,
+    "salaryMin": null,
+    "postedAt": "2026-07-29",
+    "score": 88,
+    "why": "Associate PM on an AI-enabled supply-chain visibility platform — hands-on ownership, customer engagement, and exactly his domain plus AI.",
+    "flags": [
+      "remote",
+      "genuine-fit",
+      "domain-depth",
+      "ai-adjacent",
+      "early-career"
+    ],
+    "source": "Greenhouse",
+    "track": "orchestrator"
+  },
+  {
+    "id": "ashby-harvey-xju4c9",
+    "title": "Integration Engineer",
+    "company": "Harvey",
+    "location": "Remote",
+    "url": "https://jobs.ashbyhq.com/harvey",
+    "salary": "$134k–$200k",
+    "salaryMin": 133500,
+    "postedAt": "2026-07-28",
+    "score": 88,
+    "why": "Integration engineering on a frontier agentic-AI platform is squarely the applied-AI, customer-deployment IC work he wants.",
+    "flags": [
+      "remote",
+      "genuine-fit",
+      "applied-ai",
+      "integration"
+    ],
+    "source": "Ashby",
+    "track": "orchestrator"
+  },
+  {
+    "id": "ashby-openai-1ut5c4i",
+    "title": "Forward Deployed Engineer - Zurich",
+    "company": "OpenAI",
+    "location": "Zurich, Switzerland",
+    "url": "https://jobs.ashbyhq.com/openai",
+    "salary": null,
+    "salaryMin": null,
+    "postedAt": "2026-07-21",
+    "score": 88,
+    "why": "Forward deployed engineering on frontier model deployments — full-stack customer delivery of LLM systems is exactly his archetype.",
+    "flags": [
+      "remote",
+      "genuine-fit",
+      "applied-ai",
+      "forward-deployed"
+    ],
+    "source": "Ashby",
+    "track": "orchestrator"
+  },
+  {
+    "id": "ashby-harvey-yp30t9",
+    "title": "Sr. AI Enablement Engineer",
+    "company": "Harvey",
+    "location": "New York",
+    "url": "https://jobs.ashbyhq.com/harvey",
+    "salary": "$134k–$200k",
+    "salaryMin": 133500,
+    "postedAt": "2026-07-16",
+    "score": 88,
+    "why": "AI enablement engineering at a frontier agentic-AI company is exactly the operator-tier AI adoption work he wants; seniority is fine on enablement titles.",
+    "flags": [
+      "remote",
+      "genuine-fit",
+      "ops-ai",
+      "ai-enablement"
+    ],
+    "source": "Ashby",
+    "track": "orchestrator"
+  },
+  {
+    "id": "ashby-clickup-187yc4o",
+    "title": "Automations Engineer, Post Sales Systems",
+    "company": "ClickUp",
+    "location": "United States",
+    "url": "https://jobs.ashbyhq.com/clickup",
+    "salary": "$144k–$181k",
+    "salaryMin": 144000,
+    "postedAt": "2026-07-10",
+    "score": 88,
+    "why": "Automation/AI systems engineering on support workflows at an AI-native company — squarely his applied-AI automation shape at IC scope with strong pay.",
+    "flags": [
+      "remote",
+      "genuine-fit",
+      "applied-ai",
+      "automation",
+      "high-comp"
+    ],
+    "source": "Ashby",
+    "track": "orchestrator"
+  },
+  {
+    "id": "gh-snorkelai-5709067004",
+    "title": "Applied AI Engineer - Enterprise Solutions",
+    "company": "Snorkel AI",
+    "location": "New York City, NY (Hybrid); Redwood City, CA (Hybrid); San Francisco, CA (Hybrid); United States (Remote)",
+    "url": "https://job-boards.greenhouse.io/snorkelai/jobs/5709067004",
+    "salary": null,
+    "salaryMin": null,
+    "postedAt": "2026-06-26",
+    "score": 88,
+    "why": "Applied AI Engineer delivering GenAI solutions directly to enterprise customers — the forward-deployed applied-AI archetype he fits.",
+    "flags": [
+      "remote",
+      "genuine-fit",
+      "applied-ai",
+      "forward-deployed"
+    ],
+    "source": "Greenhouse",
+    "track": "orchestrator"
+  },
+  {
+    "id": "ashby-montecarlodata-ow5wz5",
+    "title": "AI Marketing Operations Manager",
+    "company": "Monte Carlo",
+    "location": "Remote, Americas",
+    "url": "https://jobs.ashbyhq.com/montecarlodata",
+    "salary": null,
+    "salaryMin": null,
+    "postedAt": "2026-06-24",
+    "score": 88,
+    "why": "Ships AI agents and automations to run a business function — operator-tier applied AI exactly as he builds.",
+    "flags": [
+      "remote",
+      "genuine-fit",
+      "ops-ai",
+      "automation"
+    ],
+    "source": "Ashby",
+    "track": "orchestrator"
+  },
+  {
+    "id": "ashby-openai-zu8hh0",
+    "title": "Forward Deployed Engineer - Seoul",
+    "company": "OpenAI",
+    "location": "Seoul, South Korea",
+    "url": "https://jobs.ashbyhq.com/openai",
+    "salary": null,
+    "salaryMin": null,
+    "postedAt": "2026-06-23",
+    "score": 88,
+    "why": "Forward deployed engineer owning full-stack frontier-model deployments with customers — ideal archetype, though heavy travel and Seoul-based.",
+    "flags": [
+      "remote",
+      "genuine-fit",
+      "applied-ai",
+      "forward-deployed"
+    ],
+    "source": "Ashby",
+    "track": "orchestrator"
+  },
+  {
+    "id": "ashby-siena-1izj8ms",
+    "title": "Solutions Engineer - Remote",
+    "company": "Siena AI",
+    "location": "Austin",
+    "url": "https://jobs.ashbyhq.com/siena",
+    "salary": null,
+    "salaryMin": null,
+    "postedAt": "2026-06-18",
+    "score": 88,
+    "why": "Hands-on solutions engineer at an agentic AI company — customer-facing deployment and ownership, IC scope.",
+    "flags": [
+      "remote",
+      "genuine-fit",
+      "applied-ai",
+      "solutions-engineering"
+    ],
+    "source": "Ashby",
+    "track": "orchestrator"
+  },
+  {
+    "id": "ashby-siena-u7duqs",
+    "title": "Forward Deployed Product Manager, Agents",
+    "company": "Siena AI",
+    "location": "Unite States / Canada",
+    "url": "https://jobs.ashbyhq.com/siena",
+    "salary": null,
+    "salaryMin": null,
+    "postedAt": "2026-05-15",
+    "score": 88,
+    "why": "Forward-deployed product management on production AI agents at a small distributed team — precisely the operator-tier archetype he targets.",
+    "flags": [
+      "remote",
+      "forward-deployed",
+      "applied-ai",
+      "genuine-fit"
+    ],
+    "source": "Ashby",
+    "track": "orchestrator"
+  },
+  {
+    "id": "ashby-cohere-bx8vjx",
+    "title": "Forward Deployed Engineer, Agentic Platform (UK/Europe)",
+    "company": "Cohere",
+    "location": "Europe",
+    "url": "https://jobs.ashbyhq.com/cohere",
+    "salary": null,
+    "salaryMin": null,
+    "postedAt": "2026-05-12",
+    "score": 88,
+    "why": "Forward deployed engineer on an agentic enterprise AI platform — squarely the applied-AI, customer-deployment work he does.",
+    "flags": [
+      "remote",
+      "genuine-fit",
+      "applied-ai",
+      "forward-deployed"
+    ],
+    "source": "Ashby",
+    "track": "orchestrator"
+  },
+  {
+    "id": "ashby-openai-h5ajy9",
+    "title": "AI Deployment Engineer, Codex | India",
+    "company": "OpenAI",
+    "location": "Delhi, India",
+    "url": "https://jobs.ashbyhq.com/openai",
+    "salary": null,
+    "salaryMin": null,
+    "postedAt": "2026-04-16",
+    "score": 88,
+    "why": "Forward-deployed AI deployment engineer role at an AI lab, centered on customer AI workflow adoption, demos and automations — exactly his operator-tier shape.",
+    "flags": [
+      "remote",
+      "genuine-fit",
+      "applied-ai",
+      "forward-deployed"
+    ],
+    "source": "Ashby",
+    "track": "orchestrator"
+  },
+  {
+    "id": "ashby-openai-lisbyv",
+    "title": "Forward Deployed Engineer (FDE), Healthcare - Seattle",
+    "company": "OpenAI",
+    "location": "Paris, France",
+    "url": "https://jobs.ashbyhq.com/openai",
+    "salary": "$198k–$280k",
+    "salaryMin": 198000,
+    "postedAt": "2026-08-06",
+    "score": 88,
+    "why": "Forward deployed engineer owning end-to-end LLM deployments — exactly his operator-tier applied-AI archetype.",
+    "flags": [
+      "remote",
+      "genuine-fit",
+      "applied-ai",
+      "forward-deployed"
+    ],
+    "source": "Ashby",
+    "track": "orchestrator"
+  },
+  {
+    "id": "ashby-openai-1bi6ckd",
+    "title": "Forward Deployed Engineer (FDE), Healthcare - NYC",
+    "company": "OpenAI",
+    "location": "New York City",
+    "url": "https://jobs.ashbyhq.com/openai",
+    "salary": "$198k–$280k",
+    "salaryMin": 198000,
+    "postedAt": "2026-08-06",
+    "score": 88,
+    "why": "FDE deploying production AI systems for customers, squarely his target shape.",
+    "flags": [
+      "remote",
+      "genuine-fit",
+      "applied-ai",
+      "forward-deployed"
+    ],
+    "source": "Ashby",
+    "track": "orchestrator"
+  },
+  {
+    "id": "ashby-openai-rnfw7v",
+    "title": "Forward Deployed Engineer (FDE), Healthcare - SF",
+    "company": "OpenAI",
+    "location": "San Francisco",
+    "url": "https://jobs.ashbyhq.com/openai",
+    "salary": "$198k–$280k",
+    "salaryMin": 198000,
+    "postedAt": "2026-08-06",
+    "score": 88,
+    "why": "Customer-facing end-to-end AI deployment work at an AI lab — strong applied-AI fit.",
+    "flags": [
+      "remote",
+      "genuine-fit",
+      "applied-ai",
+      "forward-deployed"
+    ],
+    "source": "Ashby",
+    "track": "orchestrator"
+  },
+  {
+    "id": "ashby-ramp-1tc0n4x",
+    "title": "Software Engineer, Forward Deployed AI",
+    "company": "Ramp",
+    "location": "New York, NY (HQ)",
+    "url": "https://jobs.ashbyhq.com/ramp",
+    "salary": "$189k–$330k",
+    "salaryMin": 189000,
+    "postedAt": "2026-07-28",
+    "score": 88,
+    "why": "Forward-deployed AI engineer co-leading customer engagements and technical delivery — squarely his applied-AI, ship-outcomes archetype at a portfolio-over-pedigree employer.",
+    "flags": [
+      "remote",
+      "genuine-fit",
+      "applied-ai",
+      "forward-deployed"
+    ],
+    "source": "Ashby",
+    "track": "orchestrator"
+  },
+  {
+    "id": "ashby-writer-11i7zol",
+    "title": "Solutions architect (Central)",
+    "company": "Writer",
+    "location": "Chicago, IL",
+    "url": "https://jobs.ashbyhq.com/writer",
+    "salary": "$164k–$245k",
+    "salaryMin": 164000,
+    "postedAt": "2026-07-31",
+    "score": 87,
+    "why": "Solutions architect deploying enterprise generative-AI agents for customers — strong applied-AI, customer-engineering fit.",
+    "flags": [
+      "remote",
+      "genuine-fit",
+      "applied-ai",
+      "solutions-engineering"
+    ],
+    "source": "Ashby",
+    "track": "orchestrator"
+  },
+  {
+    "id": "ashby-clickup-8puydl",
+    "title": "Business Systems Engineer",
+    "company": "ClickUp",
+    "location": "United States",
+    "url": "https://jobs.ashbyhq.com/clickup",
+    "salary": "$144k–$181k",
+    "salaryMin": 144000,
+    "postedAt": "2026-06-09",
+    "score": 86,
+    "why": "AI-native business systems automation with LLM agents, MCP and iPaaS integrations at an AI company — operator-tier automation work he does well.",
+    "flags": [
+      "remote",
+      "genuine-fit",
+      "automation",
+      "ops-ai",
+      "internal-tools"
+    ],
+    "source": "Ashby",
+    "track": "orchestrator"
+  },
+  {
+    "id": "ashby-uipath-i3ctux",
+    "title": "Technical Account Manager - Retail, Travel, Logistics",
+    "company": "UiPath",
+    "location": "Toronto",
+    "url": "https://jobs.ashbyhq.com/uipath",
+    "salary": null,
+    "salaryMin": null,
+    "postedAt": "2026-07-27",
+    "score": 86,
+    "why": "Customer-facing technical advisor for agentic automation programs in supply chain and manufacturing — his domain plus AI operator work.",
+    "flags": [
+      "remote",
+      "genuine-fit",
+      "ops-ai",
+      "domain-depth",
+      "automation"
+    ],
+    "source": "Ashby",
+    "track": "orchestrator"
+  },
+  {
+    "id": "ashby-replit-wat2ud",
+    "title": "Product Engineer, New Products",
+    "company": "Replit",
+    "location": "Foster City, CA",
+    "url": "https://jobs.ashbyhq.com/replit",
+    "salary": "$180k–$250k",
+    "salaryMin": 180000,
+    "postedAt": "2026-08-03",
+    "score": 86,
+    "why": "Unlevelled product engineer shipping products across AI models and agentic workflows with founder-style ownership — squarely his shape.",
+    "flags": [
+      "remote",
+      "genuine-fit",
+      "applied-ai",
+      "ic-scope",
+      "ownership"
+    ],
+    "source": "Ashby",
+    "track": "orchestrator"
+  },
+  {
+    "id": "gh-arizeai-5993317004",
+    "title": "Forward Deployed Engineer, APJ",
+    "company": "Arize AI",
+    "location": "Remote (Singapore)",
+    "url": "https://job-boards.greenhouse.io/arizeai/jobs/5993317004",
+    "salary": null,
+    "salaryMin": null,
+    "postedAt": "2026-06-29",
+    "score": 86,
+    "why": "Forward deployed engineer at an LLM/agent observability vendor — customer-facing applied-AI deployment work that fits him squarely.",
+    "flags": [
+      "remote",
+      "genuine-fit",
+      "forward-deployed",
+      "applied-ai"
+    ],
+    "source": "Greenhouse",
+    "track": "orchestrator"
+  },
+  {
+    "id": "ashby-harvey-10t2dsg",
+    "title": "Automation Engineer, Customer Education",
+    "company": "Harvey",
+    "location": "San Francisco",
+    "url": "https://jobs.ashbyhq.com/harvey",
+    "salary": "$124k–$185k",
+    "salaryMin": 123600,
+    "postedAt": "2026-06-22",
+    "score": 86,
+    "why": "Automation engineering at an agentic-AI company is exactly the operator-tier build-and-automate shape he wants.",
+    "flags": [
+      "remote",
+      "genuine-fit",
+      "automation",
+      "applied-ai"
+    ],
+    "source": "Ashby",
+    "track": "orchestrator"
+  },
+  {
+    "id": "ashby-gamma-jm0sqn",
+    "title": "Software Engineer, Full Stack",
+    "company": "Gamma",
+    "location": "San Francisco",
+    "url": "https://jobs.ashbyhq.com/gamma",
+    "salary": null,
+    "salaryMin": null,
+    "postedAt": "2025-11-10",
+    "score": 86,
+    "why": "Unlevelled full-stack role building LLM-powered product features with prompt engineering — ideal applied-AI IC fit.",
+    "flags": [
+      "remote",
+      "genuine-fit",
+      "applied-ai",
+      "full-stack"
+    ],
+    "source": "Ashby",
+    "track": "orchestrator"
+  },
+  {
+    "id": "ashby-coder-7l7glu",
+    "title": "Senior Forward Deployed Engineer",
+    "company": "Coder",
+    "location": "United States",
+    "url": "https://jobs.ashbyhq.com/coder",
+    "salary": "$182k–$246k",
+    "salaryMin": 182000,
+    "postedAt": "2026-08-06",
+    "score": 86,
+    "why": "Forward-deployed customer engineering driving agentic-workflow deployment and adoption — exactly the operator-tier archetype, and seniority is fine on this title.",
+    "flags": [
+      "remote",
+      "genuine-fit",
+      "forward-deployed",
+      "applied-ai",
+      "ownership"
+    ],
+    "source": "Ashby",
+    "track": "orchestrator"
+  },
+  {
+    "id": "ashby-writer-1onp1fb",
+    "title": "AI engineer",
+    "company": "Writer",
+    "location": "San Francisco, CA",
+    "url": "https://jobs.ashbyhq.com/writer",
+    "salary": "$187k–$329k",
+    "salaryMin": 186500,
+    "postedAt": "2026-05-18",
+    "score": 86,
+    "why": "Unlevelled AI engineer role building enterprise LLM/agent solutions at an AI-native company — squarely applied AI.",
+    "flags": [
+      "remote",
+      "genuine-fit",
+      "applied-ai",
+      "agentic"
+    ],
+    "source": "Ashby",
+    "track": "orchestrator"
+  },
+  {
+    "id": "ashby-openai-1818b6v",
+    "title": "AI Support Engineer, Government - Washington, D.C.",
+    "company": "OpenAI",
+    "location": "Washington, DC",
+    "url": "https://jobs.ashbyhq.com/openai",
+    "salary": "$162k–$234k",
+    "salaryMin": 162000,
+    "postedAt": "2026-03-16",
+    "score": 86,
+    "why": "Operator-tier AI support/adoption engineering at a frontier lab — troubleshooting customer AI deployments is squarely his shape.",
+    "flags": [
+      "remote",
+      "genuine-fit",
+      "ops-ai",
+      "applied-ai"
+    ],
+    "source": "Ashby",
+    "track": "orchestrator"
+  },
+  {
+    "id": "ashby-cognition-m4ioxq",
+    "title": "Applied AI Transformation Manager - ANZ",
+    "company": "Cognition",
+    "location": "Sydney",
+    "url": "https://jobs.ashbyhq.com/cognition",
+    "salary": null,
+    "salaryMin": null,
+    "postedAt": "2026-08-05",
+    "score": 86,
+    "why": "Applied AI transformation/delivery role implementing agentic AI operating models for enterprise customers — precisely the operator-tier AI adoption work he wants.",
+    "flags": [
+      "remote",
+      "genuine-fit",
+      "ai-adoption",
+      "forward-deployed",
+      "agentic"
+    ],
+    "source": "Ashby",
+    "track": "orchestrator"
+  },
+  {
+    "id": "gh-launchdarkly-7798078003",
+    "title": "Solutions Architect - AI Focus",
+    "company": "LaunchDarkly",
+    "location": "Remote - US",
+    "url": "https://job-boards.greenhouse.io/launchdarkly/jobs/7798078003",
+    "salary": null,
+    "salaryMin": null,
+    "postedAt": "2026-08-03",
+    "score": 86,
+    "why": "Unlevelled Solutions Architect leading customer AI/agentic adoption and operationalization — squarely his operator-tier applied-AI sweet spot.",
+    "flags": [
+      "remote",
+      "genuine-fit",
+      "applied-ai",
+      "solutions-engineering"
+    ],
+    "source": "Greenhouse",
+    "track": "orchestrator"
+  },
+  {
+    "id": "gh-arizeai-6030903004",
+    "title": "AI Solutions Manager, Digital Native",
+    "company": "Arize AI",
+    "location": "Remote (San Francisco)",
+    "url": "https://job-boards.greenhouse.io/arizeai/jobs/6030903004",
+    "salary": null,
+    "salaryMin": null,
+    "postedAt": "2026-07-31",
+    "score": 86,
+    "why": "Customer-facing AI solutions work at an LLM observability vendor — deploying and evaluating agents for customers is squarely his operator-tier lane.",
+    "flags": [
+      "remote",
+      "genuine-fit",
+      "applied-ai",
+      "forward-deployed"
+    ],
+    "source": "Greenhouse",
+    "track": "orchestrator"
+  },
+  {
+    "id": "ashby-writer-zh5942",
+    "title": "AI deployment engineer (UK)",
+    "company": "Writer",
+    "location": "London, UK",
+    "url": "https://jobs.ashbyhq.com/writer",
+    "salary": null,
+    "salaryMin": null,
+    "postedAt": "2026-07-30",
+    "score": 86,
+    "why": "Same forward-deployed AI deployment engineering role at an enterprise genAI company.",
+    "flags": [
+      "remote",
+      "applied-ai",
+      "forward-deployed",
+      "genuine-fit"
+    ],
+    "source": "Ashby",
+    "track": "orchestrator"
+  },
+  {
+    "id": "ashby-openai-10wr3by",
+    "title": "Supply Chain Transformation Architect",
+    "company": "OpenAI",
+    "location": "San Francisco",
+    "url": "https://jobs.ashbyhq.com/openai",
+    "salary": "$216k–$295k",
+    "salaryMin": 216000,
+    "postedAt": "2026-06-12",
+    "score": 88,
+    "why": "Supply-chain transformation with AI-driven automation at OpenAI — his domain depth plus real AI/automation component.",
+    "flags": [
+      "remote",
+      "genuine-fit",
+      "domain-depth",
+      "automation",
+      "high-comp"
+    ],
+    "source": "Ashby",
+    "track": "domain"
+  },
+  {
+    "id": "ashby-lambda-ojraxs",
+    "title": "Supply Chain Systems & Process Lead",
+    "company": "Lambda",
+    "location": "San Jose Office (Zanker)",
+    "url": "https://jobs.ashbyhq.com/lambda",
+    "salary": "$143k–$190k",
+    "salaryMin": 143000,
+    "postedAt": "2026-06-24",
+    "score": 86,
+    "why": "Supply chain systems and process ownership inside an AI cloud infrastructure company — domain depth at an AI employer with strong pay.",
+    "flags": [
+      "remote",
+      "domain-depth",
+      "genuine-fit",
+      "high-comp"
+    ],
+    "source": "Ashby",
+    "track": "domain"
+  },
+  {
+    "id": "ashby-openai-1bh5fwt",
+    "title": "Supply Chain Program Manager (SCPM) - AI Infrastructure",
+    "company": "OpenAI",
+    "location": "San Francisco",
+    "url": "https://jobs.ashbyhq.com/openai",
+    "salary": "$226k–$285k",
+    "salaryMin": 226000,
+    "postedAt": "2026-05-14",
+    "score": 80,
+    "why": "Material planning and supply-chain execution at an AI-infrastructure employer maps directly to his MRP/planning/supplier experience.",
+    "flags": [
+      "remote",
+      "domain-depth",
+      "genuine-fit"
+    ],
+    "source": "Ashby",
+    "track": "domain"
+  },
+  {
+    "id": "ashby-openai-h6ov96",
+    "title": "Supply Chain Operations Program Manager, AI Infrastructure",
+    "company": "OpenAI",
+    "location": "San Francisco",
+    "url": "https://jobs.ashbyhq.com/openai",
+    "salary": "$177k–$285k",
+    "salaryMin": 177000,
+    "postedAt": "2026-05-14",
+    "score": 76,
+    "why": "Supply-chain/NPI operations program management inside an AI-hardware org — strong domain-depth fit, though program scope is senior.",
+    "flags": [
+      "remote",
+      "domain-depth",
+      "ops-ai",
+      "stretch"
+    ],
+    "source": "Ashby",
+    "track": "domain"
+  },
+  {
+    "id": "gh-samsara-8017174",
+    "title": "Senior Business Technology Product Manager- Supply Chain Planning",
+    "company": "Samsara",
+    "location": "Remote - US",
+    "url": "https://www.samsara.com/company/careers/roles/8017174?gh_jid=8017174",
+    "salary": null,
+    "salaryMin": null,
+    "postedAt": "2026-08-04",
+    "score": 76,
+    "why": "Supply-chain planning product management inside an AI-native company blends his domain depth with technical PM work, though senior business-systems PM scope is a stretch.",
+    "flags": [
+      "remote",
+      "domain-depth",
+      "ai-adjacent",
+      "stretch"
+    ],
+    "source": "Greenhouse",
+    "track": "domain"
+  },
+  {
+    "id": "gh-andurilindustries-5179198007",
+    "title": "Senior Procurement Engineer, Supply Chain",
+    "company": "Anduril",
+    "location": "Morrisville, North Carolina, United States",
+    "url": "https://boards.greenhouse.io/andurilindustries/jobs/5179198007?gh_jid=5179198007",
+    "salary": null,
+    "salaryMin": null,
+    "postedAt": "2026-08-02",
+    "score": 72,
+    "why": "Sourcing/supplier and cost management at an AI-powered defense company — real domain-depth fit, though engineering-flavored and senior.",
+    "flags": [
+      "hybrid",
+      "domain-depth",
+      "genuine-fit",
+      "stretch"
+    ],
+    "source": "Greenhouse",
+    "track": "domain"
+  },
+  {
+    "id": "ashby-openai-lob28h",
+    "title": "Procurement Enablement Lead",
+    "company": "OpenAI",
+    "location": "San Francisco",
+    "url": "https://jobs.ashbyhq.com/openai",
+    "salary": "$216k–$240k",
+    "salaryMin": 216000,
+    "postedAt": "2026-07-17",
+    "score": 72,
+    "why": "Procurement process/enablement at OpenAI with explicit AI-and-automation streamlining mandate matches his ops+automation edge, though 'Lead' framing is a slight stretch.",
+    "flags": [
+      "remote",
+      "domain-depth",
+      "automation",
+      "ops-ai",
+      "genuine-fit"
+    ],
+    "source": "Ashby",
+    "track": "domain"
+  },
+  {
+    "id": "gh-andurilindustries-5198632007",
+    "title": "Federal Material Manager",
+    "company": "Anduril",
+    "location": "Morrisville, North Carolina, United States",
+    "url": "https://boards.greenhouse.io/andurilindustries/jobs/5198632007?gh_jid=5198632007",
+    "salary": null,
+    "salaryMin": null,
+    "postedAt": "2026-08-02",
+    "score": 68,
+    "why": "Materials/procurement management inside an AI defense company matches his supply-chain domain, though manager scope and FAR/DFAR compliance focus stretch him.",
+    "flags": [
+      "hybrid",
+      "domain-depth",
+      "stretch"
+    ],
+    "source": "Greenhouse",
+    "track": "domain"
+  },
+  {
+    "id": "jsearch-dGs2ZGllX09jTVVmekNHX0FBQUFBQT09OkVzd0JDb3dCUVVwcFZEUjBTelp2WkVWdWNXcDFhRkEwWTBGRmVETmxRbXBITm0xRFdEaERkMDlMZEVWZmIwRnJRMVJhYlZKMGMwNXJkMDU2TW5sV1pXWllUbkE0UWxWWlNYTmthREpzWVZFNVUweEJXRzFNVHpCd1QwdHJPVnA2TTE5eWNWaEVURU4yTFZkVmFYTjVWRkpOYlhaQk1WUnNNamRoYUhoTE9VZ3pXRk5wWWtwNGQyeHpibUpIVFZsUVpWa1NGMEp5WkRGaGNtNWFUMDE2U1d0UVNWQXhaVk5YTkZGSkdpSkJSSE55T1daVVNuRTBjakJyUjJWMWEwSXdSRE5sYm5oeExWbHlhV0ZzUjE5Ug",
+    "title": "Supply Chain Senior Business Analyst",
+    "company": "Lingaro",
+    "location": "Remote",
+    "url": "https://jobgether.com/offer/6a737353e9f5b786586bcfcd-supply-chain-senior-business-analyst",
+    "salary": null,
+    "salaryMin": null,
+    "postedAt": "2026-08-05",
+    "score": 67,
+    "why": "Keyword match: Python, supply chain, remote (heuristic — seniority/fit not assessed).",
+    "flags": [
+      "remote"
+    ],
+    "source": "JSearch",
+    "track": "domain"
+  },
+  {
+    "id": "jsearch-MGNKY0lVbXg0YVd2RjRmb0FBQUFBQT09OkVzd0JDb3dCUVVwcFZEUjBTbTlqU3pKMVIwUTFVSGxTU0dVMGNISXhRVVJEVUd0UU1XTjNOMkphY2pkVU1ESkpUR3BSU3pKTU5FOW9lV0pWUVRsTlYwVkdUV0ZpVmw5d2VXWTJVa1p5TkhKMFNYY3pXa3hZVUV0aFpuQndYeloyUW1vNFNrOW9XWGRZUzJOUWJEbEpiSFZmTjJaMFpUWjBhRmhtYUZoTVNrTjRWa2hEVUZkaFdqRm1NMWhIUTFReVdGVVNGMEp5WkRGaGNtNWFUMDE2U1d0UVNWQXhaVk5YTkZGSkdpSkJSSE55T1daVVVrWkVZWFl0WDFoc1JYWllTMk5wUkZKMVFuZHhhM05qZEVsMw",
+    "title": "Supply Chain Network Design Analyst | No C2C",
+    "company": "Resourceful",
+    "location": "Remote",
+    "url": "https://www.linkedin.com/jobs/view/supply-chain-network-design-analyst-no-c2c-at-resourceful-4449790694",
+    "salary": "$140k–$165k",
+    "salaryMin": 140000,
+    "postedAt": "2026-08-06",
+    "score": 72,
+    "why": "Pay-led IC supply-chain analyst role with strong modeling/logistics match and $140–165k disclosed pay, though network design is adjacent to his MRP/BOM depth.",
+    "flags": [
+      "remote",
+      "pay-led",
+      "supply-chain",
+      "high-comp",
+      "contract"
+    ],
+    "source": "JSearch",
+    "track": "supply-chain"
+  }
+]

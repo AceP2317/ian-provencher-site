@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64" width="64" height="64" role="img" aria-label="Ian Provencher">
+  <defs>
+    <linearGradient id="ip" x1="12" y1="14" x2="52" y2="50" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#f2a33c"/>
+      <stop offset="1" stop-color="#22d3ee"/>
+    </linearGradient>
+  </defs>
+  <rect x="2" y="2" width="60" height="60" rx="14" fill="#0f1117" stroke="#262c3a" stroke-width="2"/>
+  <!-- I -->
+  <rect x="19" y="18" width="4.5" height="28" rx="2" fill="url(#ip)"/>
+  <!-- P -->
+  <path d="M30 18 h9 a9 9 0 0 1 0 18 h-4.5 v10 h-4.5 z M34.5 22.5 v9 h4.5 a4.5 4.5 0 0 0 0-9 z"
+        fill="url(#ip)"/>
+</svg>

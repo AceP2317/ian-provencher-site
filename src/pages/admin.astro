@@ -1,0 +1,37 @@
+---
+/**
+ * /admin — the PRIVATE publishing console. Paste-to-publish so authoring no longer
+ * needs the terminal. Three surfaces (Blog / Signal / Favorites), each an AI-assisted
+ * fetch → review → publish flow. Posts to the Worker (/api/admin/*), which validates →
+ * firewall-scans → commits the markdown to src/content/*; the normal
+ * push→build→gate→deploy pipeline does the rest.
+ *
+ * Security: this route + /api/admin/* sit behind a Cloudflare Access application
+ * ("ian-provencher admin", operator email only). The Worker also re-verifies the
+ * Access JWT (fail-closed). noindex + sitemap-excluded (astro.config filter);
+ * the page holds no secrets. Committing markdown by hand stays the escape hatch.
+ */
+import BaseLayout from '../layouts/BaseLayout.astro';
+import AdminConsole from '../components/islands/AdminConsole.jsx';
+---
+<BaseLayout
+  title="Admin console"
+  description="Private publishing console for ian-provencher.com."
+  noindex
+>
+  <main id="main" class="mx-auto max-w-5xl px-6 py-10 sm:py-14">
+    <header class="mb-8">
+      <p class="mono-label">ian-provencher · private</p>
+      <h1 class="mt-2 font-display text-3xl font-semibold tracking-tight text-ink">Operator console</h1>
+      <p class="mt-2 max-w-2xl text-sm leading-relaxed text-ink-muted">
+        One place to run the site. <strong class="text-ink">Content</strong> publishes posts, tips,
+        Signal links, and favorites — or generates your résumé and cover letters — no terminal. <strong class="text-ink">Data</strong>
+        refreshes the repos and job board on demand. <strong class="text-ink">Setup</strong> shows which
+        keys are configured and how to set them. <strong class="text-ink">Runbook</strong> lists every
+        manual lever you have. Everything published here runs the same build + safe-export gate before
+        it goes live (~1&nbsp;min); the résumé generator is private and commits nothing.
+      </p>
+    </header>
+    <AdminConsole client:load />
+  </main>
+</BaseLayout>
