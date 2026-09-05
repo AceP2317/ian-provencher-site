@@ -1,0 +1,99 @@
+{
+  "_comment": "How old each section's DATA is allowed to get. Read by scripts/check-freshness.mjs, which runs in postbuild and npm test. `lastReviewed` is DECLARED, never detected: file mtime and git log both get reset by a formatting pass that changed no content, which is exactly how forty-day-old content read as current (LEDGER L-049). Move a date with `node scripts/check-freshness.mjs --touch <section>` when you have actually refreshed that content. Forgetting reports STALE, which errs safe. Seeded 2026-08-24 from the last real content change of each source, deliberately ignoring same-day commits that only changed colour tokens.",
+  "_states": "fresh = inside budget. stale = past budget. rotten = past 2x budget. unknown = no date at all, which is a broken ledger and always fails. Whether ROTTEN fails the build is decided by breachMeans, not by the state alone.",
+  "sections": {
+    "repos": {
+      "refresh": "auto — GitHub API, daily 08:17 UTC",
+      "breachMeans": "pipeline",
+      "lastReviewed": "2026-09-05",
+      "maxAgeDays": 3,
+      "note": "auto-refreshed; if this goes stale the refresh workflow has stopped doing its job"
+    },
+    "jobs": {
+      "refresh": "paused — on demand only, from the /admin console",
+      "breachMeans": "person",
+      "lastReviewed": "2026-08-24",
+      "maxAgeDays": 8,
+      "note": "PAUSED 2026-09-01 on cost grounds (D65) — the AI scoring ran up to 80 sequential Opus 5 batches at ~$7.59 a run, ~$66/month, and that money was repurposed. Nothing is deleted: resume by restoring the schedule clause on the two job-board steps in .github/workflows/refresh-data.yml, which carry the removed text verbatim. breachMeans is 'person' because a HUMAN moves this date now, by pressing Run now in /admin. maxAgeDays STAYS 8 deliberately: widening it would hold the reader-facing freshness dot green on a board that is switched off, and green means genuinely running or current on this site (D16). A warning here is the truth, and it is the standing nudge asking whether the pause is still wanted."
+    },
+    "podcast": {
+      "refresh": "auto — daily 12:35 UTC",
+      "breachMeans": "person",
+      "derive": "newestPodcast",
+      "maxAgeDays": 3,
+      "note": "derived from the newest episode filename. A gap here means the PRODUCER stopped cutting releases, not that the sync broke — read the sync log before touching this repo (D30)"
+    },
+    "tools": {
+      "refresh": "local — npm run publish:data",
+      "breachMeans": "person",
+      "lastReviewed": "2026-09-05",
+      "maxAgeDays": 30,
+      "note": "needs the private estate, so CI cannot do it (D2)"
+    },
+    "architectures": {
+      "refresh": "local — npm run publish:data",
+      "breachMeans": "person",
+      "lastReviewed": "2026-09-05",
+      "maxAgeDays": 30,
+      "note": "needs the private estate, so CI cannot do it (D2)"
+    },
+    "cron": {
+      "refresh": "local — npm run publish:data, from hermes model.public.json",
+      "breachMeans": "person",
+      "lastReviewed": "2026-09-05",
+      "maxAgeDays": 30,
+      "note": "the SOURCE is hermes/architecture/model.public.json — running the export here cannot help until that file is regenerated in the hermes repo. Two entries are garbled at the source ('08:05 08:05:00', 'every 2min AND 01:30 daily') and copied faithfully"
+    },
+    "stack": {
+      "refresh": "hand-authored — src/data/stack.ts",
+      "breachMeans": "person",
+      "lastReviewed": "2026-08-25",
+      "maxAgeDays": 45,
+      "note": "public-safe paraphrase of the private doctrine (D1); scripts/check-stack.mjs nudges on drift but never blocks"
+    },
+    "apps": {
+      "refresh": "hand-authored — src/data/apps.ts",
+      "breachMeans": "person",
+      "lastReviewed": "2026-07-16",
+      "maxAgeDays": 30,
+      "note": "one of the two sections that describe day-to-day operations; its last change was a safety scrub, not a content update"
+    },
+    "routines": {
+      "refresh": "hand-authored — src/data/routines.ts",
+      "breachMeans": "person",
+      "lastReviewed": "2026-08-25",
+      "maxAgeDays": 30,
+      "note": "one of the two sections that describe day-to-day operations; its last change was a safety scrub, not a content update"
+    },
+    "resume": {
+      "refresh": "hand-authored — src/data/resume.ts",
+      "breachMeans": "person",
+      "lastReviewed": "2026-08-25",
+      "maxAgeDays": 45,
+      "note": "the public copy; the private canonical lives in Workers KV and is separate"
+    },
+    "anthropic": {
+      "refresh": "hand-authored — src/data/anthropic-resources.json",
+      "breachMeans": "person",
+      "lastReviewed": "2026-08-25",
+      "maxAgeDays": 45,
+      "note": "curated offline, every URL verified before commit (D13)"
+    },
+    "learn": {
+      "refresh": "hand-authored — src/data/learn-topics.json",
+      "breachMeans": "person",
+      "lastReviewed": "2026-08-25",
+      "maxAgeDays": 90,
+      "note": "reference material, so it ages more slowly than operations data"
+    },
+    "glossary": {
+      "refresh": "hand-authored — src/data/glossary-terms.json",
+      "breachMeans": "person",
+      "lastReviewed": "2026-08-25",
+      "maxAgeDays": 90,
+      "note": "reference material, so it ages more slowly than operations data"
+    }
+  },
+  "_budgets": "Set by what the content DESCRIBES. 30d for anything describing a live system (builds, architectures, cron, apps, routines) because that is what goes wrong fastest. 45d for positioning and doctrine, which move slowly on purpose. 90d for the large reference sets, which genuinely do age slowly. Tight budgets on the auto-refreshed sections, where a breach means the PIPELINE stopped, not the content.",
+  "_breachMeans": "What an overrun MEANS here, and it is declared per section because it cannot be derived. 'pipeline' = something automated moves this date, so an overrun means that machinery stopped — it FAILS the build, because a dead fetch should be loud. 'person' = a human moves this date, so an overrun means writing is overdue — it WARNS, because being behind on prose is no reason to hold a podcast episode or a deploy. PODCAST IS 'person' DESPITE BEING AUTOMATED: its date derives from the newest episode filename, so a gap means the producer stopped cutting releases, not that the sync broke (D30). Deriving this field from the `refresh` string would get that one case exactly wrong."
+}

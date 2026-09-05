@@ -1,0 +1,95 @@
+---
+/**
+ * /stack/hooks — the hook layer: 32 hooks across 6 Claude Code events. Described BY EVENT
+ * rather than one-by-one; the previous version listed five, then six, against a real 32 and
+ * named a register that has since been retired.
+ * and keep the whole setup reproducible. Generalized (src/data/stack.ts): the
+ * private repos are referred to by role, never by path/name.
+ */
+import PageLayout from '../../layouts/PageLayout.astro';
+import Icon from '../../components/Icon.astro';
+import PipelineFlow from '../../components/PipelineFlow.astro';
+import { hooks, hookCount, hookEvents } from '../../data/stack';
+
+const origin = new URL(Astro.site!).origin;
+const description =
+  `${hookCount} hooks across ${hookEvents.length} Claude Code events — the layer that turns a convention from something remembered into something the tool enforces, and keeps the whole environment reproducible from git.`;
+
+const schema = [
+  {
+    '@type': 'BreadcrumbList',
+    '@id': `${origin}/stack/hooks/#breadcrumb`,
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: `${origin}/` },
+      { '@type': 'ListItem', position: 2, name: 'Operating Stack', item: `${origin}/stack/` },
+      { '@type': 'ListItem', position: 3, name: 'The hooks', item: `${origin}/stack/hooks/` },
+    ],
+  },
+];
+---
+<PageLayout title="The hooks" description={description} image="/og/stack-hooks.png?v=2" schema={schema}>
+  <section class="mx-auto max-w-4xl px-6 pt-16 pb-6 sm:pt-20">
+    <a href="/stack/" class="inline-flex items-center gap-1.5 text-sm text-ink-faint transition-colors hover:text-ink">
+      <Icon name="arrow-right" size={14} class="rotate-180" /> Operating Stack
+    </a>
+    <p class="mono-label mt-6">The hooks · Claude Code</p>
+    <h1 class="mt-3 font-display text-title font-semibold text-ink">
+      A convention nobody has to remember.
+    </h1>
+    <p class="mt-5 max-w-2xl text-lg leading-relaxed text-ink-muted">
+      A hook is a shell command the tool fires on an event — a prompt arriving, a tool call about
+      to run, a session opening or closing. There are <strong class="text-ink">{hookCount} of them
+      across {hookEvents.length} events</strong>, and the reason there are that many is one idea:
+      a rule that lives only on a checklist gets missed, and the more carefully the checklist is
+      written the more it feels like a control. So each rule worth keeping is moved into the
+      command that already runs.
+    </p>
+    <p class="mt-4 max-w-2xl text-lg leading-relaxed text-ink-muted">
+      Grouped here by event, because that is the useful axis: what runs before the model reads a
+      message, what refuses an action outright, what inspects the result, and what has to happen
+      at the boundaries of a session so nothing is left stranded on one machine.
+    </p>
+    <div class="mt-8">
+      <PipelineFlow
+        label="One session, start to end — the hooks firing"
+        stages={[
+          { name: 'session start', note: 'pull doctrine + skills' },
+          { name: 'load', note: 'into every turn', lit: true },
+          { name: 'run', note: 'the work' },
+          { name: 'session end', note: 'commit config back' },
+          { name: 'self-refresh', note: 'reproducible anywhere', lit: true },
+        ]}
+      />
+    </div>
+  </section>
+
+  <section class="mx-auto max-w-4xl px-6 pb-20">
+    <div class="mt-4 flex flex-col gap-4">
+      {hooks.map((h) => (
+        <div class="reveal panel p-6">
+          <div class="flex items-center gap-3">
+            <span class="grid h-9 w-9 shrink-0 place-items-center rounded-lg border border-line bg-surface-2 text-cyan">
+              <Icon name={h.icon} size={17} />
+            </span>
+            <div>
+              <h2 class="font-display text-base font-semibold tracking-tight text-ink">{h.name}</h2>
+              <code class="font-mono text-xs text-cyan-deep">{h.event}</code>
+            </div>
+          </div>
+          <dl class="mt-4 grid grid-cols-1 gap-3 sm:grid-cols-[auto_1fr] sm:gap-x-5">
+            <dt class="mono-label text-ink-faint">What it does</dt>
+            <dd class="text-sm leading-relaxed text-ink-muted">{h.does}</dd>
+            <dt class="mono-label text-ink-faint sm:mt-1">Why</dt>
+            <dd class="text-sm leading-relaxed text-ink-muted">{h.why}</dd>
+          </dl>
+        </div>
+      ))}
+    </div>
+    <p class="mt-8 max-w-2xl text-sm leading-relaxed text-ink-faint">
+      The doctrine and skills live in private repos, referred to here by role. Counts are read
+      from the real configuration rather than typed — an earlier version of this page said “five”,
+      then “six”, while the true number was {hookCount}, and the drift checker reported it in sync
+      the whole time because it compares event names and never reads what a hook does.
+    </p>
+  </section>
+</PageLayout>

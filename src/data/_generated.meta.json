@@ -1,0 +1,9 @@
+{
+  "generatedAt": "2026-08-25T00:55:16.668Z",
+  "source": "Command Center OS + Hermes (public-safe export)",
+  "counts": {
+    "tools": 32,
+    "architectures": 10,
+    "cron": 10
+  }
+}

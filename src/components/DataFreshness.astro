@@ -1,0 +1,122 @@
+---
+/**
+ * DataFreshness — tells the READER how old the data on this page is.
+ *
+ * WHY THIS EXISTS. `src/data/freshness.json` and `scripts/check-freshness.mjs` have
+ * watched section age since session 48, and both of them talk only to the operator.
+ * MEASURED 2026-08-26: no page on the site showed a visitor how fresh its own data
+ * was, while one section (apps) was 41 days past a 30-day budget.
+ *
+ * The instinct is to make the check BLOCK the build. That is the wrong lever here: a
+ * hand-authored section drifting past its budget would then stop every deploy of every
+ * unrelated page, and a gate that punishes unrelated work is a gate that gets switched
+ * off. The failure being defended against is "one stale claim discredits everything
+ * near it" — and that is only true when the staleness is HIDDEN. A labelled stale item
+ * is not a lie, it is a disclosure, and a page that says "refreshed three hours ago"
+ * earns trust for everything beside it.
+ *
+ * D16 AND THE RESERVED COLOURS. Green means one thing on this site: something is
+ * genuinely running or current. That is exactly what this dot reports, so this is one
+ * of the very few places the reserved colour is EARNED rather than spent. Stale takes
+ * warn, rotten takes down. Nothing here is decorative.
+ *
+ * WHAT IS RENDERED IS A DATE, NOT AN AGE. "Reviewed 3 days ago" is baked at build time
+ * and silently becomes wrong the moment the site goes a while without rebuilding —
+ * which is the precise failure this whole ledger was created to catch, so reproducing
+ * it here would be absurd. An absolute date is a fact and cannot rot.
+ *
+ * ponytail: the DOT is still computed at build time, so on a site that went months
+ * without a rebuild a green dot could outlive its own budget. Upgrade path: move the
+ * state calculation into a few lines of inline script reading the <time datetime>,
+ * which makes it correct on every view. Not done now because this repo rebuilds on
+ * every push and on a daily schedule, so the window is small and the date beneath the
+ * dot is always right regardless.
+ */
+import freshness from '../data/freshness.json';
+
+interface Props {
+  /** Key in freshness.json → sections. Unknown keys render nothing, never a guess. */
+  slug: string;
+  /**
+   * A date for the sections the ledger DERIVES rather than declares. Those entries
+   * carry `derive` instead of `lastReviewed` — podcast's age is the newest episode
+   * filename, so only the page holding those entries can supply it. Omitting it on a
+   * derived section renders nothing, which matches `check-freshness.mjs`'s own rule
+   * that a section with no date is UNKNOWN and never fresh.
+   */
+  date?: string;
+  class?: string;
+}
+const { slug, date, class: klass = '' } = Astro.props;
+
+type Entry = { refresh: string; lastReviewed?: string; derive?: string; maxAgeDays: number; note?: string };
+const entry = (freshness.sections as Record<string, Entry>)[slug];
+
+/** Whole days between two dates, exact — no drift from hours or timezones. */
+function daysBetween(from: string, to: Date): number {
+  const [y, m, d] = from.split('-').map(Number);
+  const a = Date.UTC(y, m - 1, d);
+  const b = Date.UTC(to.getUTCFullYear(), to.getUTCMonth(), to.getUTCDate());
+  return Math.round((b - a) / 86_400_000);
+}
+
+/* THE FIRST VERSION OF THIS CRASHED THE BUILD. It assumed every ledger entry declares
+   `lastReviewed`, and podcast carries `derive: "newestPodcast"` instead — so `from` was
+   undefined and .split threw while rendering /podcast. The build gate caught it, which
+   is the gate doing its job. The rule it should have matched from the start is already
+   written and selftested in check-freshness.mjs: a section with no date is UNKNOWN,
+   never fresh. A provenance footnote must never be able to take a page down with it. */
+const reviewed = entry?.lastReviewed ?? date ?? null;
+const age = reviewed ? daysBetween(reviewed, new Date()) : null;
+const state =
+  !entry || age === null ? 'unknown'
+  : age > entry.maxAgeDays * 2 ? 'rotten'
+  : age > entry.maxAgeDays ? 'stale'
+  : 'fresh';
+
+/* The refresh string starts with how it happens: "auto — …", "local — …",
+   "hand-authored — …", "paused — …". Take that first word and drop the machinery behind
+   the dash; a visitor does not need the workflow name, only whether a person or a clock
+   does it — or that nothing does it at all.
+
+   PAUSED IS A REAL FOURTH ANSWER AND NOT A FLAVOUR OF "BY HAND". A section whose machinery
+   was switched off deliberately would otherwise fall through to "kept by hand", which reads
+   as an ongoing habit and is the same false reassurance this component exists to remove.
+   Added 2026-09-01 for the paused job board (D65). */
+const how = (entry?.refresh ?? '').split('—')[0].trim();
+const humanHow =
+  how.startsWith('auto') ? 'refreshes on a schedule'
+  : how.startsWith('local') ? 'refreshed from the private estate'
+  : how.startsWith('paused') ? 'paused, not refreshing'
+  : 'kept by hand';
+
+const dot = { fresh: 'var(--color-up)', stale: 'var(--color-warn)', rotten: 'var(--color-down)', unknown: 'var(--color-ink-faint)' }[state];
+const said = {
+  fresh: 'current',
+  stale: `past its ${entry?.maxAgeDays}-day budget`,
+  rotten: `well past its ${entry?.maxAgeDays}-day budget`,
+  unknown: '',
+}[state];
+
+const pretty = reviewed
+  ? new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'UTC' })
+      .format(new Date(reviewed + 'T00:00:00Z'))
+  : '';
+---
+{entry && reviewed && (
+  <p class={`flex flex-wrap items-center gap-x-2 gap-y-1 font-mono text-[0.6875rem] text-ink-faint ${klass}`}>
+    <span
+      class="inline-block size-1.5 shrink-0 rounded-full"
+      style={`background:${dot}`}
+      aria-hidden="true"
+    ></span>
+    <span>
+      {/* `reviewed`, NOT `entry.lastReviewed` — the derived sections have no declared
+          date, so reading the raw field here dropped the machine-readable attribute on
+          exactly the section whose date is computed. Caught by a grep that required
+          datetime= and found podcast missing it. */}
+      Data reviewed <time datetime={reviewed} class="text-ink-muted">{pretty}</time>
+      {said && <> · {said}</>} · {humanHow}
+    </span>
+  </p>
+)}

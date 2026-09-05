@@ -1,0 +1,40 @@
+# build output
+dist/
+# generated types
+.astro/
+
+# dependencies
+node_modules/
+
+# logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+
+# environment variables
+.env
+.env.production
+
+# Claude Code local (machine-specific) settings — skills DO get committed
+.claude/settings.local.json
+
+# wrangler local secrets (Worker dev)
+.dev.vars
+.wrangler/
+
+# Safe-export local denylist (exact private literals — NEVER commit)
+scripts/denylist.local.json
+
+# macOS-specific files
+.DS_Store
+
+# jetbrains setting folder
+.idea/
+
+# mirror-publish staging (assembled sanitized tree — never commit)
+.mirror/out/
+
+# Podcast episodes held back by the denylist gate — reviewed by hand, never committed
+# from here. Astro only loads src/content/podcast/, so a quarantined file is inert.
+.podcast-quarantine/

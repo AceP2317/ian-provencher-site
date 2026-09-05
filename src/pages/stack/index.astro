@@ -1,0 +1,113 @@
+---
+/**
+ * /stack — the "Operating Stack" hub. How I direct AI, made legible: the
+ * operating doctrine, the Fable execution register, the hooks that wire them in,
+ * and the status-line instrument. All PUBLIC-SAFE (see src/data/stack.ts — no
+ * private repo names/paths, no infra literals, no verbatim vendor snippets).
+ */
+import PageLayout from '../../layouts/PageLayout.astro';
+import Icon from '../../components/Icon.astro';
+import { bySlug } from '../../data/sections';
+import { stackPages, doctrineName, doctrineVersion } from '../../data/stack';
+
+const section = bySlug.get('stack')!;
+const origin = new URL(Astro.site!).origin;
+
+const schema = [
+  {
+    '@type': 'CollectionPage',
+    '@id': `${origin}/stack/#collectionpage`,
+    name: 'Operating Stack',
+    url: `${origin}/stack/`,
+    description: section.description,
+    isPartOf: { '@id': `${origin}/#website` },
+    about: { '@id': `${origin}/#person` },
+  },
+  {
+    '@type': 'BreadcrumbList',
+    '@id': `${origin}/stack/#breadcrumb`,
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: `${origin}/` },
+      { '@type': 'ListItem', position: 2, name: 'Operating Stack', item: `${origin}/stack/` },
+    ],
+  },
+];
+---
+<PageLayout
+  dataSlug="stack"
+  title="Operating Stack"
+  description={section.description}
+  image="/og/stack.png?v=2"
+  schema={schema}
+>
+  {/* ── Hero ───────────────────────────────────────────────────────────── */}
+  <section class="relative overflow-hidden border-b border-line">
+    <div class="bg-grid bg-grid-fade pointer-events-none absolute inset-0 -z-10 opacity-60"></div>
+    <div class="relative mx-auto max-w-5xl px-6 pt-20 pb-16 sm:pt-28 sm:pb-24">
+      <p class="mono-label">Operating Stack · how I direct AI</p>
+      <h1 class="mt-3 max-w-3xl font-display text-title font-semibold text-ink">
+        The layer that makes one operator run like a team.
+      </h1>
+      <p class="mt-5 max-w-2xl font-display text-lg leading-relaxed text-cyan">
+        The model is the engine. This is the operating system I run it with.
+      </p>
+      <p class="mt-5 max-w-2xl text-lg leading-relaxed text-ink-muted">
+        Everything else on this site — the repos, tools, cron jobs, architectures — is
+        the <em>output</em>. This section is the <em>method</em>: a versioned operating
+        doctrine, an execution register for the work that has to land, the hooks that keep
+        both live automatically, and a live instrument that shows me exactly what every
+        session costs and where it stands.
+      </p>
+    </div>
+  </section>
+
+  {/* ── The four surfaces ──────────────────────────────────────────────── */}
+  <section class="mx-auto max-w-5xl px-6 py-16 sm:py-20">
+    <div class="flex items-center gap-3">
+      <h2 class="font-display text-head font-semibold text-ink">The four pieces</h2>
+      <span class="h-px flex-1 bg-line"></span>
+    </div>
+    <div class="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2">
+      {/* A retired page is DIMMED and LABELLED, never hidden and never shown as current.
+          Deleting it would lose work that was real; showing it as today's setup was the
+          injustice this fixes. The tier does the work: .panel--quiet was removed earlier
+          for having no consumer, so the muted treatment is done with the existing tokens. */}
+      {stackPages.map((p) => (
+        <a
+          href={`/stack/${p.slug}/`}
+          class={`reveal panel group flex flex-col gap-3 p-6 transition-colors hover:border-line-2${p.status === 'retired' ? ' opacity-70' : ''}`}
+        >
+          <div class="flex items-start justify-between gap-3">
+            <span class={`grid h-11 w-11 shrink-0 place-items-center rounded-lg border border-line bg-surface-2 ${p.status === 'retired' ? 'text-ink-faint' : 'text-cyan'}`}>
+              <Icon name={p.icon} size={20} />
+            </span>
+            {p.status === 'retired' && (
+              <span class="chip border-line-2 text-ink-faint">Retired {p.retiredOn}</span>
+            )}
+          </div>
+          <h3 class="font-display text-lg font-semibold tracking-tight text-ink">
+            {p.title}
+          </h3>
+          <p class="text-sm leading-relaxed text-ink-muted">{p.blurb}</p>
+          <span class={`mt-1 inline-flex items-center gap-1 text-sm font-medium ${p.status === 'retired' ? 'text-ink-faint' : 'text-cyan-deep'}`}>
+            {p.status === 'retired' ? 'Read the archive' : 'Open'} <Icon name="arrow-right" size={14} class="transition-transform group-hover:translate-x-0.5" />
+          </span>
+        </a>
+      ))}
+    </div>
+  </section>
+
+  {/* ── Why it exists ──────────────────────────────────────────────────── */}
+  <section class="section-band">
+    <div class="mx-auto max-w-4xl px-6 py-14 sm:py-16">
+      <p class="mono-label">Why bother</p>
+      <p class="mt-4 max-w-2xl text-lg leading-relaxed text-ink-muted">
+        A frontier model is only as good as the operator directing it. The gap between a
+        chat and a shipped system is discipline — spec first, verify adversarially, never
+        claim a result you didn’t observe. I encode that discipline once, in
+        <span class="font-mono text-sm text-cyan-deep">{doctrineName} {doctrineVersion}</span>
+        and a set of hooks, so it runs on every task without being re-typed. This is that layer.
+      </p>
+    </div>
+  </section>
+</PageLayout>

@@ -1,0 +1,370 @@
+---
+/**
+ * The front door.
+ *
+ * WHAT THIS REPLACED, AND WHY. The old homepage was a hero, then twenty identical
+ * cards in a symmetric three-column grid, under a header carrying twenty links in
+ * two rows. MEASURED 2026-08-24: 789 rendered elements shared six background
+ * colours; all twenty cards drew one fill, one border and one identical 1px shadow;
+ * and every card wore a green "LIVE" pill — which was CONSTANT, because all 21
+ * sections carry status 'live'. A status indicator whose value never varies is not
+ * an indicator, and it was spending the site's reserved semantic green to say
+ * nothing twenty times.
+ *
+ * Giving everything equal weight is the same defect as a chart whose marks are all
+ * the same height: the frame looks full, and it has lost the ability to say MORE and
+ * LESS. So this page now says less, louder — a position, the numbers that back it,
+ * three pieces of work shown rather than described, then the index.
+ *
+ * EVERY NUMBER HERE IS DERIVED, NEVER TYPED. D20 forbids counts in evergreen copy
+ * because "a count rots silently" — the hazard it names is a HAND-TYPED count going
+ * stale. These regenerate on every build from the committed data, so that failure
+ * mode is unreachable by construction. That is the whole premise of this site as a
+ * render layer over the real estate.
+ */
+import PageLayout from '../layouts/PageLayout.astro';
+import PipelineFlow from '../components/PipelineFlow.astro';
+import ArchThumb from '../components/ArchThumb.astro';
+import Icon from '../components/Icon.astro';
+import { site } from '../data/site';
+import { groupedSections } from '../data/sections';
+import { tools } from '../data/tools';
+import { architectures, archSlug } from '../data/architectures';
+import { cronJobs } from '../data/cron';
+import { repos } from '../data/repos';
+import { orchestratorJobs } from '../data/jobs';
+import { glossaryTerms } from '../data/glossary';
+import { learnTopics } from '../data/learn';
+import { claudeCodeSetup } from '../data/claude-code-setup';
+
+const deployed = tools.filter((t) => t.status === 'deployed').length;
+
+/**
+ * The readout. Five figures, each one a count of something committed in this repo.
+ *
+ * ONE LEADS AND FOUR SUPPORT. MEASURED 2026-08-26: all five rendered at an identical
+ * 28px, alongside the job score, so six numbers spanning 7 to 2,973 carried exactly
+ * the same visual weight. That costs twice. It invites a comparison between a repo
+ * count and a glossary-term count which means nothing, because they count different
+ * universes. And it leaves the reader with nothing ranked, which is the same defect
+ * as a chart whose marks are all one height — the frame looks full and has lost the
+ * ability to say MORE and LESS.
+ *
+ * The lead is `builds deployed` because it is the only figure here that counts
+ * FINISHED work rather than things that merely exist, and it is the one a first-time
+ * reader is actually asking about. `public repos` says public in the unit on purpose:
+ * standing alone, a bare 7 reads as the whole output rather than the shared slice.
+ */
+const readout = [
+  { n: deployed,               unit: 'builds',       note: 'deployed',   href: '/tools/' },
+  { n: architectures.length,   unit: 'systems',      note: 'mapped',     href: '/architectures/' },
+  { n: cronJobs.length,        unit: 'unattended jobs', note: '',        href: '/cron/' },
+  { n: repos.length,           unit: 'public repos', note: '',           href: '/repos/' },
+  { n: glossaryTerms.length,   unit: 'terms indexed', note: '',          href: '/glossary/' },
+];
+const [lead, ...support] = readout;
+
+/**
+ * The three. Chosen because each SHOWS something rather than describing it — a real
+ * scored row, a real node graph, a real station count. A featured slot that only
+ * carries a sentence is a card with extra steps.
+ */
+const topJob = [...orchestratorJobs].sort((a, b) => b.score - a.score)[0];
+const featureArch = architectures.find((a) => a.id === 'arch-command-center') ?? architectures[0];
+
+/** Derived, because the close used to say "Twenty sections" as a hand-typed word —
+ *  the exact rot D20 names, sitting inside the one file whose own header says every
+ *  number here is derived. Adding a 21st section would have made that sentence lie. */
+const sectionCount = groupedSections.reduce((n, band) => n + band.items.length, 0);
+---
+<PageLayout title={site.name} description={site.description}>
+  {/* ── The position ──────────────────────────────────────────────────────── */}
+  <section class="relative overflow-hidden">
+    <div class="accent-glow"></div>
+    <div class="absolute inset-0 bg-grid bg-grid-fade opacity-30" aria-hidden="true"></div>
+    <div class="relative mx-auto max-w-6xl px-6 pb-14 pt-20 sm:pt-28">
+      {/* TWO COLUMNS, AND THIS IS THE ACTUAL FIX.
+          MEASURED 2026-08-26: the hero was four blocks stacked down one left edge, and
+          the entire right half of the screen above the fold was empty. That is what a
+          DOCUMENT does — it leaves margins. An instrument faceplate fills its frame and
+          packs readings at different scales into it, which is why edge treatments alone
+          were never going to change the impression.
+
+          Wide-left, narrow-right rather than an even split: an even split reads as a
+          layout, an uneven one reads as a composition. The readings go on the right
+          because that is where the emptiness was, and because a faceplate is where a
+          machine puts its numbers. */}
+      <div class="grid gap-y-12 lg:grid-cols-[minmax(0,1fr)_19rem] lg:items-end lg:gap-x-14">
+      <div>
+      <p class="mono-label">Ian Provencher · AI orchestrator</p>
+
+      {/* THE HEADLINE IS A NOUN PHRASE, AND THAT IS THE WHOLE POINT.
+          It names what the page IS. It does not claim anything about Ian, which is why
+          there is nothing in it to push back on.
+
+          A replacement was tried and rejected across four rounds — "I take things apart
+          and put them back together better", then "I can't stop building", "None of this
+          needs me", "Everything here runs". Every one of them was a SENTENCE MAKING A
+          POINT, and the operator's verdict on all of them was the same: it screams
+          "look at me". A clever understatement is still a performance. The lesson, in his
+          words: it should pull people because THEY want him, not because he wants their
+          attention.
+
+          So: no slogan, no self-assessment, no adjective about the work. The paragraph
+          below is a LIST — the range is what an appetite for building looks like from the
+          outside, and listing it proves what saying it only claims. Do not put a verb of
+          achievement back into either of these. */}
+      <h1 class="mt-5 max-w-4xl font-display text-display font-[560] text-ink">
+        The workspace behind <span class="name-accent">the work</span>.
+      </h1>
+
+      <p class="mt-7 max-w-2xl text-lg leading-relaxed text-ink-muted">
+        I direct fleets of coding agents. Planning systems, job pipelines, architecture
+        diagrams, a daily AI podcast. Supply-chain and operations underneath.
+      </p>
+
+      <div class="mt-9 flex flex-wrap items-center gap-3">
+        <a href="/resume/" class="btn btn-primary">The résumé</a>
+        <a href="/blog/" class="btn btn-secondary">Field notes</a>
+      </div>
+      </div>
+
+      {/* THE FACEPLATE. The five figures used to sit in the left column as a
+          pedestal-plus-strip, which is a stats band wherever you put it. As a panel
+          of label-and-value rows they stop being a band and become a SPEC PLATE —
+          the thing bolted to a machine that tells you what it is.
+
+          Every row is a link to the thing it counts, so nothing here is decoration.
+          The values are right-aligned and tabular, which is what stops digits
+          jittering between rows and is doing more work than any colour: a column of
+          figures that lines up reads as measured, one that does not reads as typed.
+
+          The scale rule finally has a job. It sat under a paragraph before, where it
+          measured nothing and read as dirt on the screen — a decoration wearing an
+          instrument's clothes. Here it separates the plate's header from its
+          readings, which is where a real faceplate rules a line. */}
+      <aside class="bezel panel--flat relative rounded-[var(--r-lg)] p-5 sm:p-6">
+        <span aria-hidden="true" class="reg-mark reg-mark--tl"></span>
+        <span aria-hidden="true" class="reg-mark reg-mark--br"></span>
+
+        <p class="mono-label">Current readings</p>
+        <hr class="rule-scale mt-3" />
+
+        <a href={lead.href} class="group mt-4 flex items-baseline gap-2.5 focus-visible:outline-none">
+          <span
+            class="readout-figure font-display text-title leading-none text-accent transition-colors duration-200 group-hover:text-accent-2 group-focus-visible:text-accent-2"
+            data-countup={lead.n}
+          >{lead.n.toLocaleString()}</span>
+          <span class="font-mono text-[0.8125rem] text-ink-muted transition-colors group-hover:text-ink">
+            {lead.unit}<br />{lead.note}
+          </span>
+        </a>
+
+        {/* The rows ARRIVE one at a time, so the plate powers up rather than appearing.
+            THE WRAPPER IS LOAD-BEARING, not tidiness: `.arrive` lives in the components
+            layer and each link carries Tailwind's `transition-colors`, which lives in
+            utilities — and utilities beat components on LAYER ORDER, before specificity
+            is ever consulted. Both on one element would silently drop the arrival and
+            leave nothing on screen explaining why. D17 records the same mechanism. */}
+        <dl class="mt-5 flex flex-col">
+          {support.map((r, i) => (
+            <div class="arrive" style={`--arrive-delay:${260 + i * 70}ms`}>
+              <a
+                href={r.href}
+                class="index-row group flex items-baseline gap-3 border-t border-line py-2 font-mono text-[0.8125rem] transition-colors hover:text-ink focus-visible:text-ink"
+              >
+                <dt class="engraved min-w-0 flex-1 truncate text-ink-faint transition-colors group-hover:text-ink-muted">{r.unit}</dt>
+                <dd class="readout-figure shrink-0 tabular-nums text-ink-muted transition-colors group-hover:text-accent-2">{r.n.toLocaleString()}</dd>
+              </a>
+            </div>
+          ))}
+        </dl>
+      </aside>
+      </div>
+
+      {/*
+        The claim here is scoped to what actually runs unattended: repos daily and the
+        job board Monday and Thursday, both 4am ET, gated by check-safe.mjs (exit 1
+        aborts BEFORE the commit), committed only if the snapshot changed, pushed,
+        deployed. Everything else is authored or needs the private estate (D2).
+
+        Stage notes must stay under ~20 chars — PipelineFlow centres each note on its
+        node at a fixed 208px gap, and longer strings collide and clip (D25).
+      */}
+      {/* THE CHASSIS — applied to the diagram itself, not wrapped around it.
+          The first attempt put a `.bezel` figure AROUND this component, and the
+          component's own root is already a `.panel` with a border and a radius. The
+          result was two nested rounded rectangles, which reads as a mistake rather
+          than as depth. Passing the class IN gives one panel with a machined edge:
+          a real light-above / shadow-below pair instead of the single 1px hairline
+          that was this page's only edge treatment. */}
+      <div class="mt-14">
+        <PipelineFlow
+          class="bezel"
+          label="Repos and the job board keep themselves current — fetched, gated, deployed, unattended"
+          stages={[
+            { name: 'fetch', note: 'daily · board 2×/wk' },
+            { name: 'gate', note: 'red aborts the run', lit: true },
+            { name: 'commit', note: 'only if changed' },
+            { name: 'deploy', note: 'auto, on push' },
+            { name: 'live', note: '~1 min later', lit: true },
+          ]}
+        />
+      </div>
+    </div>
+  </section>
+
+  {/* ── Three pieces, shown rather than described ─────────────────────────── */}
+  <section class="section-band">
+    <div class="section mx-auto max-w-6xl px-6">
+      {/* NO EYEBROW HERE, AND NO "/ 01 / 02 / 03" ON THE CARDS BELOW — deliberate.
+          MEASURED 2026-08-26: this page carried 22 small-caps tracked labels across
+          only three structural blocks. When every block announces itself the same
+          way, the announcements stop ranking anything, which is what "everything
+          looks equally important" literally means.
+
+          The rule that replaced the habit: MONO UPPERCASE IS A MACHINE LABEL ON
+          MACHINE DATA, never decoration above prose. So the pipeline stage names,
+          the readout strip, "Top of the board" and the band headings keep it — each
+          of those labels a real reading. "/ the work" above a heading that already
+          says the work does not, because it restates the line beneath it.
+
+          The numerals went for a second reason: this heading calls them THREE THINGS,
+          which is a set with no order. A numbered marker asserts a sequence that does
+          not exist, and 01/02/03 as section scaffolding is the single most saturated
+          tell in machine-generated layout. */}
+      <h2 class="max-w-2xl font-display text-title font-semibold text-ink">
+        Three things that run without me
+      </h2>
+
+      <div class="mt-10 flex flex-col gap-5">
+
+        {/* 01 — the job board: a real scored row, not a description of one */}
+        <a href="/jobs/" class="reveal panel panel--raised lift group grid gap-6 p-6 sm:p-8 lg:grid-cols-[1fr_minmax(0,22rem)] lg:items-center">
+          <div>
+            <h3 class="font-display text-head font-semibold text-ink">The job board</h3>
+            <p class="mt-2 max-w-lg text-sm leading-relaxed text-ink-muted">
+              Every posting on it was fetched, filtered and scored by Claude against a rubric
+              I wrote — twice a week, on a schedule, with nobody watching. {orchestratorJobs.length} roles
+              survive the cut today.
+            </p>
+            <span class="mt-4 inline-flex items-center gap-1 text-xs font-medium text-ink-faint transition-colors group-hover:text-accent-2">
+              Open the board <Icon name="arrow-up-right" size={13} />
+            </span>
+          </div>
+          {topJob && (
+            <div class="panel panel--well p-4">
+              <div class="mono-label">Top of the board</div>
+              <div class="mt-2 flex items-baseline gap-2">
+                <span class="font-display text-head font-semibold tabular-nums text-accent-2">{topJob.score}</span>
+                <span class="font-mono text-[0.6875rem] uppercase tracking-[0.14em] text-ink-faint">score</span>
+              </div>
+              <div class="mt-1 text-sm font-medium leading-snug text-ink">{topJob.title}</div>
+              <div class="font-mono text-[0.6875rem] text-ink-faint">{topJob.company}</div>
+              {/* The bar GROWS to the score it is already reporting, so the card
+                  performs the scoring instead of depicting it. The authored width is
+                  untouched — only the transform moves — which is why nothing here can
+                  leave a wrong figure on screen. */}
+              <div class="mt-3 h-1 w-full overflow-hidden rounded-full bg-line">
+                <div class="grow-bar h-full rounded-full bg-accent" style={`width:${topJob.score}%`}></div>
+              </div>
+            </div>
+          )}
+        </a>
+
+        {/* 02 — the architecture map: the real node graph, drawn at build time */}
+        <a href={`/architectures/${archSlug(featureArch.id)}/`} class="reveal panel panel--raised lift group grid gap-6 p-6 sm:p-8 lg:grid-cols-[1fr_minmax(0,22rem)] lg:items-center">
+          <div>
+            <h3 class="font-display text-head font-semibold text-ink">The architecture map</h3>
+            <p class="mt-2 max-w-lg text-sm leading-relaxed text-ink-muted">
+              {architectures.length} systems I run, each drawn from its own node graph and
+              walkable in 3D in the browser. The diagram beside this is that data, rendered
+              at build time — not a picture of it.
+            </p>
+            <span class="mt-4 inline-flex items-center gap-1 text-xs font-medium text-ink-faint transition-colors group-hover:text-accent-2">
+              Walk {featureArch.title} <Icon name="arrow-up-right" size={13} />
+            </span>
+          </div>
+          <div class="arch-thumb-wrap panel panel--well p-4">
+            <ArchThumb arch={featureArch} />
+          </div>
+        </a>
+
+        {/* 03 — the setup: the doctrine that directs the agents */}
+        <a href="/claude-setup/" class="reveal panel panel--raised lift group grid gap-6 p-6 sm:p-8 lg:grid-cols-[1fr_minmax(0,22rem)] lg:items-center">
+          <div>
+            <h3 class="font-display text-head font-semibold text-ink">The setup that directs them</h3>
+            <p class="mt-2 max-w-lg text-sm leading-relaxed text-ink-muted">
+              A frontier model is only as good as the operating system around it. This is
+              mine, made visible — {claudeCodeSetup.stations.length} stations from the
+              operator's keystroke to the shipped commit, as a 3D exhibit you can take apart.
+            </p>
+            <span class="mt-4 inline-flex items-center gap-1 text-xs font-medium text-ink-faint transition-colors group-hover:text-accent-2">
+              Open the exhibit <Icon name="arrow-up-right" size={13} />
+            </span>
+          </div>
+          {/* One bar per station, coloured by its zone. No slice and no fixed column
+              count: both would be a cap on data that is free to grow, and a phantom
+              cap is how a number on a page quietly stops matching the thing it counts.
+              (An earlier draft carried slice(0,20) against a set of 10 — harmless, but
+              it asserted a limit that did not exist.) */}
+          <div class="panel panel--well p-4">
+            {/* The stations arrive in their real order — operator, core, layers,
+                output — so the strip reads as a path rather than a row of ticks.
+                A stagger WITHIN one list is the legitimate use of the gesture; the
+                tell is the same entrance applied to every section of a page. */}
+            <div class="flex flex-wrap gap-1.5">
+              {claudeCodeSetup.stations.map((st, i) => (
+                <span
+                  class="arrive h-1.5 min-w-10 flex-1 rounded-full"
+                  {/* The 80% lives in the COLOUR, not in an inline `opacity`, and that
+                      is not a style preference. An inline declaration beats every
+                      stylesheet rule regardless of layer or specificity, so an inline
+                      opacity would have silently cancelled this element's fade while
+                      leaving its travel working — a half-firing animation with nothing
+                      on screen explaining why. */}
+                  style={`background: color-mix(in oklab, var(--color-${st.accent === 'amber' ? 'accent' : st.accent}) 80%, transparent); --arrive-delay:${i * 55}ms`}
+                  title={`${st.label} — ${st.zone}`}
+                ></span>
+              ))}
+            </div>
+            <span class="mt-3 block font-mono text-[0.6875rem] text-ink-faint">
+              {claudeCodeSetup.stations.length} stations · operator → core → layers → output
+            </span>
+          </div>
+        </a>
+
+      </div>
+    </div>
+  </section>
+
+  {/* ── The close ──────────────────────────────────────────────────────────
+      WHAT THIS REPLACED, AND WHY. A full twenty-link index stood here, and the
+      footer directly beneath renders the SAME twenty from the same registry.
+      MEASURED 2026-08-26: 23 of the last 24 links in the page body reappeared in
+      the footer — a 96% repeat. The front door ended by showing its own menu
+      twice, at precisely the moment a reader was ready to be pointed somewhere.
+
+      Nothing is lost by removing it. The footer still carries every section,
+      banded, one scroll further down — so the map survives and the repetition
+      does not.
+
+      This band is deliberately the QUIETEST thing on the page. Its heading sits
+      two rungs below the featured work above it, because an index is not a peer
+      of the thing it indexes, and the page needs somewhere to land. */}
+  <section class="mx-auto max-w-6xl px-6 py-20">
+    <div class="max-w-2xl">
+      <h2 class="font-display text-xl font-semibold text-ink">The rest of it</h2>
+      <p class="mt-3 text-sm leading-relaxed text-ink-muted">
+        {sectionCount} sections — builds, systems, field notes, reference — banded by what
+        kind of thing they are, in the footer below. Press
+        <kbd class="rounded border border-line bg-surface-2 px-1.5 py-0.5 font-mono text-[0.6875rem] text-ink-muted">/</kbd>
+        to search across all of them from anywhere on the site.
+      </p>
+      <div class="mt-6 flex flex-wrap items-center gap-3">
+        <a href="/resume/" class="btn btn-primary">The résumé</a>
+        <a href="/stack/" class="btn btn-secondary">How the work gets done</a>
+      </div>
+    </div>
+  </section>
+</PageLayout>
