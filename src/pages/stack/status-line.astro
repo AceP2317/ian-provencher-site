@@ -1,0 +1,103 @@
+---
+/**
+ * /stack/status-line — the FIVE figures the terminal line shows, and only the five the
+ * HUD cannot see. Re-tenanted 2026-08; this page described the previous instrument
+ * (seven rows: tokens, cache economics, spend, billing cycle, rate limits) long after it
+ * had been replaced. The script is a PUBLIC gist already; the only scrub is not embedding
+ * a literal sample render, since a real cwd path would trip the safe-export gate.
+ */
+import PageLayout from '../../layouts/PageLayout.astro';
+import Icon from '../../components/Icon.astro';
+import { statusRows, statusGistUrl } from '../../data/stack';
+
+const origin = new URL(Astro.site!).origin;
+const description =
+  'The five figures a Claude Code status line can show that nothing else can — the billed total, its own edit tally, context against the real window, the in-flight cache read, and the model variant. Zero subprocesses per render.';
+
+const schema = [
+  {
+    '@type': 'BreadcrumbList',
+    '@id': `${origin}/stack/status-line/#breadcrumb`,
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: `${origin}/` },
+      { '@type': 'ListItem', position: 2, name: 'Operating Stack', item: `${origin}/stack/` },
+      { '@type': 'ListItem', position: 3, name: 'The status line', item: `${origin}/stack/status-line/` },
+    ],
+  },
+];
+---
+<PageLayout title="The status line" description={description} image="/og/stack-status-line.png?v=2" schema={schema}>
+  {/* Same grid backdrop the /stack hub hero carries — this page is in that family. */}
+  <section class="relative overflow-hidden">
+    <div class="bg-grid bg-grid-fade pointer-events-none absolute inset-0 -z-10 opacity-60"></div>
+    <div class="relative mx-auto max-w-4xl px-6 pt-16 pb-6 sm:pt-20">
+      <a href="/stack/" class="inline-flex items-center gap-1.5 text-sm text-ink-faint transition-colors hover:text-ink">
+        <Icon name="arrow-right" size={14} class="rotate-180" /> Operating Stack
+      </a>
+      <p class="mono-label mt-6">The status line · Claude Code</p>
+      <h1 class="mt-3 font-display text-title font-semibold text-ink">
+        Only what nothing else can show.
+      </h1>
+      <p class="mt-5 max-w-2xl text-lg leading-relaxed text-ink-muted">
+        Claude Code lets you replace the status line with your own script. Mine shows five figures,
+        and the choice of which five is the whole design: these reach the status-line command and
+        are written nowhere else, so no other tool on the machine can display them. Everything the
+        <a href="/stack/hud/" class="link-sweep text-cyan-deep">HUD</a> can compute for itself was
+        removed from here, because two readouts of one session are only worth having while neither
+        restates the other.
+      </p>
+      <p class="mt-4 max-w-2xl text-lg leading-relaxed text-ink-muted">
+        It also spawns nothing. The previous tenant of this line ran roughly forty-seven short-lived
+        helpers per render, and every process launch on this machine is scanned before it starts —
+        so the cost was paid forty-seven times, ten seconds apart, forever. Every field is now read
+        with the shell's own pattern matching: one process per refresh, no children.
+      </p>
+    </div>
+  </section>
+
+  {/* ── The five figures ─────────────────────────────────────────────────── */}
+  <section class="mx-auto max-w-4xl px-6 pb-12">
+    <div class="flex items-center gap-3">
+      <h2 class="font-display text-head font-semibold text-ink">The five figures</h2>
+      <span class="h-px flex-1 bg-line"></span>
+      <span class="font-mono text-xs text-ink-faint">{statusRows.length}</span>
+    </div>
+    {/* Cards, not table rows — each row of the instrument is a readout, so it gets its
+        own panel with the row's own signal color on the dot and the tag. */}
+    <div class="mt-6 grid grid-cols-1 gap-4 sm:grid-cols-2">
+      {statusRows.map((row) => (
+        <div class="reveal panel flex flex-col gap-2 p-5">
+          <div class="flex items-center gap-2.5">
+            <span class="h-1.5 w-1.5 shrink-0 rounded-full" style={`background: var(--color-${row.accent})`}></span>
+            <code class="font-mono text-sm font-semibold tracking-wide" style={`color: var(--color-${row.accent})`}>
+              {row.tag}
+            </code>
+          </div>
+          <span class="text-sm leading-relaxed text-ink-muted">{row.reads}</span>
+        </div>
+      ))}
+    </div>
+    <p class="mt-4 text-sm leading-relaxed text-ink-faint">
+      The dollar figures are an API-equivalent usage gauge — what the same tokens would cost on the
+      metered API — not a real subscription charge. It’s there to keep me honest about how much a
+      given approach actually burns.
+    </p>
+  </section>
+
+  {/* ── The gist ───────────────────────────────────────────────────────── */}
+  <section class="section-band">
+    <div class="mx-auto max-w-4xl px-6 py-14 sm:py-16">
+      <p class="mono-label">Take it</p>
+      <p class="mt-4 max-w-2xl text-lg leading-relaxed text-ink-muted">
+        The whole script is public — one file, no dependencies beyond <code class="font-mono text-sm text-cyan-deep">jq</code>.
+        A hook <a href="/stack/hooks/" class="text-cyan-deep hover:underline">auto-publishes it</a> every time I
+        change it, so the gist is always the current build.
+      </p>
+      <div class="mt-6">
+        <a href={statusGistUrl} target="_blank" rel="noopener" class="btn btn-primary text-sm">
+          <Icon name="git-branch" size={15} /> View the gist on GitHub
+        </a>
+      </div>
+    </div>
+  </section>
+</PageLayout>
