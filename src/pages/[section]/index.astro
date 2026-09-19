@@ -1,0 +1,21 @@
+---
+// Catch-all stub route — renders a real, on-brand "in build" page for every
+// section that is not yet live. A static route (e.g. src/pages/blog/index.astro)
+// out-prioritizes this, so promoting a section to live just means adding its own
+// page + flipping status in the registry; this route drops it automatically.
+import PageLayout from '../../layouts/PageLayout.astro';
+import StubSection from '../../components/StubSection.astro';
+import { stubSlugs, bySlug } from '../../data/sections';
+
+export function getStaticPaths() {
+  return stubSlugs.map((slug) => ({
+    params: { section: slug },
+    props: { section: bySlug.get(slug)! },
+  }));
+}
+
+const { section } = Astro.props;
+---
+<PageLayout title={section.title} description={section.description} noindex>
+  <StubSection section={section} />
+</PageLayout>
