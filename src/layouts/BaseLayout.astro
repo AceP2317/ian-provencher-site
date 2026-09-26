@@ -1,0 +1,346 @@
+---
+// Self-hosted type (Fontsource) — no external font CDN.
+//
+// Each family is imported by its AXIS entrypoint, not `index.css`, and the axis is the
+// reason the face was chosen. Verified against the published @font-face rules:
+//   newsreader/opsz.css   font-weight: 200 800  + a real optical-size axis
+//   archivo/wdth.css      font-weight: 100 900  + font-stretch: 62% 125%
+//   jetbrains-mono/wght.css  font-weight: 100 800
+// Taking `index.css` instead would still work but ships every axis file; taking
+// `wght.css` for the first two would silently DROP the axis that justified the pick.
+// Every @font-face carries a `unicode-range`, so a browser never fetches the
+// cyrillic/greek/vietnamese files for an English page — that is dist weight, not
+// runtime weight.
+//
+// This replaces Inter + Space Grotesk + IBM Plex Mono. The first two are named on the
+// published tell-list for machine-generated design (Space Grotesk explicitly as the
+// "safe alternative" that became its own tell), and Plex Mono has no variable build, so
+// it was costing three static files for three fixed weights.
+import '@fontsource-variable/newsreader/opsz.css';
+import '@fontsource-variable/archivo/wdth.css';
+import '@fontsource-variable/jetbrains-mono/wght.css';
+import '../styles/global.css';
+import { site, sameAs } from '../data/site';
+import { palette } from '../data/palette';
+
+// Preload the two faces that render above the fold. The hero headline is the LCP element
+// and it is set in the display face, so without this it cannot paint until the CSS has
+// been parsed AND the font fetched — a serial round-trip on the critical path.
+// `?url` hands back the hashed, bundled asset path, so this never breaks on a rebuild.
+import bodyLatin from '@fontsource-variable/archivo/files/archivo-latin-wdth-normal.woff2?url';
+import displayLatin from '@fontsource-variable/newsreader/files/newsreader-latin-opsz-normal.woff2?url';
+import { ClientRouter } from 'astro:transitions';
+
+interface Props {
+  title?: string;
+  description?: string;
+  image?: string;
+  /** OpenGraph type — 'website' (default) or 'article' for blog posts. */
+  ogType?: 'website' | 'article';
+  /** When ogType='article', the post's dates + author for article:* tags. */
+  article?: { publishedTime?: string; modifiedTime?: string; author?: string };
+  /** Extra JSON-LD nodes for this page, merged into the site-wide @graph. */
+  schema?: Record<string, unknown>[];
+  /** Keep this page out of search indexes (shareable, but not crawled). */
+  noindex?: boolean;
+  /** RSS feed for this page (e.g. /blog/rss.xml) — emits <link rel="alternate">. */
+  rssHref?: string;
+  /** Feed name in that <link title> — the site has more than one feed. */
+  rssTitle?: string;
+}
+
+const {
+  title = site.name,
+  description = site.description,
+  // ?v=N cache-busts social scrapers (LinkedIn pins og:image by URL for ~7 days)
+  image = '/og/default.png?v=5',
+  ogType = 'website',
+  article,
+  schema = [],
+  noindex = false,
+  rssHref,
+  rssTitle = 'Field notes',
+} = Astro.props;
+
+const canonical = new URL(Astro.url.pathname, Astro.site);
+const ogImage = new URL(image, Astro.site);
+const isHome = Astro.url.pathname === '/';
+// Derived from site.role, never retyped. This line held a hardcoded "— Builder" that
+// D42's reposition never reached, so the BROWSER TAB — the single most-seen string on
+// the site — contradicted the résumé, the About page and the job-board blurb for a month.
+const fullTitle = isHome ? `${site.name} — ${site.role}` : `${title} · ${site.name}`;
+
+// ── Structured data ──────────────────────────────────────────────────────
+const origin = new URL(Astro.site!).origin;
+const personId = `${origin}/#person`;
+const siteGraph: Record<string, unknown>[] = [
+  {
+    '@type': 'Person',
+    '@id': personId,
+    name: site.name,
+    jobTitle: site.role,
+    description: site.tagline,
+    url: `${origin}/`,
+    image: new URL('/og/default.png', Astro.site).href,
+    sameAs,
+    knowsAbout: [
+      'Supply chain operations', 'MRP', 'Bill of materials',
+      'Production planning', 'Applied AI', 'Custom software', 'Systems architecture',
+    ],
+  },
+  {
+    '@type': 'WebSite',
+    '@id': `${origin}/#website`,
+    name: site.name,
+    description: site.description,
+    inLanguage: 'en-US',
+    url: `${origin}/`,
+    publisher: { '@id': personId },
+  },
+];
+const jsonLdStr = JSON.stringify({
+  '@context': 'https://schema.org',
+  '@graph': [...siteGraph, ...schema],
+}).replace(/</g, '\\u003c');
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32.png" />
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/manifest.webmanifest" />
+    {/* Derived, never typed. This tints the browser's own chrome on mobile, so it has
+        to be the CANVAS and it has to move with it — it was a hand-typed hex beside a
+        comment claiming the tokens were single-source. */}
+    <meta name="theme-color" content={palette.themeColor} />
+
+    <link rel="preload" as="font" type="font/woff2" href={displayLatin} crossorigin="anonymous" />
+    <link rel="preload" as="font" type="font/woff2" href={bodyLatin} crossorigin="anonymous" />
+    <link rel="canonical" href={canonical} />
+    {rssHref && (
+      <link rel="alternate" type="application/rss+xml" title={`${site.name} — ${rssTitle}`} href={rssHref} />
+    )}
+
+    <title>{fullTitle}</title>
+    <meta name="description" content={description} />
+
+    <!-- OpenGraph / social -->
+    <meta property="og:type" content={ogType} />
+    <meta property="og:site_name" content={site.name} />
+    <meta property="og:title" content={fullTitle} />
+    <meta property="og:description" content={description} />
+    <meta property="og:url" content={canonical} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={fullTitle} />
+    <meta property="og:locale" content="en_US" />
+    {ogType === 'article' && article?.publishedTime && (
+      <meta property="article:published_time" content={article.publishedTime} />
+    )}
+    {ogType === 'article' && article?.modifiedTime && (
+      <meta property="article:modified_time" content={article.modifiedTime} />
+    )}
+    {ogType === 'article' && article?.author && (
+      <meta property="article:author" content={article.author} />
+    )}
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={fullTitle} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={ogImage} />
+
+    <meta name="robots" content={noindex ? 'noindex, follow' : 'index, follow, max-image-preview:large, max-snippet:-1'} />
+    <meta name="generator" content={Astro.generator} />
+
+    <script type="application/ld+json" is:inline set:html={jsonLdStr} />
+
+    <ClientRouter />
+
+    {/*
+      THE SCROLL-REVEAL GATE IS GONE — removed 2026-09-24. It added `reveal-on` to <html> and
+      an observer faded every `.reveal` element in as it scrolled into view. The operator picked
+      "no scroll animation, content is simply there" on the polish-pass alignment page: one
+      entrance per page, and this was one per element. The home hero's `.arrive` entrance,
+      armed by `motion-armed` below, is that one.
+    */}
+    {/*
+      `motion-armed` is the gate for the one entrance, and it exists because of a measured
+      bug rather than a preference.
+
+      The entry animations that use `@starting-style` get their FROM value at an
+      element's first style resolution and rely on a transition to carry them to the
+      resting one. Chrome freezes CSS transitions while a tab is hidden — so in a tab
+      opened in the background (a middle-click, "open in new tab", a restored session)
+      that transition never starts and the element stays at its FROM value forever.
+
+      MEASURED 2026-08-26 under browser automation, whose tab is hidden for its entire
+      life: the job-score bar sat at scaleX(0), rendering 0px wide inside a 318px track,
+      and all fourteen staggered items sat at opacity 0. A reader in that tab would have
+      found the page permanently missing its figures — not a missed flourish, missing
+      content.
+
+      So the same discipline the count-up below already uses: DO NOT ANIMATE WHAT NOBODY
+      IS WATCHING. This class is withheld when the tab is hidden, and the CSS puts every
+      `@starting-style` behind it — which means the elements simply resolve straight to
+      their resting, visible state. Absent JS, absent class, reduced motion, or a hidden
+      tab all land in the same place: the content is correct and on screen.
+    */}
+    <script is:inline>
+      (function () {
+        try {
+          if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) return;
+          /* Only arm entry motion for a tab that can actually run it. */
+          if (!document.hidden) document.documentElement.classList.add('motion-armed');
+        } catch (e) {
+          /* fail open: no class, no hiding, no stranded animation */
+        }
+      })();
+    </script>
+  </head>
+  <body class="min-h-screen antialiased">
+    <a href="#main" class="skip-link">Skip to content</a>
+    <slot />
+
+    {/*
+      Decorative flourishes. Deliberately a plain inline script and NOT an island
+      (DECISIONS.md D7 — islands are rationed).
+
+      Two rules govern everything below:
+        1. Progressive enhancement. With JS off, every effect is ABSENT and nothing is
+           BROKEN. Nothing here is load-bearing.
+        2. Nothing here decides whether content is VISIBLE. The count-up has its own
+           IntersectionObserver and never hides the figure it animates.
+
+      As picked on the polish-pass alignment page, 2026-09-24: the count-up and the tap ripple
+      are matured, and the cursor trail ("the comet") is CUT.
+    */}
+    <script is:inline>
+      (function () {
+        try {
+          var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+          var fine = window.matchMedia('(pointer: fine)').matches;
+
+          // ══ Per-page work — must re-run after every view transition ═══════════
+          //
+          // A view transition swaps the entire <body>. Anything bound to elements in the
+          // OLD body is gone, and the elements in the NEW body have never been seen. So
+          // the count-up is bound to `astro:page-load`, which fires on the initial load AND
+          // after every navigation.
+
+          // Count-up, MATURED 2026-09-24: from 80% of the figure to the exact figure in
+          // 0.6s (was from zero over 0.9s). Its own observer; it never hides the figure.
+          // Every in-flight count-up, so any of them can be snapped to its true value.
+          var pendingCounts = [];
+          document.addEventListener('visibilitychange', function () {
+            if (!document.hidden) return;
+            for (var i = 0; i < pendingCounts.length; i++) pendingCounts[i]();
+            pendingCounts.length = 0;
+          });
+
+          function initCountUp() {
+            if (reduced || !('IntersectionObserver' in window)) return;
+            var stats = document.querySelectorAll('[data-countup]:not([data-counted])');
+            if (!stats.length) return;
+            var io2 = new IntersectionObserver(function (entries) {
+              entries.forEach(function (entry) {
+                if (!entry.isIntersecting) return;
+                var el = entry.target;
+                io2.unobserve(el);
+                el.setAttribute('data-counted', '');
+
+                var final = el.textContent;
+                var target = parseFloat(String(final).replace(/[^0-9.]/g, ''));
+                if (!isFinite(target) || target <= 0) return; // not a number: leave it alone
+
+                // A count-up that is INTERRUPTED leaves a wrong number on screen and
+                // presents it as fact. That is tolerable on a decorative stat and not
+                // tolerable here: the homepage readout's whole argument is that these
+                // figures are real, so a frozen "1,123 terms indexed" against a true
+                // 2,973 is a credibility bug wearing an animation's clothes.
+                //
+                // rAF does not run in a background tab, so a visitor who scrolls the
+                // readout into view and switches tabs mid-flight comes back to the wrong
+                // number, permanently. Observed live 2026-08-24 under browser automation,
+                // where the tab is ALWAYS hidden: every figure froze part-way.
+                //
+                // So the animation is registered as PENDING and can always be flushed.
+                var land = function () { el.textContent = final; };
+                // Already hidden when the observer fired — a tab opened in the
+                // background, or an automation tab, which is hidden for its whole life.
+                // rAF will never run, so starting the animation here would strand a
+                // wrong number with no event left to correct it. Don't animate what
+                // nobody is watching; the true value is already in the HTML.
+                if (document.hidden) return;
+                pendingCounts.push(land);
+                var start = performance.now();
+                var from = target * 0.8;
+                (function step(now) {
+                  if (el.textContent === final) return;         // already flushed
+                  var p = Math.min(1, (now - start) / 600);
+                  var eased = 1 - Math.pow(1 - p, 3);
+                  if (p < 1) {
+                    el.textContent = String(Math.round(from + (target - from) * eased));
+                    requestAnimationFrame(step);
+                  } else {
+                    land(); // land on the AUTHORED string, exactly
+                  }
+                })(start);
+              });
+            }, { threshold: 0.5 });
+            for (var i = 0; i < stats.length; i++) io2.observe(stats[i]);
+          }
+
+          document.addEventListener('astro:page-load', function () {
+            initCountUp();
+          });
+
+          // ══ One-time setup ════════════════════════════════════════════════════
+          //
+          // This inline script RE-EXECUTES on every view transition, so everything below —
+          // which attaches window-level listeners and builds persistent DOM — must run
+          // exactly once, or each navigation would add another listener and another console
+          // signature.
+          if (window.__ipFx) return;
+          window.__ipFx = true;
+
+          // The cursor trail ("the comet") was CUT on 2026-09-24: the operator's pick on the
+          // polish-pass alignment page. Its mount, frame loop and mousemove listener went with
+          // the .comet-layer / .comet-dot rules in global.css.
+
+          // ── Tap ripple ────────────────────────────────────────────────────────
+          // A finger landing gets a small, quick ring (matured, 8rem, 480ms, in global.css).
+          // `pointerdown`, not `click`: it has to land WITH the finger — waiting for click
+          // feels laggy and disconnected from the touch.
+          if (!fine && !reduced) {
+            window.addEventListener('pointerdown', function (e) {
+              if (e.pointerType === 'mouse') return;
+              var r = document.createElement('span');
+              r.className = 'tap-ripple';
+              r.setAttribute('aria-hidden', 'true');
+              r.style.left = e.clientX + 'px';
+              r.style.top = e.clientY + 'px';
+              r.addEventListener('animationend', function () { r.remove(); }, { once: true });
+              document.body.appendChild(r);
+            }, { passive: true }); // passive so it can never delay a scroll
+          }
+
+          // ── Console signature ─────────────────────────────────────────────────
+          // Zero risk, and the people who open devtools are reliably the audience worth
+          // talking to. A real invitation, not a joke.
+          console.log(
+            '%cIan Provencher%c\nI build the operational software big systems leave out.\n\nThe diagrams are real — exported from my Command Center, scrubbed, and gated before they ship.\nThe 3D scenes are three.js. The site is Astro. Nothing here is a mockup.\n\nHiring, or just curious how a piece of it works?\n' + window.location.origin + '/about/\n',
+            `font: 600 20px ui-sans-serif, system-ui; color: ${palette.accent}`,
+            `font: 13px ui-monospace, monospace; color: ${palette.ink}`
+          );
+        } catch (e) {
+          /* A flourish must never take the page down with it. */
+        }
+      })();
+    </script>
+  </body>
+</html>

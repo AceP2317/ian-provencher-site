@@ -1,0 +1,46 @@
+---
+import PageLayout from '../../layouts/PageLayout.astro';
+import ArchitectureViewer from '../../components/islands/ArchitectureViewer.jsx';
+import { architectures, archSlug, archSchema } from '../../data/architectures';
+
+export function getStaticPaths() {
+  return architectures.map((arch) => ({
+    params: { id: archSlug(arch.id) },
+    props: { arch },
+  }));
+}
+
+const { arch } = Astro.props;
+const origin = new URL(Astro.site!).origin;
+// D10: og:image needs a `?v=N` cache-bust — bump this literal by hand whenever
+// gen-assets.mjs regenerates this arch's card (see BaseLayout.astro:45-46).
+const ogImage = `/og/${arch.id}.png?v=1`;
+---
+<PageLayout
+  title={arch.title}
+  description={arch.tagline}
+  image={ogImage}
+  schema={archSchema(arch, origin)}
+>
+  {/* A retired system's page is kept as the record of how it ran, and says so up front.
+      data-retired marks the whole page as history for the retired-copy gate. */}
+  <section class="section" data-retired={arch.legacy ? arch.legacy.since ?? '' : undefined}>
+    <div class="mx-auto max-w-6xl px-6">
+      <a href="/architectures/" class="mono-label transition-colors hover:text-ink">← All architectures</a>
+      {arch.legacy && (
+        <p class="mt-4 max-w-3xl rounded-[var(--r-md)] border border-line-2 bg-surface-2 px-4 py-3 text-sm leading-relaxed text-ink-muted">
+          <span class="chip mr-2 border-line-2 text-ink-faint">Retired {arch.legacy.since}</span>
+          {arch.legacy.reason}
+        </p>
+      )}
+      <h1 class="mt-3 max-w-3xl font-display text-title font-semibold text-ink">
+        {arch.title}
+      </h1>
+      <p class="mt-3 max-w-2xl text-base leading-relaxed text-ink-muted">{arch.tagline}</p>
+
+      <div class="mt-8">
+        <ArchitectureViewer arch={arch} client:visible />
+      </div>
+    </div>
+  </section>
+</PageLayout>

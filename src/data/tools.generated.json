@@ -1,0 +1,582 @@
+[
+  {
+    "id": "tool-appliediq-site",
+    "name": "AppliedIQ Solutions site",
+    "kind": "site",
+    "status": "deployed",
+    "tech": "Astro 7 + React 19 islands + Tailwind v4, Cloudflare Workers, Resend",
+    "description": "The business site for custom software for small local businesses. The front page is three doors: a website anyone can own, Main Street for a local business, and supply-chain tools built to order for a manufacturer. It carries live tool demos and a free check as the lead offer.",
+    "links": [
+      {
+        "label": "appliediqsolutions.com",
+        "href": "https://appliediqsolutions.com"
+      }
+    ]
+  },
+  {
+    "id": "tool-bom-explorer",
+    "name": "BOM Explorer",
+    "kind": "demo",
+    "status": "deployed",
+    "tech": "React island, multi-level BOM-explosion engine (per-unit quantities, where-used), synthetic data",
+    "description": "Field-qualified BOM search, reverse where-used, multi-level explosion with true per-unit quantities across every usage path. A first version of the tool behind it ran on Abacus.AI in June 2026.",
+    "links": [
+      {
+        "label": "Live demo",
+        "href": "https://appliediqsolutions.com/work/bom-explorer/"
+      }
+    ]
+  },
+  {
+    "id": "tool-production-plan-churn",
+    "name": "Production Plan Churn",
+    "kind": "demo",
+    "status": "deployed",
+    "tech": "React island, week-over-week churn diff-engine (noise vs. real reschedules), synthetic data",
+    "description": "Week-over-week production-plan volatility tracker: separates real reschedules from MRP renumbering noise, attributes changes to planner vs system.",
+    "links": [
+      {
+        "label": "Live demo",
+        "href": "https://appliediqsolutions.com/work/production-plan-churn/"
+      }
+    ]
+  },
+  {
+    "id": "tool-order-confirmation-cc",
+    "name": "Order Confirmation Command Center",
+    "kind": "demo",
+    "status": "deployed",
+    "tech": "React island, first-match-wins root-cause waterfall engine, synthetic data",
+    "description": "Roots every unconfirmed unit to a cause via first-match-wins waterfall, drills category→cause→line, exports a ranked worklist.",
+    "links": [
+      {
+        "label": "Live demo",
+        "href": "https://appliediqsolutions.com/work/order-confirmation-command-center/"
+      }
+    ]
+  },
+  {
+    "id": "tool-past-due-order-triage",
+    "name": "Past-Due Order Triage",
+    "kind": "demo",
+    "status": "deployed",
+    "tech": "React island, phantom-demand scoring + action-routing engine, synthetic data",
+    "description": "Finds past-due production orders faking dependent demand, phantom-scores them, and sorts each into one action with where-used BOM impact. A first version of the tool behind it ran on Abacus.AI in June 2026.",
+    "links": [
+      {
+        "label": "Live demo",
+        "href": "https://appliediqsolutions.com/work/past-due-order-triage/"
+      }
+    ]
+  },
+  {
+    "id": "tool-asn-update-radar",
+    "name": "ASN Update Radar",
+    "kind": "demo",
+    "status": "deployed",
+    "tech": "React island, firmest-date arbitration + four-way triage engine, synthetic data",
+    "description": "Daily inbound worklist: picks the firmest arrival date per open shipment and sorts each into verify/chase/reschedule/drop. A first version of the tool behind it ran on Abacus.AI in June 2026.",
+    "links": [
+      {
+        "label": "Live demo",
+        "href": "https://appliediqsolutions.com/work/asn-update-radar/"
+      }
+    ]
+  },
+  {
+    "id": "tool-staging-triage-console",
+    "name": "Staging Triage Console",
+    "kind": "demo",
+    "status": "deployed",
+    "tech": "React island, per-bin integrity rules engine (offsetting-error detection), synthetic data",
+    "description": "Per-bin physical-inventory integrity checks: impossible quantities, offsetting errors that net believable, line-side overstaging. The demo runs on synthetic data; the tool it stands in for reads SAP bin-stock exports and hands a planner the materials worth walking to: stock in the wrong place, a bin that cannot be right, a line position that has not moved in two years, and a quantity falling fast enough to run out before the next delivery. That tool now runs as an Abacus.AI-hosted Next.js + Postgres app whose one analysis engine is shared by the page, a background file parser, the test suite and an independent Python recomputation, and it measures movement by adding up the falls between readings rather than subtracting the endpoints. A first version ran on Abacus.AI in June 2026.",
+    "links": [
+      {
+        "label": "Live demo",
+        "href": "https://appliediqsolutions.com/work/staging-triage-console/"
+      }
+    ]
+  },
+  {
+    "id": "tool-parameter-audit-console",
+    "name": "Parameter Audit Console",
+    "kind": "demo",
+    "status": "deployed",
+    "tech": "React island + Recharts, five-parameter grading engine (tier × ABC × XYZ, dollar exposure), synthetic data",
+    "description": "MRP parameter-governance console: grades five parameters against sourcing-tier × ABC × XYZ targets, dollar exposure on every finding.",
+    "links": [
+      {
+        "label": "Live demo",
+        "href": "https://appliediqsolutions.com/work/parameter-audit-console/"
+      }
+    ]
+  },
+  {
+    "id": "tool-working-identity-kit",
+    "name": "Working identity kit (v3)",
+    "kind": "internal-tool",
+    "status": "shippable",
+    "tech": "Three portable .md artifacts, firewall-clean",
+    "description": "WORKING_IDENTITY, IDENTITY_PRIMER and DEPLOYMENT_KIT: portable working context kept as three markdown files, reshaped per destination AI by a bridge skill.",
+    "links": []
+  },
+  {
+    "id": "tool-command-center",
+    "name": "Command Center OS",
+    "kind": "internal-tool",
+    "status": "deployed",
+    "tech": "Next.js 16, file-per-record JSON with live SSE, React Three Fiber",
+    "description": "Private operations console in seven modules: the bridge, an estate map, agent assignments, skills, architectures, activity and token metrics. The architecture diagrams on this site are exported from it. A public template is available.",
+    "links": [
+      {
+        "label": "Template repo",
+        "href": "https://github.com/AceP2317/command-center-os-template"
+      }
+    ]
+  },
+  {
+    "id": "tool-pdf-pro",
+    "name": "Ian PDF Pro",
+    "kind": "app",
+    "status": "wip",
+    "tech": "Tauri v2, Rust, React 19, TypeScript — Windows + Android",
+    "description": "Cross-platform PDF suite: viewer, page organizer, annotation, forms, OCR. One Tauri codebase shipping to Windows desktop and side-loaded Android.",
+    "links": [
+      {
+        "label": "GitHub repo",
+        "href": "https://github.com/AceP2317/ian-pdf-pro"
+      }
+    ]
+  },
+  {
+    "id": "tool-ask-the-tooling",
+    "name": "'Ask the tooling' live AI assistant",
+    "kind": "web-app",
+    "status": "retired",
+    "tech": "Cloudflare Worker + Anthropic API (streaming, cached) + React chat island",
+    "description": "A site-embedded assistant that answered in Ian's locked voice on three pages. It was rate-limited and spend-capped, and held 8 of 8 adversarial angles, including the employer firewall.",
+    "links": [],
+    "retiredOn": "2026-08-25",
+    "retiredWhy": "Removed from the business site on 25 Aug 2026. Its route is switched off and its components deleted."
+  },
+  {
+    "id": "tool-bom-workbench",
+    "name": "bom-workbench",
+    "kind": "cli",
+    "status": "deployed",
+    "tech": "Python 3.12+ (stdlib only, zero runtime deps), pytest ×48, ruff, GitHub Actions CI",
+    "description": "Public BOM/MRP data toolkit: multi-level BOM explosion with quantity roll-up, where-used lookup, and production-plan churn diff over plain CSV. Ships with fictional demo data.",
+    "links": [
+      {
+        "label": "GitHub repo",
+        "href": "https://github.com/AceP2317/bom-workbench"
+      }
+    ]
+  },
+  {
+    "id": "tool-ian-card",
+    "name": "Digital business card (/ian-card)",
+    "kind": "web-app",
+    "status": "deployed",
+    "tech": "Astro + vCard 3.0 + logo-QR generator",
+    "description": "Share-only landscape business card: save-contact vCard, tap rows, QR with the iQ mark baked in; noindex for privacy.",
+    "links": [
+      {
+        "label": "Card",
+        "href": "https://appliediqsolutions.com/ian-card/"
+      }
+    ]
+  },
+  {
+    "id": "tool-hermes-librarian",
+    "name": "Hermes Librarian",
+    "kind": "internal-tool",
+    "status": "retired",
+    "tech": "Scheduled headless Claude Code + systemd timers + tier-scoped MCP",
+    "description": "An autonomous nightly curation agent over the notes vault. It routed material to sensitivity tiers, shelved atomic notes, wove the link graph and kept Maps of Content current.",
+    "links": [],
+    "retiredOn": "2026-08-02",
+    "retiredWhy": "Shut down with the rest of the Hermes second brain on 2 Aug 2026. The vault is kept as an archive."
+  },
+  {
+    "id": "tool-hermes-vault-infra",
+    "name": "Hermes vault infrastructure",
+    "kind": "internal-tool",
+    "status": "retired",
+    "tech": "Hardened VPS + Cloudflare Tunnel/Access + MCP filesystem + git-crypt + gocryptfs",
+    "description": "The serving layer of the shared brain: an outbound-only tunnel, edge identity gating, three-tier encryption and GitHub sync across every surface.",
+    "links": [],
+    "retiredOn": "2026-08-02",
+    "retiredWhy": "Shut down on 2 Aug 2026, with its services disabled and credentials destroyed. The server itself was kept and now hosts an agents board."
+  },
+  {
+    "id": "tool-co-implementation-planner",
+    "name": "co-implementation-planner",
+    "kind": "skill-suite",
+    "status": "deployed",
+    "tech": "Claude skill: SAP CO PDF + ERP master-data extract + BOM extract + production plan → state-aware BOM validation and a dated implementation plan, two xlsx workbooks",
+    "description": "Computes feasible implementation windows per Change Order with binding constraints, stock projection, multi-CO conflict report, readiness deadlines.",
+    "links": []
+  },
+  {
+    "id": "tool-skill-library-system",
+    "name": "Skill library",
+    "kind": "skill-suite",
+    "status": "deployed",
+    "tech": "SKILL.md packages on claude.ai + Claude Code",
+    "description": "The full house system: cognitive registers, operational skills, deploy machinery, and versioned skill/tool conventions — one library serving every Claude surface.",
+    "links": []
+  },
+  {
+    "id": "tool-confirmation-outlook",
+    "name": "Confirmation Outlook",
+    "kind": "web-app",
+    "status": "deployed",
+    "tech": "Python probability engine + FastAPI + MCP server + React operator console, one Docker container",
+    "description": "Supply-chain order-confirmation risk service, built end to end: risk as a conditional probability table measured from week-to-week transition history, served over an API and an MCP server, with a React operator console on top. Fictional company, synthetic data.",
+    "links": [
+      {
+        "label": "Live demo",
+        "href": "https://demo.appliediqsolutions.com"
+      },
+      {
+        "label": "github.com/AceP2317/confirmation-outlook",
+        "href": "https://github.com/AceP2317/confirmation-outlook"
+      }
+    ]
+  },
+  {
+    "id": "tool-ian-cli",
+    "name": "ian — terminal AI agent",
+    "kind": "cli",
+    "status": "deployed",
+    "tech": "Node 22 + TypeScript + Ink, multi-provider (Anthropic, OpenAI, Google, xAI, OpenRouter, Ollama), MCP client, vitest + biome",
+    "description": "A personal multi-provider CLI coding agent — Claude Code's shape, any model: frontier APIs or free local models behind one terminal UI, with tool use, MCP servers, and a real test suite. In daily use.",
+    "links": []
+  },
+  {
+    "id": "tool-claude-skeleton-map",
+    "name": "Claude skeleton map",
+    "kind": "web-app",
+    "status": "deployed",
+    "tech": "Node + PWA, rebuilt live from disk on every build",
+    "description": "A drillable reference map of the whole Claude Code meta-infrastructure — doctrine, config, hooks, memory, the skills library, plugins and MCP, companion repos, and every dev port. Reads live off disk, so the map cannot go stale on its own.",
+    "links": []
+  },
+  {
+    "id": "tool-review-autopilot",
+    "name": "Review Autopilot",
+    "kind": "web-app",
+    "status": "deployed",
+    "tech": "Next.js 16 + React 19 + Tailwind v4 + Anthropic API",
+    "description": "Review-management dashboard for a small business: it pulls reviews into one queue, drafts on-voice replies with AI, and tracks response health. It now runs as an open demo on the AppliedIQ site.",
+    "links": [
+      {
+        "label": "Open the demo",
+        "href": "https://appliediqsolutions.com/work/review-autopilot/"
+      }
+    ]
+  },
+  {
+    "id": "tool-confirmation-forecaster",
+    "name": "Confirmation-rate forecaster",
+    "kind": "internal-tool",
+    "status": "deployed",
+    "tech": "Python engine + FastAPI service + Vite/React consoles",
+    "description": "Genuinely-predictive order-confirmation analytics: forecasts which materials will miss confirmation next week, splits the at-risk book into recoverable vs structural, and hands the operator the specific lever to pull. Backtested across a run of historical weekly snapshots and validated on a held-out week.",
+    "links": []
+  },
+  {
+    "id": "tool-token-metrics",
+    "name": "Token metrics pipeline",
+    "kind": "internal-tool",
+    "status": "deployed",
+    "tech": "JSON snapshots + nightly box-sync ingestion + Command Center console module",
+    "description": "Usage tracking across every Claude surface: per-project token buckets locally, nightly ingestion from the remote boxes, daily snapshots, and a console module that renders spend and usage trends.",
+    "links": []
+  },
+  {
+    "id": "tool-headless-agents",
+    "name": "Headless agent fleet",
+    "kind": "internal-tool",
+    "status": "deployed",
+    "tech": "Always-on VPS, systemd-run agents, issue-driven dispatch, acceptance harness",
+    "description": "An always-on agents box running autonomous Claude agents: a coding agent that answers task issues with pull requests, a Telegram personal assistant, and a shared runtime with its own verify harness — work continues while the operator sleeps.",
+    "links": []
+  },
+  {
+    "id": "tool-status-line",
+    "name": "Claude Code status line",
+    "kind": "internal-tool",
+    "status": "deployed",
+    "tech": "Bash wired into Claude Code settings, no subprocess per render, 60-second refresh",
+    "description": "The terminal status line inside every Claude Code session. It shows only the five figures Claude Code hands the status line and nothing else can see: the session's cost estimate, lines edited, context used, the cache read in flight and the exact model variant. Rate limits and cache timing live in the Claude HUD panel instead.",
+    "links": []
+  },
+  {
+    "id": "tool-claude-counter",
+    "name": "Claude Counter (browser extension)",
+    "kind": "app",
+    "status": "deployed",
+    "tech": "MV3 Chrome/Firefox extension, vanilla-JS content scripts + vendored tokenizer, all data local",
+    "description": "Live meters injected into claude.ai: per-conversation token count (exact when the stream exposes usage, a labeled approximation otherwise), a cache countdown timer, cache hit rate, and unrounded session/weekly usage bars. A modified build of the MIT claude-counter extension — this fork adds adaptive usage capture from the SSE stream, model-aware context limits, image/document token estimates, and a fail-visible badge when the page layout shifts.",
+    "links": [
+      {
+        "label": "Source (public gist)",
+        "href": "https://gist.github.com/AceP2317/6406208614fa9944fac45d5e9f3479b3"
+      },
+      {
+        "label": "Upstream (she-llac/claude-counter)",
+        "href": "https://github.com/she-llac/claude-counter"
+      }
+    ]
+  },
+  {
+    "id": "tool-mrp-audit-engine",
+    "name": "MRP Audit Engine",
+    "kind": "internal-tool",
+    "status": "wip",
+    "tech": "Python engine over ERP BOM-explosion exports, versioned with anonymized test fixtures",
+    "description": "Audits MRP master-data parameters across finished goods and components: ABC×XYZ segmentation drives geography-tiered policy targets (just-in-time through overseas), and every parameter that deviates from policy is flagged for analyst review with the dollar exposure attached. The structured migration of a proven console prototype into a version-controlled, distributable local engine — raw ERP exports never leave the machine. A first version ran on Abacus.AI by June 2026.",
+    "links": []
+  },
+  {
+    "id": "tool-nexus",
+    "name": "NEXUS operating doctrine",
+    "kind": "internal-tool",
+    "status": "deployed",
+    "tech": "Versioned markdown doctrine in a private git repo + session-start mirror-sync hook",
+    "description": "The operating doctrine as infrastructure: one canonical, versioned NEXUS.md (any edit bumps the version) that a session-start hook pulls and mirrors into every Claude Code session — fail-loud, dropping a visible stale marker whenever the sync chain breaks. How the AI operates is governed from a single source of truth instead of drifting per surface.",
+    "links": []
+  },
+  {
+    "id": "tool-claude-home",
+    "name": "Claude Code home (versioned)",
+    "kind": "internal-tool",
+    "status": "deployed",
+    "tech": "Git-versioned ~/.claude with scheduled auto-sync commits to a private repo",
+    "description": "The entire Claude Code home directory as a maintained, restorable build: session hooks, permission policy, the skill-library mount, the status line, sync scripts and a written migration runbook, auto-committed on a schedule and restored in a weekly rehearsal so the machine's AI setup survives any single computer. The substrate the Claude skeleton map renders.",
+    "links": []
+  },
+  {
+    "id": "tool-confirmation-rootcause",
+    "name": "Confirmation root-cause console",
+    "kind": "internal-tool",
+    "status": "shippable",
+    "tech": "Single-file React artifact, in-browser XLSX ingestion, ported classification engine",
+    "description": "Root-causes every unconfirmed order line in a weekly snapshot: the ERP's nested-IF classification waterfall ported to JavaScript and validated line-for-line against the reference classification, then ranked by cause category — supply, logistics, master data — with drill-down to the individual order. The proof that the classification logic could live outside the spreadsheet; its engine fed the confirmation tools that followed.",
+    "links": []
+  },
+  {
+    "id": "tool-confirmation-tracker",
+    "name": "Confirmation-rate tracker",
+    "kind": "internal-tool",
+    "status": "shippable",
+    "tech": "Single-file React artifact, embedded snapshot + XLSX ingestion",
+    "description": "The descriptive ancestor of the forecaster: week-over-week order-confirmation tracking with drill-downs across the usual planning dimensions — served from an embedded snapshot or a fresh workbook drop, no backend anywhere. Its interaction patterns graduated into the predictive build; this is where they were proven.",
+    "links": []
+  },
+  {
+    "id": "tool-tokenizer-tool",
+    "name": "Tokenizer — model-selection lens",
+    "kind": "cli",
+    "status": "shippable",
+    "tech": "Node CLI over the local transcript store; exact token counts where the API can give them, a fitted offline estimator where it cannot",
+    "description": "Answers one question — is the right model doing the right things — by ranking model-and-effort pairs on billed tokens per completed task rather than price per token. It runs no models to score them: it reads measurements already on disk, counts tokens exactly where an exact count is obtainable, and projects burn forward for workloads that have never been run. It re-derives hand-adjudicated benchmark cells from the raw transcripts rather than trusting the earlier judgement, and every guard inside it runs twice — once on input it must accept, once on input it must reject.",
+    "links": []
+  },
+  {
+    "id": "tool-snipnshare",
+    "name": "SnipnShare",
+    "kind": "web-app",
+    "status": "deployed",
+    "tech": "Containerised service published to loopback and routed by an outbound tunnel; browser-only client, nothing installed on either machine",
+    "description": "A clipboard that crosses networks: paste on one machine, copy on the other, text or screenshots, both directions, through nothing but a browser. It exists because two machines can share no network, no login and no filesystem while still sharing one channel — ordinary encrypted web requests — so the whole client is a web page. The health endpoint answers publicly; the page, its assets and every data endpoint sit behind an access login, and the origin box accepts no inbound connections at all.",
+    "links": [
+      {
+        "label": "Open SnipnShare",
+        "href": "https://snip.appliediqsolutions.com"
+      }
+    ]
+  },
+  {
+    "id": "tool-favorites-manager",
+    "name": "Favorites Manager",
+    "kind": "internal-tool",
+    "status": "deployed",
+    "tech": "Static page plus a small local server that starts itself at login; state in browser storage, no account and no sync",
+    "description": "A private speed-dial for the sites actually opened every day: drag-and-drop tiles in named groups, and a batch paste that takes many URLs at once or a title and URL per line. Everything stays in browser storage on the one machine, so there is no account to create, nothing synced and nothing to sign into. It opens from a desktop icon into its own window with no tabs and no address bar, and leaves no console window running behind it.",
+    "links": []
+  },
+  {
+    "id": "tool-mrp-optimizer",
+    "name": "MRP parameter recommender",
+    "kind": "internal-tool",
+    "status": "shippable",
+    "tech": "TypeScript engine with no clock, file or network in its core; React front end, SQLite run history, workbook reading isolated to one adapter",
+    "description": "Turns a coverage export into a recommended MRP parameter set per material. Each material is classed by ABC and XYZ from its forward requirements, placed in a lead-time tier, and given one recommended value per field from a days-of-cover policy grid the planner edits rather than a hard-coded rule. Every recommendation carries the sentence that justifies it and the projected effect on average stock carried, so a planner can argue with the number instead of accepting it. Source exports are never committed; the test suite runs against a scrubbed fixture, and stock value reconciles to the cent.",
+    "links": []
+  },
+  {
+    "id": "tool-requirement-projection",
+    "name": "Requirement projection workbook",
+    "kind": "internal-tool",
+    "status": "deployed",
+    "tech": "Excel workbook driven by injected VBA, built and verified from Python; no state persisted between sessions",
+    "description": "Reads a daily-requirements export and builds the forward projection a planner otherwise retypes by hand: three rows per part for requirement, inbound allocation and stock, running left to right across a date axis at hourly, daily or weekly granularity. Changing the granularity rebuilds the grid in about half a second, down from fifteen, which is the difference between a control that feels broken and one that feels instant. It opens empty every time on purpose and carries nothing between sessions, so a stale figure from yesterday's export can never be mistaken for today's.",
+    "links": []
+  },
+  {
+    "id": "tool-harness-mechanics",
+    "name": "Harness mechanics reference",
+    "kind": "internal-tool",
+    "status": "deployed",
+    "tech": "Hand-written front page with no server or network dependency; detail pages generated from the live configuration at build time, with a checksum manifest behind every quoted line",
+    "description": "A reference for every mechanism that changes how a coding agent behaves on one machine, and for the places where two of those mechanisms quietly work against each other. The detail pages are generated from the real configuration rather than written once, and every quoted line points into a manifest carrying a line count and a checksum, so an anchor that has gone stale can be caught instead of trusted. Alongside it sits the recorded output of every check that was actually run, each paired with the control that proves the check could have failed. Notes and verdicts are stored apart from the generated pages so a rebuild cannot lose them.",
+    "links": []
+  },
+  {
+    "id": "tool-agent-email",
+    "name": "Agent Inbox",
+    "kind": "web-app",
+    "status": "deployed",
+    "tech": "Abacus.AI-hosted Next.js + Postgres app; mail pulled in from short-lived inbound addresses, language-model actions through the platform's model endpoint",
+    "description": "An email inbox for inbound addresses it creates on demand, each with an expiry: mail sent to them is pulled in and kept in the app's own database, and one-time codes and links are lifted out of each message. On any message an assistant writes a summary, lists action items, assigns a category or drafts a reply; it can sort everything still uncategorized in one pass, and answers questions using only the 60 most recent messages. Its sign-in screen became the starting point for the shared sign-in template later builds are copied from.",
+    "links": []
+  },
+  {
+    "id": "tool-container-tracker",
+    "name": "Container Tracker",
+    "kind": "internal-tool",
+    "status": "deployed",
+    "tech": "Abacus.AI-hosted Next.js + Postgres app; shipping-list spreadsheets in by upload or email attachment, change alerts out by email",
+    "description": "Keeps every snapshot of an ocean-container shipping list and compares each new one with the one before it, container by container, recording a change whenever the ETA, vessel, arrival, delivery date, delivery location, shipment type or supplier moves, or a container appears or drops off. A snapshot arrives either by upload or as a spreadsheet attached to an email sent to the app, and both routes run the same pipeline. People subscribe to the containers, vessels or kinds of change they care about and receive an email listing only the changes that match.",
+    "links": []
+  },
+  {
+    "id": "tool-coverage-worklist-workbook",
+    "name": "Coverage worklist workbook",
+    "kind": "internal-tool",
+    "status": "shippable",
+    "tech": "Excel workbook built from VBA source by a Python builder, checked against a Python reference engine; no install, add-in or network drive needed",
+    "description": "Turns the SAP stock-coverage report into one list of things to do, ranked by the money each is worth, on six pages each named for the question it answers. The analysis exists twice, as a Python reference and as the VBA port inside the workbook, and the build refuses to finish unless the two agree on 50 figures, stock value to the cent included. It carries SAP's own coverage figure unchanged rather than recomputing it, and judges thin cover against how many of a part's own normal orders are on hand rather than a flat day count, because a part replenished several times a day holds a day of stock by design. Each material sits in exactly one lane so the list never shows a line twice, and statistical outliers are labelled as questions rather than errors.",
+    "links": []
+  },
+  {
+    "id": "tool-demand-supply-delta",
+    "name": "Demand Supply Delta",
+    "kind": "internal-tool",
+    "status": "deployed",
+    "tech": "Abacus.AI-hosted Next.js + Postgres app; two SAP APO exports in, one six-sheet xlsx out",
+    "description": "Puts demand against supply by model and ISO week from the two SAP APO exports for one location, on one grid that switches between demand, supply, the difference and the running balance that shows the week a model runs short; any cell opens the orders behind it. Every demand and supply row type is a switch showing its row count, and the four demand types that start switched off are the four the planners' existing report already leaves out, which was measured rather than assumed. A stored pair is shared with everyone who has the link, a private look reads two dropped files in the browser without saving them, and a test proves both paths agree byte for byte. It does not schedule, forecast or write back to SAP.",
+    "links": []
+  },
+  {
+    "id": "tool-eco-translator",
+    "name": "ECO Translator",
+    "kind": "internal-tool",
+    "status": "deployed",
+    "tech": "Abacus.AI-hosted Next.js + Postgres app; change-order PDF read by coordinate band, saved BOM explosion per plant, three-sheet xlsx out",
+    "description": "Turns one engineering change order into the purchased materials it moves, tied to the finished products they feed. A change order names assemblies and configuration records while a planner buys parts, so the tool walks the bill of materials down from every material the order names until it reaches purchased parts, and takes the affected products from the BOM structure rather than from the document, showing the document's own list beside it as a cross-check. It also measures whether the change has already been carried out, and says so when zero purchased parts is the correct answer. Its test run breaks the engine nineteen ways, each one a defect made while building it, and fails if the suite does not notice.",
+    "links": []
+  },
+  {
+    "id": "tool-line-levelling-workbook",
+    "name": "Production line-levelling workbook",
+    "kind": "internal-tool",
+    "status": "deployed",
+    "tech": "Excel workbook with nine injected VBA modules, built and checked from Python over COM; independent Python oracles for the capacity chain and the parts digest",
+    "description": "Reads a production plan and the plants' parts explosions out of SAP, works out whether each line can build what it has been given per shift, per day and per week, moves work to flatten the peaks, and writes four sendable files; nothing goes back into SAP. Everything it does at run time is VBA inside the workbook, because a plant planner has Excel and not Python. The capacity chain and the parts digest are re-derived by a separate Python implementation whose only job is to disagree, and every check has a twin that injects a real fault and refuses to pass unless the check that owns it goes red. A hosted version limited to line levelling and efficiency levers is being built beside it.",
+    "links": []
+  },
+  {
+    "id": "tool-md04-bottleneck-tool",
+    "name": "MD04 Bottleneck Tool",
+    "kind": "internal-tool",
+    "status": "deployed",
+    "tech": "Abacus.AI-hosted Next.js + Postgres app; one part's SAP MD04 export in, named what-if scenarios saved and shared",
+    "description": "Loads one part's SAP MD04 export, shows it exactly as SAP did, and lets a planner move, resize, split, add or delete any line while four answers recompute: the first day the balance drops below zero, the receipt the part hinges on, the schedule lines whose pickup passed with no shipping notice, and what to expedite by ocean or by air. The SAP view never changes; a scenario is that view plus an ordered log of edits replayed every time, saved by name and shared. The part hinges on the receipt with the least slack rather than the one whose loss causes the soonest shortage, because ranking by slack names the line a planner actually has to act on. Transit time is read from each export rather than hard-coded.",
+    "links": []
+  },
+  {
+    "id": "tool-mrp-bottleneck-coverage",
+    "name": "MRP Bottleneck Coverage",
+    "kind": "internal-tool",
+    "status": "deployed",
+    "tech": "React tool ported to an Abacus.AI-hosted Next.js app; four SAP exports parsed in the browser, no database or server storage",
+    "description": "Projects component coverage from four exports — the production plan, the BOM explosion, the supplier schedule with its shipping notices, and stock on hand — by exploding finished-good orders into component demand and rolling each component's balance forward over 60 hourly, daily or weekly periods against starting stock and the inbound quantities backed by shipping notices, to show the first period it goes short. Each component shows requirement, ordered, notice-backed and stock rows side by side, across one plant or several consolidated. A planner can add what-if demand for a finished good, edit cells with undo, and group or filter by procurement type, MRP controller or SKU before exporting to Excel. Ported to Abacus.AI in May 2026.",
+    "links": []
+  },
+  {
+    "id": "tool-sign-in-starter",
+    "name": "Sign-in starter",
+    "kind": "web-app",
+    "status": "shippable",
+    "tech": "Next.js 16 + Postgres template: deny-by-default request gate, signed seven-day cookie, owner-only access page, two identity models",
+    "description": "A Next.js app with a working sign-in, copied at the start of a build so no tool writes its own login again; it exists because nine gated apps had each hand-rolled one, in two different styles, and one shipped with no gate file at all. The gate denies every path unless it is named in one list, and a build keeps one of two identity models: shared owner and member passwords with no personal accounts, or one account per person where it matters who did something. Every stored password carries a generation number that the cookie records, so changing a password signs out every earlier session with no session table to clear, and a fresh deployment can be claimed only with a one-time code supplied at deploy time. Tools built directly inside Abacus.AI start from it through a packaged set of house files.",
+    "links": []
+  },
+  {
+    "id": "tool-sku-id",
+    "name": "SKU ID",
+    "kind": "internal-tool",
+    "status": "deployed",
+    "tech": "Abacus.AI-hosted Next.js + Postgres app; one SAP production plan export in, never writes back",
+    "description": "Reads one SAP production plan export and answers, for every finished-product SKU in it, which product platform it belongs to and which production line it is planned to run on. The two are kept apart on purpose: platform is what the product is and never changes, line is where it runs and can change every planning cycle, so a product routed onto another platform's line is recorded as a routing rather than given a third platform. Platform is settled from the strongest evidence first — the material number, then a line only one platform uses, then a marking in the production version description — and the production version decides the line. SAP cuts that description at 40 characters, so a rule recovers a marking severed mid-word, and descriptions sitting exactly at the cap are flagged because the export cannot say whether a marking was lost.",
+    "links": []
+  },
+  {
+    "id": "tool-stock-location-anomaly-alert",
+    "name": "Stock Location Anomaly Alert",
+    "kind": "internal-tool",
+    "status": "deployed",
+    "tech": "React tool ported to an Abacus.AI-hosted Next.js app; SAP bin-stock exports parsed in the browser, optional BOM enrichment",
+    "description": "Scans SAP bin-stock exports for where stock is wrong across two warehouses and returns severity-ranked findings under ten rules, among them stock stuck in transient areas, negatives where they cannot physically exist, blocked or aged stock, dead stock, posting errors and production overstaging. Nine rules judge a single bin; overstaging is judged per material and then promoted into the per-bin findings, so every view built on them, from severity cards and heatmap to worst bins and export, carries it. Which storage types count as resting or interim, production or warehouse, is kept as named, editable sets, because that classification is domain judgment that drives every result. The production staging monitor was split out of it to give the staging question its own screen, and it was ported to Abacus.AI in May 2026.",
+    "links": []
+  },
+  {
+    "id": "tool-track-and-trace-console",
+    "name": "Track and Trace Console",
+    "kind": "internal-tool",
+    "status": "deployed",
+    "tech": "React tool ported to an Abacus.AI-hosted Next.js + Postgres app; uploaded export pairs saved as datasets, one marked current",
+    "description": "Joins two inbound-logistics exports that never meet, a shipment-line tracking export and a port vessel schedule, keeping the tracking lines as the spine and decorating each with its vessel's berth data, because the two files sit at different grains and a flat merge would lose that. A supplier console groups the lines by supplier with containers and vessels in the collapsed row, and a pulse view measures the lifecycle pipeline, overdue lines whose planned arrival has passed with goods receipt not complete, and pickup-to-receipt lead time on received lines only. It deliberately reports no dwell or delay figure, because the date fields change meaning by lifecycle stage and such a number would be invented rather than measured. Ported to Abacus.AI in June 2026.",
+    "links": []
+  },
+  {
+    "id": "tool-roc-change-tracker",
+    "name": "Range-of-coverage change tracker",
+    "kind": "internal-tool",
+    "status": "deployed",
+    "tech": "Abacus.AI-hosted Next.js app behind a password sign-in",
+    "description": "Compares snapshots of the SAP S/4 range-of-coverage export and flags what changed between them, for material planners. It sits behind a password sign-in.",
+    "links": []
+  },
+  {
+    "id": "tool-supplieriq",
+    "name": "SupplierIQ",
+    "kind": "internal-tool",
+    "status": "deployed",
+    "tech": "Abacus.AI-hosted Next.js app with admin and member sign-in",
+    "description": "Researches, scores and compares material suppliers against ten procurement KPIs. Admins and members sign in with separate shared passwords.",
+    "links": []
+  },
+  {
+    "id": "tool-hot-parts-tracker",
+    "name": "Hot Parts Tracker",
+    "kind": "internal-tool",
+    "status": "deployed",
+    "tech": "Abacus.AI-hosted Next.js app behind a shared team password",
+    "description": "Tracks a team's hot parts across air, sea and land shipments, together with their BOM data and containers. The team signs in with one shared password.",
+    "links": []
+  },
+  {
+    "id": "tool-planner-time-tracker",
+    "name": "Planner time tracker",
+    "kind": "internal-tool",
+    "status": "deployed",
+    "tech": "Abacus.AI-hosted Next.js app with per-person accounts",
+    "description": "Records how material planners allocate their working time. Each planner signs in to an account of their own.",
+    "links": []
+  }
+]

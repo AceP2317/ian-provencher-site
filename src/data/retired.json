@@ -1,0 +1,50 @@
+{
+  "_comment": "What check-retired.mjs refuses to find on a built page OUTSIDE an element marked data-retired. Each entry is a system that stopped, the day it stopped, and the phrases that only ever described it as RUNNING. A phrase belongs here when it is a present-tense claim or a figure that only made sense while the thing ran; a mere NAME does not, because a past-tense sentence naming a retired system is honest. Add an entry the day something retires. Operator's answer, 2026-09-25: a daily check fails the build if anything retired is described as live.",
+  "retired": [
+    {
+      "thing": "The Hermes second brain",
+      "retiredOn": "2026-08-02",
+      "phrases": ["Hermes Librarian", "curated nightly by an autonomous librarian", "second-brain server", "535+ notes", "Vault sync"]
+    },
+    {
+      "thing": "The vault-to-graph brain pipeline and Command Center's brain module",
+      "retiredOn": "2026-08-21",
+      "phrases": ["803 notes", "803 nodes", "sanitized graph of the vault", "sanitized vault graph"]
+    },
+    {
+      "thing": "The nightly Claude briefing",
+      "retiredOn": "2026-08-21",
+      "phrases": ["Self-briefing", "morning briefing", "Briefing ready", "writes the morning briefing"]
+    },
+    {
+      "thing": "The 'Ask the tooling' site assistant",
+      "retiredOn": "2026-08-25",
+      "phrases": ["streaming AI assistant", "/api/ask"]
+    },
+    {
+      "thing": "The job board's scheduled runs (paused, D65)",
+      "retiredOn": "2026-09-01",
+      "phrases": ["twice a week, on a schedule", "board 2×/wk", "survive the cut today", "Repos and the job board keep themselves current"]
+    },
+    {
+      "thing": "The Fable execution register",
+      "retiredOn": "2026-08",
+      "phrases": ["the execution register", "load the execution registers"]
+    },
+    {
+      "thing": "The status-line gist auto-publish",
+      "retiredOn": "2026-08-02",
+      "phrases": ["the gist is always the current build", "auto-publishes it"]
+    },
+    {
+      "thing": "The notes vault as a live connector",
+      "retiredOn": "2026-08-02",
+      "phrases": ["a private notes vault", "reads and writes it over MCP"]
+    },
+    {
+      "thing": "The Hermes pipeline canary",
+      "retiredOn": "2026-08-02",
+      "phrases": ["Pipeline canary"]
+    }
+  ]
+}

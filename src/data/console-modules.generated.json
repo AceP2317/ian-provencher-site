@@ -1,0 +1,30 @@
+[
+  {
+    "title": "The Bridge",
+    "description": "The command deck — every system on one live surface: gauges, tickers, constellation."
+  },
+  {
+    "title": "Estate",
+    "description": "Every repo and app on this machine, derived live from git and the port registry."
+  },
+  {
+    "title": "Assignments",
+    "description": "Dispatch work to Claude Code and review what comes back."
+  },
+  {
+    "title": "Skill Library",
+    "description": "Live registry of deployed Claude skills."
+  },
+  {
+    "title": "Architectures",
+    "description": "The systems behind the work — drawn, with their stories."
+  },
+  {
+    "title": "Ops Log",
+    "description": "Every event the system has ever logged — filterable, searchable, drill-down detail on every line."
+  },
+  {
+    "title": "Token Metrics",
+    "description": "Every token Claude burns, everywhere — API-rate cost, cache economics, burn by model."
+  }
+]

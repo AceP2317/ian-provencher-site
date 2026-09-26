@@ -1,0 +1,402 @@
+[
+  {
+    "label": "Code map rebuild",
+    "purpose": "Redraws the navigable code map of one project from its current source, so the map never describes code that has moved.",
+    "category": "maps",
+    "host": "this PC",
+    "cadence": "Nightly",
+    "status": "running",
+    "described": true,
+    "count": 9
+  },
+  {
+    "label": "Ops console nightly",
+    "purpose": "Checks the ops console’s build, saves token-usage numbers before their source ages out, and writes a health record last, so the record existing means the run finished.",
+    "category": "console",
+    "host": "this PC",
+    "cadence": "Nightly",
+    "status": "running",
+    "described": true,
+    "count": 1
+  },
+  {
+    "label": "Encrypted backup",
+    "purpose": "Takes an encrypted backup of a private store, so losing this PC does not lose it.",
+    "category": "backup",
+    "host": "this PC",
+    "cadence": "Daily",
+    "status": "running",
+    "described": true,
+    "count": 1
+  },
+  {
+    "label": "Dev server reaper",
+    "purpose": "Stops local development servers left running on registered ports.",
+    "category": "housekeeping",
+    "host": "this PC",
+    "cadence": "Nightly",
+    "status": "running",
+    "described": true,
+    "count": 1
+  },
+  {
+    "label": "Estate preserve",
+    "purpose": "Commits and pushes every project and this machine’s settings on a clock rather than on a session, so a week without a session is not a week without a backup.",
+    "category": "backup",
+    "host": "this PC",
+    "cadence": "Nightly",
+    "status": "running",
+    "described": true,
+    "count": 1
+  },
+  {
+    "label": "Nightly test tier",
+    "purpose": "Runs the slow test tier of every project and reports any failure at the start of the next session.",
+    "category": "guards",
+    "host": "this PC",
+    "cadence": "Nightly",
+    "status": "running",
+    "described": true,
+    "count": 1
+  },
+  {
+    "label": "Machine watch",
+    "purpose": "Reads this PC’s health (disk, memory, hangs) and reports anything wrong at the start of the next session, because a machine that is merely unusable logs almost nothing.",
+    "category": "guards",
+    "host": "this PC",
+    "cadence": "Every few minutes",
+    "status": "running",
+    "described": true,
+    "count": 1
+  },
+  {
+    "label": "Traffic log trim",
+    "purpose": "Keeps the logged request and response bodies, kept deliberately for studying each new tool version, from filling the disk.",
+    "category": "housekeeping",
+    "host": "this PC",
+    "cadence": "Every few minutes",
+    "status": "running",
+    "described": true,
+    "count": 1
+  },
+  {
+    "label": "Reference sites rebuild",
+    "purpose": "Rebuilds the two reference sites that map this whole setup, in the one order that is correct, because one reads what the other builds.",
+    "category": "maps",
+    "host": "this PC",
+    "cadence": "Nightly",
+    "status": "running",
+    "described": true,
+    "count": 1
+  },
+  {
+    "label": "Restore rehearsal",
+    "purpose": "Walks the restore runbook against the backups without rebuilding anything, because a backup nobody has restored from is a guess.",
+    "category": "backup",
+    "host": "this PC",
+    "cadence": "Weekly",
+    "status": "running",
+    "described": true,
+    "count": 1
+  },
+  {
+    "label": "Stray process sweep",
+    "purpose": "Finds and stops background shell processes nobody is waiting on.",
+    "category": "housekeeping",
+    "host": "this PC",
+    "cadence": "Nightly",
+    "status": "running",
+    "described": true,
+    "count": 1
+  },
+  {
+    "label": "Desktop layout audit",
+    "purpose": "Backs up and audits the taskbar layout, and speaks up only when something is wrong.",
+    "category": "housekeeping",
+    "host": "this PC",
+    "cadence": "Weekly",
+    "status": "running",
+    "described": true,
+    "count": 1
+  },
+  {
+    "label": "Task agent wake",
+    "purpose": "Wakes the task agent when work is waiting for it.",
+    "category": "agents",
+    "host": "an agents server",
+    "cadence": "Every few minutes",
+    "status": "running",
+    "described": true,
+    "count": 1
+  },
+  {
+    "label": "Assistant schedule check",
+    "purpose": "Wakes the assistant agent when one of its scheduled entries is due.",
+    "category": "agents",
+    "host": "an agents server",
+    "cadence": "Every few minutes",
+    "status": "running",
+    "described": true,
+    "count": 1
+  },
+  {
+    "label": "Daily ops digest",
+    "purpose": "Sends me a summary of what the agents did and what is waiting on me.",
+    "category": "agents",
+    "host": "an agents server",
+    "cadence": "Daily",
+    "status": "running",
+    "described": true,
+    "count": 1
+  },
+  {
+    "label": "Alerting heartbeat",
+    "purpose": "Pings me every week whether or not anything broke, so a dead alert channel shows up as a missing ping instead of a missed outage.",
+    "category": "guards",
+    "host": "an agents server",
+    "cadence": "Weekly",
+    "status": "running",
+    "described": true,
+    "count": 1
+  },
+  {
+    "label": "Workload export",
+    "purpose": "Exports each agent’s workload numbers into its own repo, where the board reads them.",
+    "category": "agents",
+    "host": "an agents server",
+    "cadence": "Every few minutes",
+    "status": "running",
+    "described": true,
+    "count": 1
+  },
+  {
+    "label": "Domain request broker",
+    "purpose": "Checks the agents’ requests to reach new web domains and escalates each one to me for a decision.",
+    "category": "gates",
+    "host": "an agents server",
+    "cadence": "Every few minutes",
+    "status": "running",
+    "described": true,
+    "count": 1
+  },
+  {
+    "label": "Handoff watch",
+    "purpose": "Wakes an agent when the other hands it work.",
+    "category": "agents",
+    "host": "an agents server",
+    "cadence": "Every few minutes",
+    "status": "running",
+    "described": true,
+    "count": 1
+  },
+  {
+    "label": "Control poller",
+    "purpose": "Picks up the pause, resume and wake taps I make on the board.",
+    "category": "agents",
+    "host": "an agents server",
+    "cadence": "Every few minutes",
+    "status": "running",
+    "described": true,
+    "count": 1
+  },
+  {
+    "label": "Regression check",
+    "purpose": "Checks each week whether the agents’ benchmark results have slipped.",
+    "category": "guards",
+    "host": "an agents server",
+    "cadence": "Weekly",
+    "status": "running",
+    "described": true,
+    "count": 1
+  },
+  {
+    "label": "Goal judge",
+    "purpose": "Decides whether a standing goal’s latest run finished or should continue.",
+    "category": "agents",
+    "host": "an agents server",
+    "cadence": "Every few minutes",
+    "status": "running",
+    "described": true,
+    "count": 1
+  },
+  {
+    "label": "Petition broker",
+    "purpose": "Validates the agents’ requests for host changes and escalates them; nothing is granted automatically.",
+    "category": "gates",
+    "host": "an agents server",
+    "cadence": "Every few minutes",
+    "status": "running",
+    "described": true,
+    "count": 1
+  },
+  {
+    "label": "Poller watchdog",
+    "purpose": "Restarts the agents’ chat pollers if they stall.",
+    "category": "guards",
+    "host": "an agents server",
+    "cadence": "Every few minutes",
+    "status": "running",
+    "described": true,
+    "count": 1
+  },
+  {
+    "label": "Outbound send gate",
+    "purpose": "Validates anything an agent wants to send outside and holds it for my approval.",
+    "category": "gates",
+    "host": "an agents server",
+    "cadence": "Every few minutes",
+    "status": "running",
+    "described": true,
+    "count": 1
+  },
+  {
+    "label": "Proxy log rotation",
+    "purpose": "Rotates the logs of the proxy that all of the agents’ outbound traffic goes through.",
+    "category": "housekeeping",
+    "host": "an agents server",
+    "cadence": "Weekly",
+    "status": "running",
+    "described": true,
+    "count": 1
+  },
+  {
+    "label": "Agents board refresh",
+    "purpose": "Fetches both agents’ repos and rebuilds the cross-agent board page if either moved.",
+    "category": "agents",
+    "host": "the board server",
+    "cadence": "Every few minutes",
+    "status": "running",
+    "described": true,
+    "count": 1
+  },
+  {
+    "label": "Repos refresh",
+    "purpose": "Refreshes this site’s public repos list, gates it for anything private, and commits only if it changed.",
+    "category": "site",
+    "host": "GitHub",
+    "cadence": "Nightly",
+    "status": "running",
+    "described": true,
+    "count": 1
+  },
+  {
+    "label": "Podcast sync",
+    "purpose": "Publishes any new podcast episode to this site after checking its audio and provenance.",
+    "category": "site",
+    "host": "GitHub",
+    "cadence": "Daily",
+    "status": "running",
+    "described": true,
+    "count": 1
+  },
+  {
+    "label": "Librarian",
+    "purpose": "Librarian — nightly curation pass",
+    "category": "second brain",
+    "host": "the Hermes server",
+    "cadence": "Every few minutes",
+    "status": "retired",
+    "retiredOn": "2026-08-02",
+    "described": true,
+    "count": 1
+  },
+  {
+    "label": "Vault sync",
+    "purpose": "Vault sync (commit brain writes, converge with GitHub)",
+    "category": "second brain",
+    "host": "the Hermes server",
+    "cadence": "Every few minutes",
+    "status": "retired",
+    "retiredOn": "2026-08-02",
+    "described": true,
+    "count": 1
+  },
+  {
+    "label": "MCP reaper",
+    "purpose": "Reap leaked MCP filesystem children by restarting the remote connectors",
+    "category": "second brain",
+    "host": "the Hermes server",
+    "cadence": "Nightly",
+    "status": "retired",
+    "retiredOn": "2026-08-02",
+    "described": true,
+    "count": 1
+  },
+  {
+    "label": "Firewall audit",
+    "purpose": "Firewall audit — nightly tripwire over the synced (Open + Private) tiers",
+    "category": "second brain",
+    "host": "the Hermes server",
+    "cadence": "Nightly",
+    "status": "retired",
+    "retiredOn": "2026-08-02",
+    "described": true,
+    "count": 1
+  },
+  {
+    "label": "Watchdog",
+    "purpose": "Watchdog — 10-min staleness sentinel (silent-failure detector)",
+    "category": "second brain",
+    "host": "the Hermes server",
+    "cadence": "Every few minutes",
+    "status": "retired",
+    "retiredOn": "2026-08-02",
+    "described": true,
+    "count": 1
+  },
+  {
+    "label": "Pipeline canary",
+    "purpose": "Pipeline canary — daily end-to-end filing proof (drop -> model -> note -> ledger)",
+    "category": "second brain",
+    "host": "the Hermes server",
+    "cadence": "Nightly",
+    "status": "retired",
+    "retiredOn": "2026-08-02",
+    "described": true,
+    "count": 1
+  },
+  {
+    "label": "Alert heartbeat",
+    "purpose": "Weekly alerting heartbeat — a dead alert channel becomes noticeable by ABSENCE",
+    "category": "second brain",
+    "host": "the Hermes server",
+    "cadence": "Weekly",
+    "status": "retired",
+    "retiredOn": "2026-08-02",
+    "described": true,
+    "count": 1
+  },
+  {
+    "label": "Skills refresh",
+    "purpose": "Skills refresh (mirror canonical claude-code-skills into the vault tree)",
+    "category": "second brain",
+    "host": "the Hermes server",
+    "cadence": "Every few minutes",
+    "status": "retired",
+    "retiredOn": "2026-08-02",
+    "described": true,
+    "count": 1
+  },
+  {
+    "label": "Graph audit",
+    "purpose": "Graph-health audit — nightly read-only tripwire over the Open knowledge graph (#9)",
+    "category": "second brain",
+    "host": "the Hermes server",
+    "cadence": "Nightly",
+    "status": "retired",
+    "retiredOn": "2026-08-02",
+    "described": true,
+    "count": 1
+  },
+  {
+    "label": "Auto-refresh",
+    "purpose": "Regenerate the architecture view from the latest repo (self-refresh)",
+    "category": "second brain",
+    "host": "the Hermes server",
+    "cadence": "Nightly",
+    "status": "retired",
+    "retiredOn": "2026-08-02",
+    "described": true,
+    "count": 1
+  }
+]
