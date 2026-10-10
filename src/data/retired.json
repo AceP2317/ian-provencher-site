@@ -1,0 +1,75 @@
+{
+  "_comment": "What check-retired.mjs refuses to find on a built page OUTSIDE an element marked data-retired. Each entry is a system that stopped, the day it stopped, and the phrases that only ever described it as RUNNING. A phrase belongs here when it is a present-tense claim or a figure that only made sense while the thing ran; a mere NAME does not, because a past-tense sentence naming a retired system is honest. Add an entry the day something retires. Operator's answer, 2026-09-25: a daily check fails the build if anything retired is described as live.",
+  "retired": [
+    {
+      "thing": "The Hermes second brain",
+      "retiredOn": "2026-08-02",
+      "phrases": ["Hermes Librarian", "curated nightly by an autonomous librarian", "second-brain server", "535+ notes", "Vault sync"]
+    },
+    {
+      "thing": "The vault-to-graph brain pipeline and Command Center's brain module",
+      "retiredOn": "2026-08-21",
+      "phrases": ["803 notes", "803 nodes", "sanitized graph of the vault", "sanitized vault graph"]
+    },
+    {
+      "thing": "The nightly Claude briefing",
+      "retiredOn": "2026-08-21",
+      "phrases": ["Self-briefing", "morning briefing", "Briefing ready", "writes the morning briefing"]
+    },
+    {
+      "thing": "The 'Ask the tooling' site assistant",
+      "retiredOn": "2026-08-25",
+      "phrases": ["streaming AI assistant", "/api/ask"]
+    },
+    {
+      "thing": "The Fable execution register",
+      "retiredOn": "2026-08",
+      "phrases": ["the execution register", "load the execution registers"]
+    },
+    {
+      "thing": "The status-line gist auto-publish",
+      "retiredOn": "2026-08-02",
+      "phrases": ["the gist is always the current build", "auto-publishes it"]
+    },
+    {
+      "thing": "The notes vault as a live connector",
+      "retiredOn": "2026-08-02",
+      "phrases": ["a private notes vault", "reads and writes it over MCP"]
+    },
+    {
+      "thing": "The Hermes pipeline canary",
+      "retiredOn": "2026-08-02",
+      "phrases": ["Pipeline canary"]
+    },
+    {
+      "thing": "The Command Center desktop console and its phone app",
+      "retiredOn": "2026-09-25",
+      "phrases": ["private ops console", "private operations console", "ccos.internal", "installs as a PWA on the desktop", "rides in a native app on my phone", "self-updates over the air", "The console I run everything from", "console module"]
+    },
+    {
+      "thing": "The agents board on the spare server",
+      "retiredOn": "2026-09-26",
+      "phrases": ["hosts the agents board", "hosts an agents board", "Agents board refresh", "behind a corporate login wall", "Its one write action"]
+    },
+    {
+      "thing": "Command Center's read-only rule (it acts on his notes and agents since this date)",
+      "retiredOn": "2026-09-27",
+      "phrases": ["one read-only page", "it never acts", "a read-only operations page", "One notification a day", "acting on an agent happens in that agent's chat"]
+    },
+    {
+      "thing": "The learning-ledger prompt hook",
+      "retiredOn": "2026-08-28",
+      "phrases": ["what has already been taught so it is not taught twice"]
+    },
+    {
+      "thing": "The remote-box guard hook",
+      "retiredOn": "2026-09-24",
+      "phrases": ["a command about to touch a remote box"]
+    },
+    {
+      "thing": "The agents' shared files shelf, self-time wake and outcome sensor (headless-agents D79)",
+      "retiredOn": "2026-09-26",
+      "phrases": ["share a files shelf", "discretionary self-time", "earned self-time", "records which merged work later got reverted"]
+    }
+  ]
+}
