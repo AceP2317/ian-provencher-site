@@ -1,0 +1,72 @@
+---
+/**
+ * /world/orrery — the estate as an orrery. Every system, tool, repo, scheduled job and layer of the setup is
+ * a body you can select. The model is PUBLIC-SAFE only: it is derived from the already-exported generated data
+ * in src/data/world.ts. The island is client:visible (WebGL-gated, lazy-loaded) with a complete server-rendered
+ * list, so crawlers and no-WebGL visitors get every record too.
+ */
+import PageLayout from '../../../layouts/PageLayout.astro';
+import WorldIsland from '../../../components/islands/world/WorldIsland.jsx';
+import { bySlug } from '../../../data/sections';
+import { WORLD } from '../../../data/world';
+
+const section = bySlug.get('world')!;
+const origin = new URL(Astro.site!).origin;
+const records = WORLD.reduce((n, p) => n + p.moons.length, 0);
+
+const schema = [
+  {
+    '@type': 'CreativeWork',
+    '@id': `${origin}/world/orrery/#exhibit`,
+    name: 'The World, orrery view',
+    url: `${origin}/world/orrery/`,
+    description: section.description,
+    isPartOf: { '@id': `${origin}/#website` },
+    about: { '@id': `${origin}/#person` },
+    creator: { '@id': `${origin}/#person` },
+  },
+  {
+    '@type': 'BreadcrumbList',
+    '@id': `${origin}/world/orrery/#breadcrumb`,
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: `${origin}/` },
+      { '@type': 'ListItem', position: 2, name: 'The World', item: `${origin}/world/` },
+      { '@type': 'ListItem', position: 3, name: 'Orrery view', item: `${origin}/world/orrery/` },
+    ],
+  },
+];
+---
+<PageLayout
+  title="The World, orrery view"
+  description={section.description}
+  image="/og/claude-setup.png?v=2"
+  schema={schema}
+>
+  <section class="relative overflow-hidden border-b border-line">
+    <div class="bg-grid bg-grid-fade pointer-events-none absolute inset-0 -z-10 opacity-60"></div>
+    <div class="relative mx-auto max-w-5xl px-6 pt-20 pb-14 sm:pt-28 sm:pb-16">
+      <p class="mono-label">The World · the orrery</p>
+      <h1 class="mt-3 max-w-3xl font-display text-title font-semibold text-ink">
+        The whole estate, as a system you can fly through.
+      </h1>
+      <p class="mt-5 max-w-2xl text-lg leading-relaxed text-ink-muted">
+        The sun is the model. Each planet is one family of machinery, and each moon is one record in it.
+        A scheduled job orbits faster the more often it runs. Select any body to read what it is.
+        This shows {records} records across {WORLD.length} families.
+      </p>
+      <p class="mt-4 max-w-2xl text-sm leading-relaxed text-ink-faint">
+        <a href="/world/" class="underline">Walk the city instead</a>.
+      </p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="mx-auto max-w-6xl px-6">
+      <WorldIsland planets={WORLD} client:visible />
+      <p class="mt-6 max-w-2xl text-sm leading-relaxed text-ink-faint">
+        Reduced-motion and no-WebGL visitors get the same records as a plain list. Every body is reachable
+        by keyboard through the list.
+      </p>
+    </div>
+  </section>
+</PageLayout>

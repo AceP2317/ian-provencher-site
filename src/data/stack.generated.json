@@ -1,0 +1,26 @@
+{
+  "doctrineVersion": "v52.6",
+  "hookEvents": [
+    "UserPromptSubmit",
+    "PreToolUse",
+    "PostModelSwitch",
+    "PostToolUse",
+    "SessionStart",
+    "SessionEnd",
+    "SubagentStop",
+    "Stop"
+  ],
+  "hookCount": 68,
+  "perEvent": {
+    "UserPromptSubmit": 6,
+    "PreToolUse": 25,
+    "PostModelSwitch": 3,
+    "PostToolUse": 12,
+    "SessionStart": 16,
+    "SessionEnd": 1,
+    "SubagentStop": 2,
+    "Stop": 3
+  },
+  "skillCount": 59,
+  "agentCount": 5
+}
