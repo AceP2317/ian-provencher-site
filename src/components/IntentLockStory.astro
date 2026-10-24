@@ -1,0 +1,569 @@
+---
+/**
+ * IntentLockStory — the scroll story for the "Plan mode, enforced" field note.
+ *
+ * Ten stages of the intent-lock workflow, each a card with a small scene that plays while the card
+ * is the one being read, beside an instrument that follows the reader and shows the state at that
+ * stage: mode, window, round, open items, the exit gate, context tokens and the judge. Every figure
+ * is read from the real planning session and its build window, or measured on this machine; the
+ * one refused exit shown is the kit's live test and says so.
+ *
+ * No framework: one module script, colours from the @theme tokens only, every :hover gated.
+ * At rest, with scripts off or reduced motion on, every card shows its finished scene.
+ */
+const STAGES = [
+  { id: 'mode', n: 1, title: 'Plan mode is the default', kind: 'setting',
+    state: { mode: 'PLAN', win: 'planning', round: '0', open: '–', gate: '', ctx: 85429, read: 85429, judge: 'none' } },
+  { id: 'inject', n: 2, title: 'The method loads', kind: 'hook',
+    state: { mode: 'PLAN', win: 'planning', round: '0', open: '–', gate: '', ctx: 85429, read: 85429, judge: 'none' } },
+  { id: 'calibrate', n: 3, title: 'Calibrate, out loud', kind: 'method',
+    state: { mode: 'PLAN', win: 'planning', round: '0', open: '6', gate: '', ctx: 85429, read: 85429, judge: 'none' } },
+  { id: 'box', n: 4, title: 'The question box', kind: 'hook',
+    state: { mode: 'PLAN', win: 'planning', round: '1', open: '6', gate: '', ctx: 102599, read: 1305942, judge: 'none' } },
+  { id: 'ledger', n: 5, title: 'The ledger, tensions first', kind: 'method',
+    state: { mode: 'PLAN', win: 'planning', round: '2', open: '0', gate: '', ctx: 138267, read: 3847946, judge: 'none' } },
+  { id: 'restate', n: 6, title: 'The restatement, inside the box', kind: 'hook',
+    state: { mode: 'PLAN', win: 'planning', round: '5', open: '0', gate: '', ctx: 185262, read: 9637577, judge: 'none' } },
+  { id: 'seal', n: 7, title: 'Seal, then watch or walk', kind: 'method',
+    state: { mode: 'PLAN', win: 'planning', round: '5', open: '0', gate: '', ctx: 185262, read: 9637577, judge: 'none' } },
+  { id: 'gate', n: 8, title: 'The exit gate', kind: 'hook',
+    state: { mode: 'PLAN', win: 'planning', round: '5', open: '0', gate: 'allow', ctx: 193771, read: 10782386, judge: 'none' } },
+  { id: 'handoff', n: 9, title: 'The handoff', kind: 'hook',
+    state: { mode: 'AUTO', win: 'build', round: '5', open: '0', gate: 'allow', ctx: 61536, read: 11839687, judge: 'armed' } },
+  { id: 'judge', n: 10, title: 'The judge', kind: 'harness',
+    state: { mode: 'AUTO', win: 'build', round: '5', open: '0', gate: 'allow', ctx: 404305, read: 113011366, judge: 'Haiku 5.5' } },
+  { id: 'bill', n: 11, title: 'The whole bill', kind: 'measured',
+    state: { mode: 'AUTO', win: 'both', round: '5', open: '0', gate: 'allow', ctx: 404305, read: 113011366, judge: 'met' } },
+];
+const KIND = { setting: 'Setting', hook: 'Enforced by a hook', method: 'Instructed', harness: 'Built into Claude Code', measured: 'Measured' };
+const stateJson = JSON.stringify(STAGES.map((s) => s.state));
+---
+<section class="ils" aria-label="How the intent-lock workflow runs, step by step" data-states={stateJson}>
+  <div class="ils-grid">
+    <ol class="ils-cards">
+      <li class="ils-spine" aria-hidden="true"><span class="ils-flow"></span><span class="ils-packet"></span></li>
+
+      <!-- 1 · mode -->
+      <li class="ils-card" data-i="0" id="stage-mode">
+        <header><span class="ils-n">01</span><h3>{STAGES[0].title}</h3><span class="ils-kind setting">{KIND.setting}</span></header>
+        <p class="ils-lead">Every session starts in plan mode. Nothing is pressed to get there, and nothing can be edited until a plan is approved.</p>
+        <div class="ils-scene scene-mode" aria-hidden="true">
+          <div class="term"><div class="term-line"><span class="dim">❯</span> <span class="typed" data-text="make a LinkedIn post: “You’re using Claude Code wrong”">make a LinkedIn post: “You’re using Claude Code wrong”</span><span class="caret"></span></div>
+          <div class="term-status">⏸ plan mode on <span class="dim">· the session's saved default</span></div></div>
+        </div>
+        <p>One line in the user settings does it: <code>{'"permissions": {"defaultMode": "plan"}'}</code>. In plan mode Claude reads, searches and asks, but every write and command that changes the machine needs an approved plan first. Headless runs inherit the same default, so a script that needs to edit says so with its own <code>--permission-mode</code>.</p>
+        <p>Anthropic's guide treats plan mode as something you switch into for bigger work. Here it is the floor, and the next nine stages decide when it ends.</p>
+      </li>
+
+      <!-- 2 · inject -->
+      <li class="ils-card" data-i="1" id="stage-inject">
+        <header><span class="ils-n">02</span><h3>{STAGES[1].title}</h3><span class="ils-kind hook">{KIND.hook}</span></header>
+        <p class="ils-lead">Before Claude plans anything, a hook puts the interview method into its context.</p>
+        <div class="ils-scene scene-log" aria-hidden="true">
+          <div class="log-line">UserPromptSubmit <span class="arrow">→</span> intent-inject.sh</div>
+          <div class="log-line">permission_mode = "plan" <span class="ok">✓</span></div>
+          <div class="log-line">mkdir sessions/&lt;session_id&gt; <span class="ok">first send ✓</span></div>
+          <div class="log-line">method block 9,592 chars <span class="dim">· cap 9,800</span> <span class="ok">✓</span></div>
+          <div class="log-line">stdout <span class="arrow">→</span> Claude's context</div>
+        </div>
+        <ul class="ils-list">
+          <li><b>When.</b> Claude Code runs the hook on every prompt and hands it a JSON payload. The hook reads one field, <code>permission_mode</code>, and does nothing unless it says <code>"plan"</code>.</li>
+          <li><b>Once.</b> The full method goes out once per session. The hook claims the send by creating a directory named after the session id. Creating a directory either succeeds or fails, with no moment where two prompts both believe they won. Later prompts get a four-line reminder.</li>
+          <li><b>Again for a second build.</b> Every plan exit writes a heartbeat file. A heartbeat newer than the session's marker re-arms the full send, so a second plan in the same window is interviewed properly too.</li>
+          <li><b>Small enough to arrive whole.</b> Past 10,000 characters Claude Code shows Claude a 2 KB preview of a hook's output instead of the output. In September, 138 of 200 planning sessions got only the preview. The block is now held under 9,800 by a test.</li>
+        </ul>
+      </li>
+
+      <!-- 3 · calibrate -->
+      <li class="ils-card" data-i="2" id="stage-calibrate">
+        <header><span class="ils-n">03</span><h3>{STAGES[2].title}</h3><span class="ils-kind method">{KIND.method}</span></header>
+        <p class="ils-lead">Claude sizes the interview to the ask and says which branch it took, so a wrong call costs one word to fix.</p>
+        <div class="ils-scene scene-fork" aria-hidden="true">
+          <div class="fork-opt">Fewer than three open unknowns<span>one sentence naming the assumptions, then go</span></div>
+          <div class="fork-opt pick">Three or more<span>rounds until the ledger is empty</span></div>
+        </div>
+        <p>A method that interrogates a typo fix gets switched off, so the short branch matters as much as the long one. On this post Claude's first line was: “This is the long branch: at least five things are open, so I'll ask questions before drafting anything.”</p>
+        <p>Six slots are the floor it checks itself against: who it is for, what it is, what it is not, why it matters, how it runs, and how we will know it is done. They are never put to me as a form. The slot that changes builds most is <i>why</i>, because it is where “I need X” gets tested for whether X matters at all.</p>
+      </li>
+
+      <!-- 4 · box -->
+      <li class="ils-card" data-i="3" id="stage-box">
+        <header><span class="ils-n">04</span><h3>{STAGES[3].title}</h3><span class="ils-kind hook">{KIND.hook}</span></header>
+        <p class="ils-lead">Every decision arrives as a box of options. A hook reads the whole box before it is drawn, and refuses one I could not answer well.</p>
+        <div class="ils-scene scene-box" aria-hidden="true">
+          <div class="q">What should the post say is the “wrong” part?</div>
+          <div class="opt rec"><span class="lbl">Advice instead of a gate <em>(Recommended)</em></span><span class="beats"><i></i><i></i><i></i><i></i></span></div>
+          <div class="opt"><span class="lbl">Letting the AI decide it's ready</span><span class="beats"><i></i><i></i><i></i><i></i></span></div>
+          <div class="opt"><span class="lbl">Skipping the questions at all</span><span class="beats"><i></i><i></i><i></i><i></i></span></div>
+          <div class="opt"><span class="lbl">All three, in sequence</span><span class="beats"><i></i><i></i><i></i><i></i></span></div>
+          <div class="beat-key"><span>what it is</span><span>how it differs</span><span>what you will see</span><span>what you give up</span></div>
+        </div>
+        <ul class="ils-list">
+          <li><b>The hook sees everything first.</b> A <code>PreToolUse</code> hook on <code>AskUserQuestion</code> receives the full question set as its input. Answering with <code>permissionDecision: "deny"</code> and a reason stops the box, and Claude rewrites it from the reason.</li>
+          <li><b>Four beats, counted.</b> Each option needs four sentences: what it is, how it differs, what I will see, what I give up. The hook counts sentence endings and never grades the writing.</li>
+          <li><b>Labels say what a thing does.</b> A file name, a code identifier or a command-line flag in a header or label is refused.</li>
+          <li><b>No side panel.</b> An option carrying a <code>preview</code> switches the dialog to a layout that draws labels only and drops every explanation. That was measured in the program itself, so any preview is refused.</li>
+          <li><b>One position.</b> The set is filled to four where real alternatives exist, and exactly one is marked recommended. The public kit's version refuses a set with none, or more than one.</li>
+        </ul>
+        <p class="ils-note">This machine has asked 1,168 question sets, holding 9,764 questions and option descriptions.</p>
+      </li>
+
+      <!-- 5 · ledger -->
+      <li class="ils-card" data-i="4" id="stage-ledger">
+        <header><span class="ils-n">05</span><h3>{STAGES[4].title}</h3><span class="ils-kind method">{KIND.method}</span></header>
+        <p class="ils-lead">A numbered list of what is still open, shown every round. Tensions outrank assumptions, because resolving one usually changes the build.</p>
+        <div class="ils-scene scene-ledger" aria-hidden="true">
+          <div class="led t">The headline makes a claim about the reader</div>
+          <div class="led t">The headline's crowd is not the whole audience</div>
+          <div class="led t">“Full detail” does not fit a post</div>
+          <div class="led a">A real catch exists to prove it</div>
+          <div class="led a">Text and images, not an article</div>
+          <div class="led a">It names Claude Code at all</div>
+          <div class="led-count"><b>6</b> open</div>
+        </div>
+        <p>A tension is an answer that sits badly against another answer, the goal or the code. An assumption is something taken on faith. Round one closed with six open items: three tensions and three assumptions. After round two it was four, and once those answers were in, none.</p>
+        <p>The rule that matters is the floor: <b>at least two rounds</b> before sealing. A first round returns answers nobody has had time to be surprised by, and round two is spent on what round one opened. Measured across 212 planning sessions in September, the weekly average ran between 1.40 and 3.02 rounds, and 39% of sessions asked exactly once. The floor exists because of those numbers. It is instructed rather than counted, and the seal is the record the gate checks.</p>
+      </li>
+
+      <!-- 6 · restatement -->
+      <li class="ils-card" data-i="5" id="stage-restate">
+        <header><span class="ils-n">06</span><h3>{STAGES[5].title}</h3><span class="ils-kind hook">{KIND.hook}</span></header>
+        <p class="ils-lead">Before sealing, Claude restates the whole intent and asks me to break it. This is where the method found a flaw in itself.</p>
+        <div class="ils-scene scene-screen" aria-hidden="true">
+          <div class="screen"><div class="prose"><i></i><i></i><i></i><i></i><i></i><i></i></div><div class="qbox">question box · 23 rows</div></div>
+          <div class="screen-cap"><span class="cap-a">30-row terminal: the opening of the restatement is pushed off screen</span><span class="cap-b">Fix: the restatement goes inside the box</span></div>
+        </div>
+        <p>Rounds three and four both asked whether “the restatement above” matched what I wanted. In round four I answered: “I never ever see the statement you ask me about every time we get to this point of the workflow. I NEVER see it.”</p>
+        <p>The build window then ran a real Claude Code session three times in a virtual terminal. It wrote a paragraph, then asked a four-option question. The box drew 23 rows. On a 30-row screen the paragraph's opening line was off the top, with my interface add-ons on and with them off. On a 60-row screen, the control, it was visible. A short terminal panel had been hiding the most important text in the workflow.</p>
+        <p>The question hook now refuses any question or option that points at reply text, such as “the restatement above”, “listed above” or “in my reply”. A pointer at another option in the same box is allowed, because the box is on screen. Across the 9,764 historical texts it fires on 131, and “the restatement above” alone appears 16 times. In round five the restatement went inside the question itself, and I confirmed it there.</p>
+      </li>
+
+      <!-- 7 · seal -->
+      <li class="ils-card" data-i="6" id="stage-seal">
+        <header><span class="ils-n">07</span><h3>{STAGES[6].title}</h3><span class="ils-kind method">{KIND.method}</span></header>
+        <p class="ils-lead">The confirmed intent is written at the top of the plan file and sealed. Then one more question: watch, or walk away?</p>
+        <div class="ils-scene scene-seal" aria-hidden="true">
+          <div class="file-name">plans/i-am-toying-witht-optimized-duckling.md</div>
+          <div class="file-line">## Intent</div>
+          <div class="file-line dim">- **WHO** — two readers at once …</div>
+          <div class="file-line dim">- **DONE** — each printed in the conversation: (1) … (6) …</div>
+          <div class="file-line seal-line">&lt;!-- INTENT-LOCK:CONFIRMED --&gt;</div>
+          <div class="file-line seal-line">&lt;!-- INTENT-LOCK:WALK --&gt;</div>
+        </div>
+        <p>The Intent section covers the six slots and any risk I accepted by name. <b>DONE is written as evidence the conversation will show</b>: “each printed in the conversation”, then six checks, then a giving-up point. That phrasing matters two stages from now, because the judge can only read the conversation.</p>
+        <p>The watch-or-walk question goes through the box like every other decision. Watching keeps the build in this window. Walking away arms the handoff.</p>
+      </li>
+
+      <!-- 8 · gate -->
+      <li class="ils-card" data-i="7" id="stage-gate">
+        <header><span class="ils-n">08</span><h3>{STAGES[7].title}</h3><span class="ils-kind hook">{KIND.hook}</span></header>
+        <p class="ils-lead">Claude cannot leave plan mode until a hook has read the plan and found it sealed.</p>
+        <div class="ils-scene scene-gate" aria-hidden="true">
+          <div class="chk">no helper agents still out</div>
+          <div class="chk">the plan written this session is found</div>
+          <div class="chk">seal on its own line, outside code and comments</div>
+          <div class="chk">Intent section holds 40 words or more</div>
+          <div class="chk">WALK matches the answer in the box</div>
+          <div class="lamps"><span class="lamp deny">DENY</span><span class="lamp allow">ALLOW</span></div>
+          <div class="lamp-cap"><span class="cap-deny">kit live test: an unsealed plan</span><span class="cap-allow">this session: sealed, walk</span></div>
+        </div>
+        <ul class="ils-list">
+          <li><b>Where it sits.</b> A <code>PreToolUse</code> hook on <code>ExitPlanMode</code>. Leaving plan mode is a tool call, so a hook can refuse it before the approval prompt is ever drawn.</li>
+          <li><b>Evidence first.</b> If Claude spawned helper agents to map the code and any has not reported, the exit is refused. Each spawn creates a marker that the agent's own stop removes, and a marker over two hours old is treated as dead.</li>
+          <li><b>A seal that means something.</b> The marker counts only on a line of its own, outside fenced or indented code and comments, so a plan that quotes the marker is not sealed by accident. A seal over fewer than 40 words of Intent is refused as hollow.</li>
+          <li><b>My answer, not the plan's.</b> The WATCH or WALK line must match my answer in a box, given after the seal was written, whose question sentence names both choices. The gate reads that answer from the session transcript.</li>
+          <li><b>Fails open, loudly.</b> If the gate cannot read what it needs, it allows the exit and logs that it did not check, so a skipped check never reads as a passed one.</li>
+        </ul>
+        <p class="ils-note">This session's exit was allowed on its first call. The refusal shown comes from the kit's live test, a real headless run given an unsealed plan.</p>
+      </li>
+
+      <!-- 9 · handoff -->
+      <li class="ils-card" data-i="8" id="stage-handoff">
+        <header><span class="ils-n">09</span><h3>{STAGES[8].title}</h3><span class="ils-kind hook">{KIND.hook}</span></header>
+        <p class="ils-lead">I approve the plan, and a fresh window opens in auto mode with its first prompt already typed: a <code>/goal</code> built from the plan's DONE line.</p>
+        <div class="ils-scene scene-chain" aria-hidden="true">
+          <div class="link">PostToolUse · ExitPlanMode</div>
+          <div class="link">walk record for this window <span class="dim">→ consumed</span></div>
+          <div class="link">Claude runs the launcher</div>
+          <div class="link">DONE → condition · 1,124 chars <span class="dim">≤ 4,000</span></div>
+          <div class="link">Windows Terminal → pwsh → claude</div>
+          <div class="win-spawn"><div class="win-bar">fresh window <span>⏵⏵ auto mode</span></div><div class="win-body">› /goal Carry out the approved plan at ~/.claude/plans/…duckling.md; read it first, it is sealed, approved and the scope. Done when all of this is shown by output in this conversation: …</div></div>
+        </div>
+        <ul class="ils-list">
+          <li><b>Armed per window.</b> The walk answer leaves a record named after the session id. A <code>PostToolUse</code> hook on <code>ExitPlanMode</code> looks only for its own window's record, deletes it before doing anything else, and checks it names the plan just approved. A failure therefore means a normal approval, never a handoff that fires on tomorrow's plan.</li>
+          <li><b>Claude runs the launcher, in view.</b> The hook does not start a window behind Claude's back. It tells Claude that its next and only action is one launcher command, so the launch and its output land in the transcript as proof.</li>
+          <li><b>The condition is built, not typed.</b> The launcher refuses an unsealed plan and pulls the DONE slot, including continuation lines. If DONE points at a Verification section, it pulls that in too, because the judge never sees the plan file. It wraps the result as “Carry out the approved plan at … Done when all of this is shown by output in this conversation: …”, and refuses anything past /goal's 4,000-character limit. This one came to 1,124 characters.</li>
+          <li><b>One line starts everything.</b> The launcher writes a temporary script, so nothing is quoted three levels deep. That script opens a Windows Terminal tab and runs <code>claude --permission-mode auto --model &lt;pinned id&gt; "/goal …"</code>. Setting a goal starts a turn immediately with the condition as its instruction, so that one line is both the first instruction and the grader's spec.</li>
+          <li><b>Two kinds of autonomy.</b> Auto mode approves tool calls inside a turn. <code>/goal</code> starts the next turn. Together the build runs to the end without me prompting, and still stops for my read where DONE says to.</li>
+        </ul>
+        <p class="ils-note">The public kit's handoff hook opens the window itself on Windows and prints the exact command on Mac and Linux.</p>
+      </li>
+
+      <!-- 10 · judge -->
+      <li class="ils-card" data-i="9" id="stage-judge">
+        <header><span class="ils-n">10</span><h3>{STAGES[9].title}</h3><span class="ils-kind harness">{KIND.harness}</span></header>
+        <p class="ils-lead">After every turn of the build, a separate model reads the condition and the conversation, and decides whether the work is done.</p>
+        <div class="ils-scene scene-judge" aria-hidden="true">
+          <div class="verdict"><span class="who">Haiku 5.5</span><span class="v no">not yet met</span><span class="why">the live run has not been shown</span></div>
+          <div class="verdict"><span class="who">Haiku 5.5</span><span class="v no">not yet met</span><span class="why">build and phone checks not printed</span></div>
+          <div class="verdict"><span class="who">Haiku 5.5</span><span class="v ok">met</span><span class="why">all six checks are in the transcript</span></div>
+        </div>
+        <ul class="ils-list">
+          <li><b>What it is.</b> <code>/goal</code> is a session-scoped Stop hook of the prompt kind. When a turn ends, Claude Code sends the condition and the conversation so far to the small fast model. That is Haiku 5.5 on Anthropic's API, at medium effort, read from logged requests on this machine.</li>
+          <li><b>Three verdicts.</b> <i>Not yet met</i> starts another turn, with the judge's reason as guidance. <i>Met</i> clears the goal. <i>Impossible</i> clears it and records why.</li>
+          <li><b>It cannot be talked round.</b> The judge runs no commands and opens no files. A claim of done counts only if the evidence is printed in the transcript. That is why DONE says “each printed in the conversation”.</li>
+          <li><b>Not the builder grading itself.</b> Completion is decided by a different model with a fresh read, rather than the one that wants to be finished.</li>
+        </ul>
+      </li>
+      <!-- 11 · bill -->
+      <li class="ils-card" data-i="10" id="stage-bill">
+        <header><span class="ils-n">11</span><h3>{STAGES[10].title}</h3><span class="ils-kind measured">{KIND.measured}</span></header>
+        <p class="ils-lead">Both windows counted, against the same build run inside the planning window. The handoff is not a one-for-one win, and the bill shows what it really saves.</p>
+        <div class="ils-scene scene-bill" aria-hidden="true">
+          <div class="bill-row"><span class="bill-l">With the handoff</span>
+            <span class="bill-bar"><i class="seg plan" style="--w: 7.1%"></i><i class="seg build" style="--w: 61.2%"></i></span><span class="bill-v">113.0M</span></div>
+          <div class="bill-row"><span class="bill-l">One window, no handoff</span>
+            <span class="bill-bar"><i class="seg plan" style="--w: 7.1%"></i><i class="seg build" style="--w: 61.2%"></i><i class="seg carry" style="--w: 31.7%"></i></span><span class="bill-v">165.5M</span></div>
+          <div class="bill-key"><span><i class="key plan"></i>planning window, 11.8M</span><span><i class="key build"></i>the build's own work, 101.2M</span><span><i class="key carry"></i>the interview re-read on every build request, 52.5M</span></div>
+        </div>
+        <ul class="ils-list">
+          <li><b>Every request re-reads its whole context.</b> The model keeps nothing between requests, so each one sends the full conversation so far. A window's cost is the sum of its context at every request.</li>
+          <li><b>The planning window is on both sides.</b> Its 80 requests read 11,778,151 tokens, and its last request carried 200,081. That interview happens either way.</li>
+          <li><b>The fresh start is not free.</b> The build window loaded its own 61,536 tokens of system prompt, tools and setup before doing anything, and that base is in every one of its requests. It replaced a 200,081-token context, so each build request carried 138,545 fewer.</li>
+          <li><b>The build, to the point all six checks were met:</b> 379 requests, starting at 61,536 and ending at 404,305 per request, 101,233,215 read. Both windows together: <b>113,011,366</b>.</li>
+          <li><b>The same build in one window:</b> the same 379 requests, each carrying the 138,545-token interview on top, ending at 542,850 per request. Total: <b>165,519,921</b>. The handoff read 52,508,555 fewer, <b>31.7% less</b> on the whole bill.</li>
+          <li><b>The writing is the same either way.</b> Both windows wrote 494,082 tokens of output in total. The whole saving is in re-reading.</li>
+        </ul>
+        <p class="ils-note">Counted from each request's own usage record in the two session logs. The build is measured up to the moment the six checks were met and the go-live question went to me.</p>
+      </li>
+    </ol>
+
+    <aside class="ils-inst" aria-label="State at the current stage">
+      <div class="inst-stage"><span class="inst-n" data-k="n">01</span> <span data-k="title">Plan mode is the default</span></div>
+      <div class="inst-row"><span class="inst-l">Mode</span><span class="inst-v mode" data-k="mode">PLAN</span></div>
+      <div class="inst-row"><span class="inst-l">Window</span><span class="inst-v" data-k="win">planning</span></div>
+      <div class="inst-row two">
+        <div><span class="inst-l">Round</span><span class="inst-v big" data-k="round">0</span></div>
+        <div><span class="inst-l">Open</span><span class="inst-v big" data-k="open">–</span></div>
+      </div>
+      <div class="inst-row"><span class="inst-l">Exit gate</span><span class="inst-lamps"><span class="ilamp deny" data-k="deny">DENY</span><span class="ilamp allow" data-k="allow">ALLOW</span></span></div>
+      <div class="inst-row col"><span class="inst-l">Context in the working window</span><span class="inst-v big" data-k="ctx">85,429</span><span class="inst-bar"><span data-k="bar"></span></span></div>
+      <div class="inst-row col"><span class="inst-l">Read so far, both windows</span><span class="inst-v big" data-k="read">85,429</span><span class="inst-alt" data-k="alt"></span></div>
+      <div class="inst-row"><span class="inst-l">Judge</span><span class="inst-v" data-k="judge">none</span></div>
+      <div class="inst-foot">tokens, from each request&#39;s usage in the session logs</div>
+    </aside>
+  </div>
+</section>
+
+<style>
+  /* Wider than the post column it sits in: centred on the column, never wider than the screen less its gutters. */
+  .ils { margin-block: 3rem; width: min(72rem, calc(100vw - 2rem)); margin-inline: calc((100% - min(72rem, calc(100vw - 2rem))) / 2); }
+  .ils-grid { display: grid; grid-template-columns: minmax(0, 1fr) 17rem; gap: 2.5rem; align-items: start; }
+  .ils-cards { list-style: none; margin: 0; padding: 0 0 0 2.25rem; display: grid; gap: 1.5rem; position: relative; }
+  .ils-spine { position: absolute; left: 0.7rem; top: 0.5rem; bottom: 0.5rem; width: 2px; background: var(--color-line); }
+  .ils-flow { position: absolute; inset: 0; background: repeating-linear-gradient(to bottom, var(--color-accent) 0 6px, transparent 6px 18px); opacity: 0.35; animation: ils-flow 1.6s linear infinite; }
+  .ils-packet { position: absolute; left: -6px; top: 0; width: 14px; height: 14px; border-radius: 50%; background: var(--color-accent); box-shadow: 0 0 0 6px color-mix(in oklch, var(--color-accent) 18%, transparent); transition: top 0.7s cubic-bezier(0.6, 0, 0.3, 1); }
+  @keyframes ils-flow { to { background-position: 0 18px; } }
+
+  .ils-card { background: var(--color-surface-2); border: 1.5px solid var(--color-line); border-radius: 1rem; padding: 1.4rem 1.5rem; display: grid; gap: 0.9rem; min-width: 0; transition: border-color 0.35s, box-shadow 0.35s; color: var(--color-ink-muted); line-height: 1.7; }
+  .ils-card.is-cur { border-color: var(--color-accent); box-shadow: 0 0 0 5px color-mix(in oklch, var(--color-accent) 10%, transparent); }
+  .ils-card header { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.4rem 0.8rem; }
+  .ils-card h3 { margin: 0; font-family: var(--font-display); font-size: 1.45rem; font-weight: 600; line-height: 1.2; color: var(--color-ink); text-wrap: balance; }
+  .ils-n { font-family: var(--font-mono); font-size: 0.85rem; font-weight: 700; color: var(--color-accent); }
+  .ils-kind { margin-left: auto; font-family: var(--font-mono); font-size: 0.66rem; letter-spacing: 0.08em; text-transform: uppercase; border-radius: 999px; padding: 0.3rem 0.6rem; border: 1px solid var(--color-line-2); color: var(--color-ink-faint); white-space: nowrap; }
+  .ils-kind.hook { background: var(--color-accent); border-color: var(--color-accent); color: var(--color-on-accent); }
+  .ils-kind.measured { border-color: var(--color-up); color: var(--color-up); }
+  .ils-kind.harness { border-color: var(--color-cyan-deep); color: var(--color-cyan-deep); }
+  .ils-lead { margin: 0; color: var(--color-ink); font-size: 1.05rem; }
+  .ils-card p { margin: 0; }
+  .ils-card code { font-family: var(--font-mono); font-size: 0.82em; color: var(--color-ink); background: var(--color-void); border-radius: 0.3rem; padding: 0.05rem 0.3rem; overflow-wrap: anywhere; }
+  .ils-list { margin: 0; padding-left: 1.1rem; display: grid; gap: 0.55rem; }
+  .ils-list b, .ils-card p b { color: var(--color-ink); }
+  .ils-note { font-size: 0.88rem; color: var(--color-ink-faint); border-left: 3px solid var(--color-line-2); padding-left: 0.8rem; }
+
+  /* scenes: the finished state is the resting state, so a still frame reads correctly */
+  .ils-scene { background: var(--color-canvas); border: 1px solid var(--color-line); border-radius: 0.75rem; padding: 0.9rem 1rem; font-family: var(--font-mono); font-size: 0.78rem; line-height: 1.6; color: var(--color-ink); overflow: hidden; min-width: 0; }
+  .dim { color: var(--color-ink-faint); }
+  .ok { color: var(--color-up); }
+  .arrow { color: var(--color-accent); }
+  .term-line { overflow-wrap: anywhere; }
+  .caret { display: inline-block; width: 0.5em; height: 1em; vertical-align: -0.15em; background: var(--color-accent); margin-left: 2px; animation: ils-blink 1s steps(1) infinite; }
+  @keyframes ils-blink { 50% { opacity: 0; } }
+  .term-status { margin-top: 0.5rem; color: var(--color-cyan-deep); font-weight: 600; }
+  .log-line { opacity: 1; transform: none; overflow-wrap: anywhere; }
+  .fork-opt { border: 1px solid var(--color-line); border-radius: 0.5rem; padding: 0.45rem 0.7rem; margin-bottom: 0.4rem; display: grid; color: var(--color-ink-faint); transition: all 0.4s; }
+  .fork-opt span { font-family: var(--font-sans); font-size: 0.8rem; }
+  .fork-opt.pick { border-color: var(--color-accent); color: var(--color-ink); background: color-mix(in oklch, var(--color-accent) 8%, transparent); }
+  .q { font-family: var(--font-sans); font-weight: 700; margin-bottom: 0.5rem; }
+  .opt { display: flex; justify-content: space-between; gap: 0.8rem; align-items: center; border: 1px solid var(--color-line); border-radius: 0.45rem; padding: 0.35rem 0.6rem; margin-bottom: 0.35rem; background: var(--color-surface-2); }
+  .opt .lbl { font-family: var(--font-sans); min-width: 0; }
+  .opt.rec { border-color: var(--color-accent); }
+  .opt em { font-style: normal; color: var(--color-accent); font-weight: 700; }
+  .beats { display: flex; gap: 4px; flex: none; }
+  .beats i { width: 9px; height: 9px; border-radius: 50%; background: var(--color-accent); }
+  .beat-key { display: flex; flex-wrap: wrap; gap: 0.2rem 0.9rem; color: var(--color-ink-faint); font-size: 0.7rem; margin-top: 0.3rem; }
+  .led { font-family: var(--font-sans); padding: 0.2rem 0 0.2rem 1.4rem; position: relative; color: var(--color-ink-faint); text-decoration: line-through; transition: all 0.4s; }
+  .led::before { content: 'T'; position: absolute; left: 0; font-family: var(--font-mono); font-weight: 700; color: var(--color-down); }
+  .led.a::before { content: 'A'; color: var(--color-cyan-deep); }
+  .led.live { color: var(--color-ink); text-decoration: none; }
+  .led-count { margin-top: 0.4rem; color: var(--color-ink-faint); }
+  .led-count b { color: var(--color-accent); font-size: 1.1rem; }
+  .screen { position: relative; height: 9.5rem; border: 1px solid var(--color-line-2); border-radius: 0.4rem; background: var(--color-surface-2); overflow: hidden; }
+  .prose { position: absolute; left: 0.7rem; right: 0.7rem; top: 0.6rem; display: grid; gap: 0.35rem; transition: transform 0.9s cubic-bezier(0.6, 0, 0.3, 1); transform: translateY(-4.6rem); }
+  .prose i { display: block; height: 0.45rem; border-radius: 3px; background: var(--color-line-2); }
+  .prose i:first-child { background: var(--color-accent); width: 70%; }
+  .qbox { position: absolute; left: 0.5rem; right: 0.5rem; bottom: 0.4rem; height: 5.6rem; border: 1.5px solid var(--color-accent); border-radius: 0.4rem; background: var(--color-surface-3); display: grid; place-items: center; color: var(--color-accent); font-weight: 700; transition: transform 0.9s cubic-bezier(0.6, 0, 0.3, 1); }
+  .screen-cap { margin-top: 0.5rem; display: grid; color: var(--color-ink-faint); }
+  .screen-cap .cap-b { color: var(--color-up); }
+  .file-name { color: var(--color-ink-faint); margin-bottom: 0.3rem; overflow-wrap: anywhere; }
+  .file-line { overflow-wrap: anywhere; }
+  .seal-line { color: var(--color-accent); font-weight: 700; }
+  .chk { position: relative; padding-left: 1.4rem; font-family: var(--font-sans); }
+  .chk::before { content: '✓'; position: absolute; left: 0; color: var(--color-up); font-weight: 700; }
+  .lamps { display: flex; gap: 0.6rem; margin-top: 0.6rem; }
+  .lamp { flex: 1; text-align: center; font-weight: 700; padding: 0.35rem; border-radius: 0.4rem; border: 1px solid var(--color-line-2); color: var(--color-ink-faint); transition: all 0.35s; }
+  .lamp.allow { background: var(--color-up); border-color: var(--color-up); color: var(--color-on-accent); }
+  .lamp-cap { display: flex; gap: 0.6rem; color: var(--color-ink-faint); font-size: 0.7rem; margin-top: 0.25rem; }
+  .lamp-cap span { flex: 1; text-align: center; }
+  .link { position: relative; padding: 0.25rem 0 0.25rem 1.4rem; overflow-wrap: anywhere; }
+  .link::before { content: '↓'; position: absolute; left: 0.2rem; color: var(--color-accent); }
+  .link:first-child::before { content: '●'; }
+  .win-spawn { margin-top: 0.6rem; border: 1.5px solid var(--color-accent); border-radius: 0.5rem; overflow: hidden; background: var(--color-surface-3); transform-origin: top left; }
+  .win-bar { display: flex; justify-content: space-between; gap: 0.5rem; padding: 0.3rem 0.6rem; border-bottom: 1px solid var(--color-line); color: var(--color-ink-faint); }
+  .win-bar span { color: var(--color-accent); font-weight: 700; }
+  .win-body { padding: 0.5rem 0.6rem; overflow-wrap: anywhere; }
+  .verdict { display: grid; grid-template-columns: auto auto 1fr; gap: 0.7rem; align-items: baseline; padding: 0.25rem 0; border-bottom: 1px dashed var(--color-line); }
+  .verdict:last-child { border-bottom: 0; }
+  .verdict .who { color: var(--color-cyan-deep); font-weight: 700; }
+  .verdict .v.no { color: var(--color-warn); font-weight: 700; }
+  .verdict .v.ok { color: var(--color-up); font-weight: 700; }
+  .verdict .why { color: var(--color-ink-faint); font-family: var(--font-sans); min-width: 0; }
+
+  .bill-row { display: grid; grid-template-columns: 9.5rem minmax(0, 1fr) 4.2rem; gap: 0.7rem; align-items: center; margin-bottom: 0.6rem; }
+  .bill-l { font-family: var(--font-sans); font-weight: 600; }
+  .bill-v { text-align: right; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .bill-bar { display: flex; height: 1.1rem; border-radius: 0.3rem; background: var(--color-void); overflow: hidden; }
+  .seg { display: block; height: 100%; width: var(--w); transition: width 1s cubic-bezier(0.4, 0, 0.2, 1); }
+  .seg.plan, .key.plan { background: var(--color-cyan-deep); }
+  .seg.build, .key.build { background: var(--color-accent); }
+  .seg.carry, .key.carry { background: repeating-linear-gradient(135deg, var(--color-down) 0 6px, color-mix(in oklch, var(--color-down) 55%, transparent) 6px 12px); }
+  .bill-key { display: flex; flex-wrap: wrap; gap: 0.3rem 1rem; color: var(--color-ink-faint); font-size: 0.7rem; }
+  .bill-key span { display: inline-flex; align-items: center; gap: 0.35rem; }
+  .key { display: inline-block; width: 0.8rem; height: 0.6rem; border-radius: 2px; }
+  @media (max-width: 520px) { .bill-row { grid-template-columns: minmax(0, 1fr) 4rem; } .bill-l { grid-column: 1 / -1; } }
+
+  /* the instrument */
+  .ils-inst { position: sticky; top: 5.5rem; background: var(--color-ink); color: var(--color-canvas); border-radius: 1rem; padding: 1.1rem 1.15rem; display: grid; gap: 0.75rem; font-family: var(--font-mono); }
+  .inst-stage { font-size: 0.8rem; line-height: 1.35; opacity: 0.9; }
+  .inst-n { color: var(--color-accent-2); font-weight: 700; }
+  .inst-row { display: flex; justify-content: space-between; align-items: center; gap: 0.6rem; border-top: 1px solid color-mix(in oklch, var(--color-canvas) 16%, transparent); padding-top: 0.6rem; }
+  .inst-row.col { display: grid; justify-content: stretch; gap: 0.3rem; }
+  .inst-row.two { display: grid; grid-template-columns: 1fr 1fr; }
+  .inst-row.two > div { display: grid; gap: 0.2rem; }
+  .inst-l { font-size: 0.62rem; letter-spacing: 0.1em; text-transform: uppercase; opacity: 0.65; }
+  .inst-v { font-size: 0.9rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .inst-v.big { font-size: 1.6rem; line-height: 1.1; }
+  .inst-v.mode { color: var(--color-accent-2); }
+  .inst-lamps { display: flex; gap: 0.35rem; }
+  .ilamp { font-size: 0.68rem; font-weight: 700; padding: 0.3rem 0.5rem; border-radius: 0.35rem; border: 1px solid color-mix(in oklch, var(--color-canvas) 25%, transparent); opacity: 0.35; transition: all 0.3s; }
+  .ilamp.on.deny { background: var(--color-down); border-color: var(--color-down); opacity: 1; }
+  .ilamp.on.allow { background: var(--color-up); border-color: var(--color-up); opacity: 1; }
+  .inst-bar { display: block; height: 0.45rem; border-radius: 0.25rem; background: color-mix(in oklch, var(--color-canvas) 15%, transparent); overflow: hidden; }
+  .inst-bar span { display: block; height: 100%; width: 15%; background: var(--color-accent-2); transition: width 0.8s ease; }
+  .inst-foot { font-size: 0.62rem; opacity: 0.55; }
+  .inst-alt { font-size: 0.72rem; color: var(--color-accent-2); min-height: 1em; }
+
+  @media (max-width: 900px) {
+    .ils-grid { grid-template-columns: minmax(0, 1fr); }
+    .ils-inst { order: -1; top: 4.25rem; z-index: 5; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 0.45rem 0.6rem; padding: 0.7rem 0.8rem; }
+    .inst-stage { grid-column: 1 / -1; }
+    .inst-row { border-top: 0; padding-top: 0; display: grid; justify-content: start; gap: 0.1rem; }
+    .inst-row.two { grid-column: span 1; grid-template-columns: 1fr 1fr; }
+    .inst-row.col { grid-column: span 2; }
+    .inst-v.big { font-size: 1.05rem; }
+    .inst-foot, .inst-bar, .inst-alt { display: none; }
+    .ils-cards { padding-left: 1.6rem; }
+    .ils-spine { left: 0.45rem; }
+    .ils-card { padding: 1.1rem 1rem; }
+    .ils-kind { margin-left: 0; }
+  }
+
+  /* motion runs only where the page script is running and motion is welcome */
+  .ils.is-live .log-line, .ils.is-live .chk, .ils.is-live .link, .ils.is-live .verdict { opacity: 0.18; transition: opacity 0.35s, transform 0.35s; transform: translateY(4px); }
+  .ils.is-live .log-line.on, .ils.is-live .chk.on, .ils.is-live .link.on, .ils.is-live .verdict.on { opacity: 1; transform: none; }
+  .ils.is-live .beats i { opacity: 0.18; transition: opacity 0.25s; }
+  .ils.is-live .beats i.on { opacity: 1; }
+  .ils.is-live .win-spawn { transform: scale(0.6); opacity: 0; transition: transform 0.6s cubic-bezier(0.2, 0.8, 0.2, 1.05), opacity 0.4s; }
+  .ils.is-live .win-spawn.on { transform: none; opacity: 1; }
+  .ils.is-live .lamp.allow:not(.on) { background: transparent; border-color: var(--color-line-2); color: var(--color-ink-faint); }
+  .ils.is-live .lamp.deny.on { background: var(--color-down); border-color: var(--color-down); color: var(--color-on-accent); }
+  .ils.is-live .prose.calm { transform: none; }
+  .ils.is-live .qbox.down { transform: translateY(110%); }
+  .ils.is-live .screen-cap span { transition: opacity 0.35s; }
+  .ils.is-live .screen-cap .off { opacity: 0.2; }
+  .ils.is-live .scene-bill.grow .seg { width: 0; transition: none; }
+
+  @media (prefers-reduced-motion: reduce) {
+    .ils-flow, .caret { animation: none; }
+    .ils-packet, .ils-card, .inst-bar span { transition: none; }
+  }
+</style>
+
+<script>
+  const root = document.querySelector<HTMLElement>('.ils');
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (root && !reduce) {
+    root.classList.add('is-live');
+    const states = JSON.parse(root.dataset.states || '[]');
+    const cards = [...root.querySelectorAll<HTMLElement>('.ils-card')];
+    const packet = root.querySelector<HTMLElement>('.ils-packet');
+    const inst = (k: string) => root.querySelector<HTMLElement>(`[data-k="${k}"]`);
+    const fmt = (n: number) => Math.round(n).toLocaleString('en-US');
+    const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
+    let cur = -1, run = 0, ctxNow = states[0]?.ctx ?? 0, ctxAnim = 0, readNow = states[0]?.read ?? 0, readAnim = 0;
+
+    function countTo(to: number) {
+      const el = inst('ctx'); if (!el) return;
+      const from = ctxNow; ctxNow = to; const t0 = performance.now(); const id = ++ctxAnim;
+      const step = (t: number) => {
+        if (id !== ctxAnim) return;
+        const p = Math.min(1, (t - t0) / 900);
+        el.textContent = fmt(from + (to - from) * (1 - Math.pow(1 - p, 3)));
+        if (p < 1) requestAnimationFrame(step);
+      };
+      requestAnimationFrame(step);
+      const bar = inst('bar'); if (bar) bar.style.width = `${Math.min(100, (to / 560000) * 100)}%`;
+    }
+
+    function countRead(to: number) {
+      const el = inst('read'); if (!el) return;
+      const from = readNow; readNow = to; const t0 = performance.now(); const id = ++readAnim;
+      const step = (t: number) => {
+        if (id !== readAnim) return;
+        const p = Math.min(1, (t - t0) / 1100);
+        el.textContent = fmt(from + (to - from) * (1 - Math.pow(1 - p, 3)));
+        if (p < 1) requestAnimationFrame(step);
+      };
+      requestAnimationFrame(step);
+    }
+
+    // Each scene loops while its card is current; `live()` stops a loop the moment the reader moves on.
+    const scenes: Record<string, (el: HTMLElement, live: () => boolean) => Promise<void>> = {
+      mode: async (el, live) => {
+        const t = el.querySelector<HTMLElement>('.typed'); if (!t) return;
+        const full = t.dataset.text || '';
+        while (live()) {
+          for (let i = 0; i <= full.length && live(); i++) { t.textContent = full.slice(0, i); await sleep(38); }
+          await sleep(2200);
+        }
+        t.textContent = full;
+      },
+      inject: (el, live) => stepper(el, '.log-line', 650, live),
+      calibrate: async (el, live) => {
+        const [a, b] = [...el.querySelectorAll<HTMLElement>('.fork-opt')];
+        while (live()) { a.classList.add('pick'); b.classList.remove('pick'); await sleep(1200); a.classList.remove('pick'); b.classList.add('pick'); await sleep(2600); }
+        a.classList.remove('pick'); b.classList.add('pick');
+      },
+      box: async (el, live) => {
+        const dots = [...el.querySelectorAll<HTMLElement>('.beats i')];
+        while (live()) {
+          dots.forEach((d) => d.classList.remove('on'));
+          for (const d of dots) { if (!live()) break; d.classList.add('on'); await sleep(140); }
+          await sleep(2400);
+        }
+        dots.forEach((d) => d.classList.add('on'));
+      },
+      ledger: async (el, live) => {
+        const items = [...el.querySelectorAll<HTMLElement>('.led')];
+        const count = el.querySelector<HTMLElement>('.led-count b');
+        const show = (open: number, n: string) => { items.forEach((it, i) => it.classList.toggle('live', i < open)); if (count) count.textContent = n; };
+        while (live()) { show(6, '6'); await sleep(1500); show(4, '4'); await sleep(1500); show(0, '0'); await sleep(2200); }
+        show(0, '0');
+      },
+      restate: async (el, live) => {
+        const prose = el.querySelector<HTMLElement>('.prose'); const box = el.querySelector<HTMLElement>('.qbox');
+        const [ca, cb] = [...el.querySelectorAll<HTMLElement>('.screen-cap span')];
+        while (live()) {
+          prose?.classList.add('calm'); box?.classList.add('down'); ca.classList.add('off'); cb.classList.add('off'); await sleep(1300);
+          prose?.classList.remove('calm'); box?.classList.remove('down'); ca.classList.remove('off'); await sleep(2600);
+          cb.classList.remove('off'); await sleep(2200);
+        }
+        prose?.classList.remove('calm'); box?.classList.remove('down'); ca.classList.remove('off'); cb.classList.remove('off');
+      },
+      seal: (el, live) => stepper(el, '.file-line', 550, live),
+      gate: async (el, live) => {
+        const chks = [...el.querySelectorAll<HTMLElement>('.chk')];
+        const deny = el.querySelector<HTMLElement>('.lamp.deny'); const allow = el.querySelector<HTMLElement>('.lamp.allow');
+        const [cd, ca] = [...el.querySelectorAll<HTMLElement>('.lamp-cap span')];
+        while (live()) {
+          chks.forEach((c) => c.classList.remove('on')); allow?.classList.remove('on'); deny?.classList.add('on'); cd.style.opacity = '1'; ca.style.opacity = '0.3';
+          await sleep(1600);
+          deny?.classList.remove('on'); cd.style.opacity = '0.3';
+          for (const c of chks) { if (!live()) break; c.classList.add('on'); await sleep(380); }
+          allow?.classList.add('on'); ca.style.opacity = '1'; await sleep(2600);
+        }
+        chks.forEach((c) => c.classList.add('on')); deny?.classList.remove('on'); allow?.classList.add('on'); cd.style.opacity = ''; ca.style.opacity = '';
+      },
+      handoff: async (el, live) => {
+        const links = [...el.querySelectorAll<HTMLElement>('.link')]; const win = el.querySelector<HTMLElement>('.win-spawn');
+        while (live()) {
+          links.forEach((l) => l.classList.remove('on')); win?.classList.remove('on');
+          for (const l of links) { if (!live()) break; l.classList.add('on'); await sleep(520); }
+          win?.classList.add('on'); await sleep(3200);
+        }
+        links.forEach((l) => l.classList.add('on')); win?.classList.add('on');
+      },
+      bill: async (el, live) => {
+        while (live()) { el.classList.add('grow'); await sleep(60); el.classList.remove('grow'); await sleep(4200); }
+        el.classList.remove('grow');
+      },
+      judge: async (el, live) => {
+        const vs = [...el.querySelectorAll<HTMLElement>('.verdict')]; const j = inst('judge');
+        const words = ['not yet met', 'not yet met', 'met'];
+        while (live()) {
+          vs.forEach((v) => v.classList.remove('on'));
+          for (let i = 0; i < vs.length && live(); i++) { vs[i].classList.add('on'); if (j) j.textContent = `Haiku 5.5 · ${words[i]}`; await sleep(1300); }
+          await sleep(2000);
+        }
+        vs.forEach((v) => v.classList.add('on'));
+      },
+    };
+    async function stepper(el: HTMLElement, sel: string, ms: number, live: () => boolean) {
+      const items = [...el.querySelectorAll<HTMLElement>(sel)];
+      while (live()) {
+        items.forEach((x) => x.classList.remove('on'));
+        for (const x of items) { if (!live()) break; x.classList.add('on'); await sleep(ms); }
+        await sleep(2400);
+      }
+      items.forEach((x) => x.classList.add('on'));
+    }
+    function lamp(which: '' | 'deny' | 'allow') {
+      inst('deny')?.classList.toggle('on', which === 'deny');
+      inst('allow')?.classList.toggle('on', which === 'allow');
+    }
+
+    function activate(i: number) {
+      if (i === cur) return; cur = i; const my = ++run; const s = states[i]; const card = cards[i];
+      cards.forEach((c, k) => c.classList.toggle('is-cur', k === i));
+      if (packet) packet.style.top = `${card.offsetTop + 22}px`;
+      const n = inst('n'); if (n) n.textContent = String(i + 1).padStart(2, '0');
+      const title = inst('title'); if (title) title.textContent = card.querySelector('h3')?.textContent || '';
+      for (const k of ['mode', 'win', 'round', 'open', 'judge'] as const) { const el = inst(k); if (el) el.textContent = s[k] === 'none' ? 'none yet' : s[k] === 'both' ? 'both, totalled' : s[k]; }
+      lamp(s.gate);
+      countTo(s.ctx);
+      countRead(s.read);
+      const alt = inst('alt'); if (alt) alt.textContent = s.win === 'both' ? 'one window, no handoff: 165,519,921' : '';
+      const id = card.id.replace('stage-', '');
+      const scene = card.querySelector<HTMLElement>('.ils-scene');
+      if (scene && scenes[id]) scenes[id](scene, () => my === run);
+    }
+
+    // The current stage is the card crossing a line a third of the way down the viewport.
+    const io = new IntersectionObserver((entries) => {
+      const hit = entries.filter((e) => e.isIntersecting).sort((a, b) => a.boundingClientRect.top - b.boundingClientRect.top)[0];
+      if (hit) activate(Number((hit.target as HTMLElement).dataset.i));
+    }, { rootMargin: '-33% 0px -60% 0px' });
+    cards.forEach((c) => io.observe(c));
+    activate(0);
+  }
+</script>
