@@ -1,0 +1,82 @@
+---
+/**
+ * RunTimeline — the build's proof runs over time: a step line of items proved, a mark at every run (✓ passed,
+ * ✕ failed, each also named in its tooltip and in the table under the chart), and a tick at every tally.
+ * One series, so no legend box; the caption names it. Inline SVG with token colours only.
+ */
+import { et } from './story';
+type Run = { item: string; at: number; ok: boolean };
+type Tally = { at: number; done: number; of: number; verdict: string };
+interface Props { runs: Run[]; tallies: Tally[]; start: number; end: number; of: number }
+const { runs, tallies, start, end, of } = Astro.props;
+
+const W = 640, H = 230, L = 40, R = 58, T = 26, Bm = 34;
+const x = (t: number) => L + ((t - start) / Math.max(1, end - start)) * (W - L - R);
+const y = (v: number) => T + (1 - v / of) * (H - T - Bm);
+
+// Items proved after each run: an item counts from a passing run until a newer run of it fails.
+const state = new Map<string, boolean>();
+const steps = runs.map((r) => { state.set(r.item, r.ok); return { ...r, proved: [...state.values()].filter(Boolean).length }; });
+let d = `M${x(start).toFixed(1)},${y(0).toFixed(1)}`;
+let prev = 0;
+for (const s of steps) { d += ` H${x(s.at).toFixed(1)} V${y(s.proved).toFixed(1)}`; prev = s.proved; }
+d += ` H${x(end).toFixed(1)}`;
+
+// Clean ticks: every 30 minutes, labelled in Eastern time.
+const HALF = 30 * 60 * 1000;
+const ticks: number[] = [];
+for (let t = Math.ceil(start / HALF) * HALF; t <= end; t += HALF) ticks.push(t);
+const yTicks = [0, Math.round(of / 2), of];
+---
+<figure class="rt">
+  <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label={`Items proved over the build: ${prev} of ${of} at the cut, from ${runs.length} proof runs and ${tallies.length} tallies`}>
+    {yTicks.map((v) => (<g><line class="rt-grid" x1={L} x2={W - R} y1={y(v)} y2={y(v)} /><text class="rt-ax" x={L - 8} y={y(v) + 4} text-anchor="end">{v}</text></g>))}
+    <line class="rt-axis" x1={L} x2={W - R} y1={H - Bm} y2={H - Bm} />
+    {ticks.map((t) => (<text class="rt-ax" x={x(t)} y={H - Bm + 18} text-anchor="middle">{et(t)}</text>))}
+    {tallies.map((t, k) => (
+      <g class="rt-tally">
+        <line x1={x(t.at)} x2={x(t.at)} y1={T - 12} y2={H - Bm} />
+        <text x={x(t.at)} y={T - 15} text-anchor="middle">T{k + 1}</text>
+        <rect class="rt-hit" x={x(t.at) - 12} y={T - 26} width="24" height={H - Bm - T + 26}><title>{`Tally ${k + 1} at ${et(t.at)} ET: Claude ${t.done} of ${t.of}, ${t.verdict}`}</title></rect>
+      </g>
+    ))}
+    <path class="rt-line" d={d} />
+    {steps.map((s) => (
+      <g class:list={['rt-run', s.ok ? 'ok' : 'no']}>
+        <circle cx={x(s.at)} cy={y(s.proved)} r="5" />
+        <text class="rt-glyph" x={x(s.at)} y={y(s.proved) - 10} text-anchor="middle">{s.ok ? '✓' : '✕'}</text>
+        <circle class="rt-hit" cx={x(s.at)} cy={y(s.proved)} r="12"><title>{`${s.item} at ${et(s.at)} ET: ${s.ok ? 'passed' : 'failed'}, ${s.proved} of ${of} proved`}</title></circle>
+      </g>
+    ))}
+    <text class="rt-end" x={x(end) + 6} y={y(prev) + 4} text-anchor="start">{prev} of {of}</text>
+  </svg>
+  <figcaption>Items proved in Claude's part, after each proof run (✓ passed, ✕ failed). T marks each tally.</figcaption>
+  <details class="rt-table">
+    <summary>The runs as a table</summary>
+    <table>
+      <thead><tr><th>Time (ET)</th><th>Item</th><th>Exit</th><th>Proved after</th></tr></thead>
+      <tbody>{steps.map((s) => (<tr><td>{et(s.at)}</td><td>{s.item}</td><td>{s.ok ? 'clean' : 'failed'}</td><td>{s.proved} of {of}</td></tr>))}</tbody>
+    </table>
+  </details>
+</figure>
+
+<style>
+  .rt { margin: 0; display: grid; gap: 0.5rem; }
+  .rt svg { display: block; width: 100%; height: auto; overflow: visible; }
+  .rt-grid { stroke: var(--color-line); stroke-width: 1; }
+  .rt-axis { stroke: var(--color-line-2); stroke-width: 1; }
+  .rt-ax { fill: var(--color-ink-faint); font-family: var(--font-mono); font-size: 10px; font-variant-numeric: tabular-nums; }
+  .rt-line { fill: none; stroke: var(--color-accent); stroke-width: 2; stroke-linejoin: round; stroke-linecap: round; }
+  .rt-run circle:not(.rt-hit) { stroke: var(--color-canvas); stroke-width: 2; }
+  .rt-run.ok circle:not(.rt-hit) { fill: var(--color-up); }
+  .rt-run.no circle:not(.rt-hit) { fill: var(--color-down); }
+  .rt-glyph { fill: var(--color-ink); font-family: var(--font-mono); font-size: 10px; font-weight: 700; }
+  .rt-tally line { stroke: var(--color-line-2); stroke-width: 1; }
+  .rt-tally text { fill: var(--color-ink-muted); font-family: var(--font-mono); font-size: 10px; }
+  .rt-end { fill: var(--color-ink); font-family: var(--font-mono); font-size: 11px; font-weight: 700; }
+  .rt-hit { fill: transparent; stroke: none; }
+  .rt figcaption { font-size: 0.8rem; color: var(--color-ink-faint); }
+  .rt-table summary { cursor: pointer; font-size: 0.8rem; color: var(--color-ink-muted); }
+  .rt-table table { margin-top: 0.5rem; width: 100%; border-collapse: collapse; font-family: var(--font-mono); font-size: 0.74rem; }
+  .rt-table th, .rt-table td { text-align: left; padding: 0.2rem 0.4rem; border-bottom: 1px solid var(--color-line); font-variant-numeric: tabular-nums; }
+</style>

@@ -1,0 +1,279 @@
+---
+/**
+ * CompletionMeterStory — the scroll story for "The completion meter": how a plan item comes to count as
+ * done, stage by stage, beside a replica of the meter's band. Every panel value is this build's own record,
+ * read by scripts/story-figures.mjs from the session log and the meter's store: the approval, each proof
+ * run as the meter's own judge read it, and each tally it printed.
+ */
+import StoryFrame from './StoryFrame.astro';
+import StoryCard from './StoryCard.astro';
+import F from '../../data/story-figures.generated.json';
+import { figure, n, et, type StoryStage, type StoryRow } from './story';
+
+type Run = { item: string; at: number; ok: boolean };
+type Tally = { at: number; done: number; of: number; verdict: string; open: number; proved: string[]; ship: 'done' | 'committed' | 'open' | null };
+const runs = figure<Run[]>(F, 'build.runs');
+const tallies = figure<Tally[]>(F, 'build.tallies');
+const items = figure<{ id: string; list: string }[]>(F, 'build.items');
+const verdicts = figure<{ at: number; met: boolean }[]>(F, 'build.verdicts');
+const firstTally = tallies[0];
+const steps = items.filter((i) => i.list === 'steps').length;
+const checks = items.filter((i) => i.list === 'checks').length;
+const mine = items.length - 2; // S10 is his, S11 a later event's: the frozen plan names both outside Claude's part
+const twin = runs.filter((r) => r.at === runs.find((x) => x.item === 'V1')?.at).map((r) => r.item);
+
+// The band as the meter printed it. Its count includes the commit and the push, which the meter reads from
+// git as it goes and which cannot be replayed afterwards, so the replica is drawn only at the moments the
+// meter printed that count: at approval, where nothing has run, and at each tally. Every other value is
+// taken at the same instant.
+const G = { done: '✓', active: '●', waiting: '○' };
+const cellsOf = (x: Tally) => { const c = Math.floor((10 * x.done) / x.of); return "▰".repeat(c) + "▱".repeat(10 - c); };
+// Build and Verify follow the meter's own rule: done when every item of that list in Claude's part is
+// proved; Verify starts once Build is done or a check is proved. Commit and push is the tally's own word.
+const partSteps = items.filter((i) => i.list === 'steps' && i.id !== 'S10' && i.id !== 'S11').map((i) => i.id);
+const partChecks = items.filter((i) => i.list === 'checks').map((i) => i.id);
+function at(t: number, label: string, tally: Tally) {
+  const seen = runs.filter((r) => r.at <= t);
+  const proved = tally.proved.length;
+  const stepsDone = partSteps.every((id) => tally.proved.includes(id));
+  const checksN = partChecks.filter((id) => tally.proved.includes(id)).length;
+  const last = seen.at(-1);
+  const judged = verdicts.filter((v) => v.at <= t);
+  const shipped = tally.ship === 'done';
+  return {
+    at: `${label} · ${et(t)} ET`,
+    g0: G.done, g1: G.done, g2: G.done,
+    g3: stepsDone ? G.done : G.active,
+    g4: checksN === partChecks.length ? G.done : stepsDone || checksN > 0 ? G.active : G.waiting,
+    g5: shipped ? G.done : tally.ship === 'committed' ? G.active : G.waiting,
+    g6: shipped ? G.active : G.waiting,
+    proved, of: mine,
+    part: `Claude ${tally.done} of ${tally.of}`,
+    cells: cellsOf(tally),
+    side: '1 yours · 1 later',
+    run: last ? `${last.item} · ${last.ok ? 'exit 0, proved' : 'failed, reopened'}` : 'none yet',
+    verdict: tally.verdict,
+    judge: judged.length ? `${judged.length} check(s), ${judged.at(-1)!.met ? 'met' : 'not met'}` : 'waits for a turn to end',
+  };
+}
+const moments = tallies.map((x, k) => at(x.at, k === tallies.length - 1 && k > 0 ? 'the last tally' : `tally ${k + 1}`, x));
+
+const S: Omit<StoryStage, 'state'>[] = [
+  { id: 'early', title: 'Done, too early', kind: 'measured' },
+  { id: 'proofs', title: 'The plan carries its proofs', kind: 'hook' },
+  { id: 'fail', title: 'A proof must be able to fail', kind: 'method' },
+  { id: 'frozen', title: 'Frozen at approval', kind: 'mod' },
+  { id: 'exact', title: 'Only an exact run counts', kind: 'rule' },
+  { id: 'exit', title: 'The exit code decides', kind: 'rule' },
+  { id: 'background', title: 'A background run waits for its notice', kind: 'rule' },
+  { id: 'reopen', title: 'A newer failure reopens', kind: 'rule' },
+  { id: 'words', title: 'My words close only what they name', kind: 'person' },
+  { id: 'band', title: 'Seven stages on one band', kind: 'mod' },
+  { id: 'tally', title: 'The tally and its verdict', kind: 'tool' },
+  { id: 'goal', title: 'The goal reads the tally', kind: 'harness' },
+  { id: 'measured', title: 'Measured', kind: 'measured' },
+];
+// The four setting-out stages show the first tally; the rest walk the later tallies in order and end on the last.
+const later = S.length - 5;
+const pick = (i: number) => moments[i < 4 || moments.length < 2 ? 0 : Math.min(moments.length - 1, 1 + Math.round(((i - 4) / later) * (moments.length - 2)))];
+const stages: StoryStage[] = S.map((s, i) => ({ ...s, state: pick(i) }));
+const rows: StoryRow[] = [
+  { k: 'proved', label: `Proved, of ${mine} in Claude's part`, type: 'count' },
+  { k: 'verdict', label: 'Tally', type: 'lamps', lamps: ['NOT DONE', 'ALL DONE'] },
+  { k: 'run', label: 'Newest proof run', wide: true },
+  { k: 'judge', label: 'Goal judge', wide: true, phone: false },
+];
+const tallyText = `Tally of i-want-a-new-crystalline-stroustrup.md: Claude's part ${firstTally.done} of ${firstTally.of}`;
+---
+<StoryFrame id="completion-meter" label="How the completion meter decides an item is done, step by step" stages={stages} rows={rows}
+  foot="this build's own record: its approval, every proof run as the meter judged it, and each tally it printed">
+  <div slot="panel" class="cm-band sf-replica" aria-label="A replica of the meter's band">
+    <div class="cm-at" data-k="at">{stages[0].state.at}</div>
+    <div class="cm-glyphs">
+      {['Intent', 'Explore and design', 'Plan approval', 'Build', 'Verify', 'Commit and push', 'Close'].map((l, i) => (
+        <span class="cm-g" title={l}><b data-k={`g${i}`}>{stages[0].state[`g${i}`]}</b><i>{l.split(' ')[0]}</i></span>
+      ))}
+    </div>
+    <div class="cm-line"><span data-k="part">{stages[0].state.part}</span> <span class="cm-cells" data-k="cells">{stages[0].state.cells}</span></div>
+    <div class="cm-side sf-hide-phone" data-k="side">{stages[0].state.side}</div>
+  </div>
+
+  <StoryCard i={0} stage={stages[0]}>
+    <p class="sf-lead">An agent that says it is finished has made a claim. On 19 October I measured how often those claims held in my own setup.</p>
+    <div class="sf-scene">
+      <div class="sf-step"><span class="dim">2026-10-19, 23 planned sessions re-read</span></div>
+      <div class="sf-step">walk-away windows that counted anything <span class="no">0 of 5</span></div>
+      <div class="sf-step">claims of done refused <span class="warn">195 of 533</span></div>
+      <div class="sf-step">kept ticks resting on one bare file name <span class="warn">76 of 263</span></div>
+    </div>
+    <p>A walk-away window is a fresh session that builds an approved plan with nobody watching. On 19 October all 5 of them had counted nothing, because only an approval in the window itself told Claude the meter was counting. Of the ticks the meter had kept, 76 of 263 rested on a single bare name such as <code>REPORT.md</code>: a file existing, not a check passing.</p>
+    <p>So the question changed. Not "did Claude say it is done" but "which command ran, exactly as written, and how did it exit".</p>
+  </StoryCard>
+
+  <StoryCard i={1} stage={stages[1]}>
+    <p class="sf-lead">Every item in an approved plan ends with the command that proves it. The plan cannot be approved without one.</p>
+    <div class="sf-scene">
+      <div class="sf-step dim">## Steps</div>
+      <div class="sf-step">1. Correct the setup's decision log so its transcript-retention record says …</div>
+      <div class="sf-step">&nbsp;&nbsp; Proof: <span class="arrow">`grep -q "Superseded 2026-10-21" …/DECISIONS.md`</span></div>
+      <div class="sf-step dim">## Verification</div>
+      <div class="sf-step">5. No private name, path or secret appears in the posts' or stories' sources.</div>
+      <div class="sf-step">&nbsp;&nbsp; Proof: <span class="arrow">`node …/scan-tree.mjs …/src/content/blog &amp;&amp; …`</span></div>
+    </div>
+    <p>The plan for this very post has {steps} steps and {checks} checks, and each carries a <code>Proof:</code> line read the way Markdown reads a code span. The plan-exit hook that guards approval refuses a missing proof, a bare name, a <code>&lt;placeholder&gt;</code> and a proof cut short inside its own backticks.</p>
+    <p>Two items name no command. S10 is mine: "your answer in the final question box, which names S10". S11 is a later event, the live build after my go. The meter files both outside Claude's part, so neither can be closed by Claude running something.</p>
+  </StoryCard>
+
+  <StoryCard i={2} stage={stages[2]}>
+    <p class="sf-lead">A proof that cannot fail proves nothing. Each one is chosen so the wrong world prints a different answer.</p>
+    <div class="sf-scene">
+      <div class="sf-step"><span class="dim">step 2's proof, the kit's suite then the privacy scan</span></div>
+      <div class="sf-step">clean tree <span class="ok">0 hit(s) · exit 0</span></div>
+      <div class="sf-step">planted address and employer name <span class="no">2 hit(s) · exit 1</span></div>
+      <div class="sf-step"><span class="dim">so its zero can be believed</span></div>
+    </div>
+    <p>This is a rule the plan's author holds, not something the meter can check. Step 2 is a case in this build: its proof chains the kit's test suite to a privacy scan with <code>&amp;&amp;</code>, so either failing fails the line. Before trusting the scan's zero, the build planted a private address and an employer's name in a scratch repository and watched the same scan exit 1.</p>
+    <p>The same step fixed a check that could not fail. The kit's suite counted a skipped arm as a pass, so a machine missing a tool printed the same total as one that ran everything. It now prints a skip count beside the passes.</p>
+  </StoryCard>
+
+  <StoryCard i={3} stage={stages[3]}>
+    <p class="sf-lead">At approval the list is frozen by wording. Editing the plan later cannot move a proof onto a different item.</p>
+    <div class="sf-scene">
+      <pre>{`// stages.ts
+export const itemKey = (list, full) =>
+  \`\${list}:\${full.replace(/\\*\\*/g, '').replace(/\\s+/g, ' ').trim().toLowerCase()}\``}</pre>
+    </div>
+    <p>Each item's key is its list and its whole text, so an inserted step or a reworded one leaves every other proof where it was. Before 19 October an inserted step silently dropped the proofs after it.</p>
+    <p>A walk-away window never saw the approval happen, so the plan is carried to it: the launcher's <code>/goal</code> line names the plan file, and the meter freezes the list from that. This window's band read "approved in the planning window" from its first turn.</p>
+  </StoryCard>
+
+  <StoryCard i={4} stage={stages[4]}>
+    <p class="sf-lead">A run counts only when it is the main session's own shell call, and its command is the proof's whole command as written.</p>
+    <div class="sf-scene">
+      <pre>{`export function runOf(u, sites, home) {
+  if (!isEvidenceTool(u.tool)) return []
+  const said = normCmd(String(input.command ?? ''), home)
+  ...
+  return sites.filter(s => normCmd(s.cmd, home) === said)
+}`}</pre>
+    </div>
+    <p>Equality, not containment. The matcher before 25 October accepted the proof anywhere in a command, so words before it, a longer word holding it, text typed into a browser and a helper's run could all count. <code>normCmd</code> forgives only what cannot change what runs: runs of spaces, a quoted plain path, and the home folder however it is written.</p>
+    <p>This build shows the rule biting. Step 3's first build ran with its output sent to a log file, a different command, and the meter ignored it. The second ran exactly as written and proved two items at once, {twin.join(' and ')}, because the plan gives both the same proof.</p>
+    <p class="sf-note">Measured before the change: of 287 proofs run as their whole command in 30 days, 285 were typed exactly as written, and the other 2 differed only in path spelling, which <code>normCmd</code> reads one way.</p>
+  </StoryCard>
+
+  <StoryCard i={5} stage={stages[5]}>
+    <p class="sf-lead">The run's own exit decides. Nobody reads the output and judges it.</p>
+    <div class="sf-scene">
+      <pre>{`export function exitedClean(isError, result) {
+  if (isError) return false
+  const why = isRecord(result) ? result.returnCodeInterpretation : undefined
+  return !(typeof why === 'string' && why.trim() !== '')
+}`}</pre>
+      <div class="sf-step">$ grep -q "Superseded 2026-10-21" …/DECISIONS.md</div>
+      <div class="sf-step dim">(no output)</div>
+      <div class="sf-step"><span class="ok">exit 0 → S1 proved</span></div>
+    </div>
+    <p>Step 1's proof prints nothing at all. <code>grep -q</code> answers only with its exit code, and that is the point: the meter reads the tool's error flag and Claude Code's own reading of the return code, never the text, which is the command's output and could say anything.</p>
+  </StoryCard>
+
+  <StoryCard i={6} stage={stages[6]}>
+    <p class="sf-lead">A proof started in the background, or one that outran its time limit, proves nothing until the engine reports how it ended.</p>
+    <div class="sf-scene">
+      <div class="sf-step">Bash · run_in_background <span class="dim">→ a task id comes back</span></div>
+      <div class="sf-step">meter <span class="warn">pending</span> <span class="dim">· a start is not an end</span></div>
+      <div class="sf-step">engine notice for that task · completed (exit code 0)</div>
+      <div class="sf-step">meter <span class="ok">proved</span></div>
+    </div>
+    <p>Before 25 October one window kept a timed-out run as a pass, and that run's later failure never reopened it. Now an answer carrying a background task id marks the run pending. The task id is read from the answer's own field, never its text, and only the engine's own finish notice ends it. A line in a user message that looks like a notice ends nothing, because a pasted message or a peer session could carry one.</p>
+  </StoryCard>
+
+  <StoryCard i={7} stage={stages[7]}>
+    <p class="sf-lead">Each item keeps only its newest run. A pass proves it on the spot, and a later failure takes the proof back.</p>
+    <div class="sf-scene">
+      <div class="sf-step">first run · <span class="ok">passes</span> → proved</div>
+      <div class="sf-step">the work it proves is edited</div>
+      <div class="sf-step">next run · <span class="no">fails</span> → open again</div>
+      <div class="sf-step">fixed, run again · <span class="ok">passes</span> → proved</div>
+    </div>
+    <p class="sf-note">The rule's shape, not a record. This build's real runs are on the panel and in the last stage.</p>
+    <p>Before 25 October Claude claimed an item after a passing run, and the claim was what counted. The claim step is gone: the count sees the run and decides, so there is no moment where an item reads done because Claude said so. Building on a proved step and breaking it reopens it, which is exactly when it should reopen.</p>
+  </StoryCard>
+
+  <StoryCard i={8} stage={stages[8]}>
+    <p class="sf-lead">Some items only I can close. My words close them, and only words that name the item.</p>
+    <div class="sf-scene">
+      <div class="sf-step">S10 · <span class="dim">proof:</span> yours, your answer in the final question box</div>
+      <div class="sf-step">box answer · <span class="arrow">"S10 … go"</span></div>
+      <div class="sf-step">quote names S10 <span class="ok">✓</span> · from my box <span class="ok">✓</span> · after approval <span class="ok">✓</span></div>
+    </div>
+    <p>A quote counts only from a prompt typed at my terminal, sent from my phone, or my answer in a question box, and only when that prompt or box names the item's id. My answer about S2 decides nothing about S3. The meter used to read every prompt event, which also fires for task notices and messages from other sessions, and 110 of 140 quotes it had kept as mine were those.</p>
+    <p>My words never stand in for a command. On an item in Claude's part they count only once Claude has handed the item over as something nothing it can run will close.</p>
+  </StoryCard>
+
+  <StoryCard i={9} stage={stages[9]}>
+    <p class="sf-lead">The whole count lives on one line above the prompt, beside the HUD.</p>
+    <div class="sf-scene">
+      <div class="sf-step">✓ Intent · ✓ Explore and design · ✓ Plan approval</div>
+      <div class="sf-step">● Build <span class="dim">steps proved</span> · ○ Verify <span class="dim">checks proved</span></div>
+      <div class="sf-step">○ Commit and push · ○ Close</div>
+      <div class="sf-step">Claude {firstTally.done} of {firstTally.of} {cellsOf(firstTally)} <span class="dim">· 1 yours · 1 later</span></div>
+    </div>
+    <p>Seven stages, each done, under way, waiting or skipped. The headline counts Claude's part: its own items, plus commit, push and close, which is why this plan's {mine} items make a part of {firstTally.of}. The bar fills whole cells rounded down, so it never reads full until every unit is done. Items planned as mine or as a later event's sit beside the count, never inside it.</p>
+    <p>Commit and push is read from git alone. The meter asks git whether each edited file is committed and pushed, and an edit after a commit sends the stage back.</p>
+  </StoryCard>
+
+  <StoryCard i={10} stage={stages[10]}>
+    <p class="sf-lead">Asked with no items, the meter prints the tally: what is open, who acts on it, and a last line that is the verdict.</p>
+    <div class="sf-scene">
+      <div class="sf-step">{tallyText}</div>
+      <div class="sf-step">Open, Claude acts ({mine}):</div>
+      <div class="sf-step">● S1 Correct the setup's decision log …</div>
+      <div class="sf-step dim">&nbsp;&nbsp;closes: run `grep -q …` as the whole command, exactly as written</div>
+      <div class="sf-step">◆ S10 <span class="dim">· the operator acts</span> &nbsp; ◷ S11 <span class="dim">· a later event acts</span></div>
+      <div class="sf-step"><span class="no">VERDICT: {firstTally.verdict} ({firstTally.open} open)</span></div>
+    </div>
+    <p>This is this build's first tally, at {et(firstTally.at)} ET. Every answer the tool gives ends with that line, and the verdict asks exactly what Claude's part asks: every item proved, and commit and push done or not needed. Until 25 October the goal and the count judged different lists.</p>
+  </StoryCard>
+
+  <StoryCard i={11} stage={stages[11]}>
+    <p class="sf-lead">The walk-away window's goal is the tally. A separate model reads it after every turn and decides whether the build may stop.</p>
+    <div class="sf-scene">
+      <div class="sf-step dim">/goal Carry out the sealed plan at …stroustrup.md; …</div>
+      <div class="sf-step dim">… Done when the latest tally, printed with that tool after the last change, ends with the line</div>
+      <div class="sf-step"><span class="arrow">VERDICT: ALL DONE.</span></div>
+    </div>
+    <p>The condition this window started with ran to {n(figure(F, 'build.goalChars'))} characters. Its done line names one thing a judge can read in the conversation: the tally's last line. The judge runs no commands, so the evidence has to be printed.</p>
+    <p class="sf-note">From the record of 30 October, a different build: its tally read ALL DONE, and the judge refused to stop six times running. One check had been handed to the next morning's run, the meter counted that as not blocking, and the judge read the plan and the tally and said the check was not proved. It was right. The meter's count and the judge's reading disagreed, and the build stopped only when the operator ended it.</p>
+  </StoryCard>
+
+  <StoryCard i={12} stage={stages[12]}>
+    <p class="sf-lead">Two weeks of fixes, each with its numbers, and this build's own runs.</p>
+    <ul>
+      <li><b>15 October.</b> The band and the panel are born: seven stages, and every plan must list its steps.</li>
+      <li><b>19 October.</b> Proof lines and the frozen list. Measured first: 0 of 5 walk-away windows counted anything, and 195 of 533 claims were refused.</li>
+      <li><b>25 October.</b> Twelve plan steps in a day: exact runs, background notices, no claim step, his words only his, one tally. The exact-run tests: 10 of 12 failed before the change and all passed after.</li>
+      <li><b>26 October.</b> The walk-away's goal becomes the tally, and a real walk-away is judged end to end on the four failures I named.</li>
+      <li><b>This build, to the cut.</b> {runs.length} proof runs: {runs.filter((r) => r.ok).length} passed and {runs.filter((r) => !r.ok).length} failed.</li>
+    </ul>
+    <p class="sf-note">Dates and before-and-after counts are from the meter's commit messages; the build's runs are from its session log, judged by the meter's own code.</p>
+  </StoryCard>
+</StoryFrame>
+
+<style>
+  .cm-band { display: grid; gap: 0.35rem; }
+  .cm-at { font-size: 0.66rem; opacity: 0.6; }
+  .cm-glyphs { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 0.2rem; text-align: center; }
+  .cm-g { display: grid; gap: 0.05rem; }
+  .cm-g b { font-size: 1rem; color: var(--color-accent-2); }
+  .cm-g i { font-style: normal; font-size: 0.5rem; letter-spacing: 0.04em; opacity: 0.6; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .cm-line { font-weight: 700; font-size: 0.86rem; display: flex; flex-wrap: wrap; gap: 0.4rem; align-items: baseline; }
+  .cm-cells { color: var(--color-accent-2); letter-spacing: 0.02em; }
+  .cm-side { font-size: 0.7rem; opacity: 0.7; }
+</style>
+
+<script>
+  import { runStory } from '../../lib/story-runner';
+  const root = document.querySelector<HTMLElement>('.sf[data-story="completion-meter"]');
+  if (root) runStory(root);
+</script>

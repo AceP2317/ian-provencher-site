@@ -1,0 +1,244 @@
+---
+/**
+ * PlanModeStory — the scroll story for "Plan mode, enforced", as the setup runs on 31 October: each stage of
+ * planning at file level, beside a panel of this post's own planning session and the build it handed to.
+ * Every panel value is read by scripts/story-figures.mjs from the two session logs; the 12 October record
+ * is kept, labelled, as where the restatement rule came from.
+ */
+import StoryFrame from './StoryFrame.astro';
+import StoryCard from './StoryCard.astro';
+import F from '../../data/story-figures.generated.json';
+import { figure, n, et, type StoryStage, type StoryRow } from './story';
+
+type At = { ctx: number; read: number; requests: number };
+type Box = At & { at: number; questions: number };
+const P = {
+  promptAt: figure<number>(F, 'planning.promptAt'),
+  firstCtx: figure<number>(F, 'planning.firstCtx'),
+  helpers: figure<number>(F, 'planning.helpers'),
+  helpersOutAt: figure<number>(F, 'planning.helpersOutAt'),
+  helpersBackAt: figure<number>(F, 'planning.helpersBackAt'),
+  refusal: figure<{ at: number; word: string }>(F, 'planning.refusal'),
+  boxes: figure<Box[]>(F, 'planning.perBox'),
+  questions: figure<number>(F, 'planning.questions'),
+  planAt: figure<number>(F, 'planning.firstPlanWriteAt'),
+  approvedAt: figure<number>(F, 'planning.approvedAt'),
+  exits: figure<number>(F, 'planning.exits'),
+  exitRefused: figure<number>(F, 'planning.exitRefused'),
+  read: figure<number>(F, 'planning.read'),
+  requests: figure<number>(F, 'planning.requests'),
+  lastCtx: figure<number>(F, 'planning.lastCtx'),
+  atHelpersBack: figure<At>(F, 'planning.atHelpersBack'),
+  atPlanWrite: figure<At>(F, 'planning.atPlanWrite'),
+  atExit: figure<At>(F, 'planning.atExit'),
+};
+const B = {
+  baseCtx: figure<number>(F, 'build.baseCtx'),
+  lastCtx: figure<number>(F, 'build.lastCtx'),
+  read: figure<number>(F, 'build.read'),
+  requests: figure<number>(F, 'build.requests'),
+  goalChars: figure<number>(F, 'build.goalChars'),
+  verdicts: figure<{ at: number; met: boolean }[]>(F, 'build.verdicts'),
+  refused: figure<{ at: number; tool: string; guard: string }[]>(F, 'build.refused'),
+};
+const bill = figure<{ both: number; oneWindow: number; saved: number; savedPct: number; carry: number }>(F, 'bill');
+const boxes = [...P.boxes].sort((a, b) => a.at - b.at);
+const helperHolds = B.refused.filter((r) => r.guard === 'plan-agents').length;
+const judged = B.verdicts.length;
+const judgeWord = judged ? `${judged} check(s), the last ${B.verdicts.at(-1)!.met ? 'met' : 'not met'}` : 'armed, waits for a turn to end';
+
+const st = (mode: string, win: string, step: string, gate: string, ctx: number, read: number, judge: string) => ({ mode, win, step, gate, ctx, read, judge });
+const box = (k: number) => `box ${k + 1} of ${boxes.length} · ${et(boxes[k].at)} ET`;
+const S: (Omit<StoryStage, 'state'> & { state: StoryStage['state'] })[] = [
+  { id: 'mode', title: 'Plan mode is the default', kind: 'setting', state: st('PLAN', 'planning', `first prompt · ${et(P.promptAt)} ET`, '', P.firstCtx, P.firstCtx, 'none') },
+  { id: 'inject', title: 'The method loads', kind: 'hook', state: st('PLAN', 'planning', `first prompt · ${et(P.promptAt)} ET`, '', P.firstCtx, P.firstCtx, 'none') },
+  { id: 'calibrate', title: 'Calibrate, then design from zero', kind: 'method', state: st('PLAN', 'planning', `first prompt · ${et(P.promptAt)} ET`, '', P.firstCtx, P.firstCtx, 'none') },
+  { id: 'helpers', title: 'Helpers search, and nothing changes', kind: 'hook', state: st('PLAN', 'planning', `${P.helpers} helpers back · ${et(P.helpersBackAt)} ET`, '', P.atHelpersBack.ctx, P.atHelpersBack.read, 'none') },
+  { id: 'box', title: 'The question box, five beats', kind: 'hook', state: st('PLAN', 'planning', box(0), '', boxes[0].ctx, boxes[0].read, 'none') },
+  { id: 'ledger', title: 'The ledger, tensions first', kind: 'method', state: st('PLAN', 'planning', box(1), '', boxes[1].ctx, boxes[1].read, 'none') },
+  { id: 'restate', title: 'The restatement, inside the box', kind: 'hook', state: st('PLAN', 'planning', box(2), '', boxes[2].ctx, boxes[2].read, 'none') },
+  { id: 'seal', title: 'Seal, proofs and From zero', kind: 'hook', state: st('PLAN', 'planning', `plan written · ${et(P.planAt)} ET`, '', P.atPlanWrite.ctx, P.atPlanWrite.read, 'none') },
+  { id: 'walk', title: 'Watch or walk', kind: 'person', state: st('PLAN', 'planning', box(3), '', boxes[3].ctx, boxes[3].read, 'none') },
+  { id: 'gate', title: 'The exit gate', kind: 'hook', state: st('PLAN', 'planning', `approved · ${et(P.approvedAt)} ET`, 'ALLOW', P.atExit.ctx, P.atExit.read, 'none') },
+  { id: 'handoff', title: 'The handoff', kind: 'hook', state: st('AUTO', 'build', 'fresh window, goal set', 'ALLOW', B.baseCtx, P.read + B.baseCtx, 'armed') },
+  { id: 'judge', title: 'The judge reads the tally', kind: 'harness', state: st('AUTO', 'build', `${n(B.requests)} build requests`, 'ALLOW', B.lastCtx, bill.both, judgeWord) },
+  { id: 'bill', title: 'The whole bill', kind: 'measured', state: st('AUTO', 'both', 'both windows counted', 'ALLOW', B.lastCtx, bill.both, judgeWord) },
+];
+const stages: StoryStage[] = S;
+const rows: StoryRow[] = [
+  { k: 'mode', label: 'Mode', type: 'lamps', lamps: ['PLAN', 'AUTO'] },
+  { k: 'win', label: 'Window' },
+  { k: 'step', label: 'Where', wide: true },
+  { k: 'gate', label: 'Exit gate', type: 'lamps', lamps: ['DENY', 'ALLOW'], phone: false },
+  { k: 'ctx', label: 'Context in the working window', type: 'count' },
+  { k: 'read', label: 'Read so far, both windows', type: 'count', phone: false },
+  { k: 'judge', label: 'Goal judge', wide: true, phone: false },
+];
+---
+<StoryFrame id="plan-mode" label="How planning runs in my Claude Code setup, step by step" stages={stages} rows={rows}
+  foot="this post's own planning session and the build it handed to, read from both session logs; tokens are input, cache read and cache write per request">
+
+  <StoryCard i={0} stage={stages[0]}>
+    <p class="sf-lead">Every session starts in plan mode. Nothing is pressed to get there, and nothing changes the machine until a plan is approved.</p>
+    <div class="sf-scene">
+      <pre>{`// ~/.claude/settings.json
+"permissions": {
+  "defaultMode": "plan",
+  ...`}</pre>
+    </div>
+    <p>One setting does it. In plan mode Claude reads, searches and asks, and every write or command that changes the machine needs an approved plan first. Anthropic's guide now starts new sessions in auto mode, where a classifier reviews anything risky before it runs. This setup overrides that default, and every stage below decides when plan mode ends.</p>
+    <p>This post was planned in one such session. Its first prompt went in at {et(P.promptAt)} ET, and the panel follows that session and the build it handed to.</p>
+  </StoryCard>
+
+  <StoryCard i={1} stage={stages[1]}>
+    <p class="sf-lead">Before Claude plans anything, a hook puts the interview method into its context.</p>
+    <div class="sf-scene">
+      <div class="sf-step">UserPromptSubmit <span class="arrow">→</span> intent-inject.sh</div>
+      <div class="sf-step">permission_mode = "plan" <span class="ok">✓</span> · not a headless run <span class="ok">✓</span></div>
+      <div class="sf-step">first send this session <span class="ok">✓</span> → the whole method</div>
+      <div class="sf-step">stdout <span class="arrow">→</span> Claude's context</div>
+    </div>
+    <p>Claude Code runs the hook on every prompt and hands it a JSON payload. The hook acts only when <code>permission_mode</code> is <code>"plan"</code>, and since 6 October it skips headless runs, which have nobody to interview. The whole method goes out once per session, and later prompts get a short reminder.</p>
+    <p>Size matters here. Past 10,000 characters, Claude Code shows the session a 2 KB preview and a file path instead of a hook's output. The method crossed that line on 6 September, and every planning session until 30 September got only the preview. Since 26 October a guard refuses any commit that grows the method to 10,000 characters or more. As of 31 October it is 9,671.</p>
+  </StoryCard>
+
+  <StoryCard i={2} stage={stages[2]}>
+    <p class="sf-lead">Claude sizes the interview to the ask and says which branch it took, so a wrong call costs one word to fix.</p>
+    <div class="sf-scene">
+      <pre>{`- Fewer than three open unknowns — one confirming sentence naming
+  what is assumed, then proceed. No interrogation.
+- Three or more — full rounds until the ledger empties.`}</pre>
+    </div>
+    <p>A method that interrogates a typo fix gets switched off, so the short branch matters as much as the long one. On the long branch, the order changed on 25 October. First Claude asks what the code cannot answer: who it is for, why, and what it is not. Then it designs the best mechanism from the objective alone, before reading what the build would touch. Only then does it explore, holding what exists against that design.</p>
+    <p>The order is the point. Read the code first and the design becomes a patch on whatever is there.</p>
+  </StoryCard>
+
+  <StoryCard i={3} stage={stages[3]}>
+    <p class="sf-lead">Helpers map the code in parallel. While any is out, a hook refuses every change to the machine.</p>
+    <div class="sf-scene">
+      <div class="sf-step">{P.helpers} helpers out at {et(P.helpersOutAt)} ET</div>
+      <div class="sf-step">a command starting <code>{P.refusal.word}</code> at {et(P.refusal.at)} ET <span class="no">refused</span></div>
+      <div class="sf-step"><span class="dim">reading still open: ls, cat, grep, git log, git diff …</span></div>
+      <div class="sf-step">all back at {et(P.helpersBackAt)} ET <span class="ok">changes open</span></div>
+    </div>
+    <p>A helper is a subagent with its own context, and only three read-only kinds may launch: one that searches, one that reviews when asked, and one that answers questions about Claude Code. At most four run at once, and none can start another. The hook writes a marker when a helper starts and removes it when the helper reports. While any marker stands, every file write and every command off a short reading list is refused, by every tool.</p>
+    <p>It exists because a session once rewrote a stylesheet, committed and pushed it thirteen minutes before its own research landed. The refusal in the panel's session is real: one command started with <code>{P.refusal.word}</code> while the helpers were out. The build that wrote this post hit the same hook {helperHolds} time(s), each while its own helpers were mapping the code.</p>
+  </StoryCard>
+
+  <StoryCard i={4} stage={stages[4]}>
+    <p class="sf-lead">Every decision arrives as a box of options. A hook reads the whole box before it is drawn and refuses one I could not answer well.</p>
+    <div class="sf-scene">
+      <div class="sf-step">1 · What happens <span class="dim">· in my words, not the machinery's</span></div>
+      <div class="sf-step">2 · How it differs <span class="dim">· opens with "Unlike"</span></div>
+      <div class="sf-step">3 · What I will see</div>
+      <div class="sf-step">4 · The cost in numbers <span class="dim">· minutes of the session, then mine</span></div>
+      <div class="sf-step">5 · What that cost means for me</div>
+    </div>
+    <p>A <code>PreToolUse</code> hook on <code>AskUserQuestion</code> receives every question and option before the box draws, and a refusal sends its reason back to Claude, which rewrites the box. It refuses a file name, a code identifier or a flag in a header or label. It refuses an option shorter than five sentences, because each option owes five beats, one sentence each. That was four beats until 25 October, when the cost moved from "what you give up" to a number with its meaning beside it.</p>
+    <pre>{`qg_ns = gsub(/[.!?]"? /, " ", qg_t)
+if (text ~ /[.!?]"?$/) qg_ns++
+if (qg_ns < 5) flag(kind, qi, "... it needs five beats, one sentence each ...")`}</pre>
+    <p>It counts sentence endings and never grades the writing. The panel's session asked {P.questions} questions in {boxes.length} boxes.</p>
+  </StoryCard>
+
+  <StoryCard i={5} stage={stages[5]}>
+    <p class="sf-lead">A numbered list of what is still open, shown every round. Tensions outrank assumptions, because resolving one usually changes the build.</p>
+    <div class="sf-scene">
+      <div class="sf-step"><b>tension</b> · an answer that sits badly against another answer, the goal or the code</div>
+      <div class="sf-step"><b>assumption</b> · something taken on faith</div>
+      <div class="sf-step"><span class="dim">the gate opens when the list is empty, or every survivor is a risk I accepted by name</span></div>
+    </div>
+    <p>The floor is two rounds on the long branch. A first round returns answers nobody has had time to be surprised by, and the second is spent on what the first opened. This is instructed rather than counted: the skill says it, and the seal at the end is the record the gate checks.</p>
+    <p>This stage is unchanged since 12 October.</p>
+  </StoryCard>
+
+  <StoryCard i={6} stage={stages[6]}>
+    <p class="sf-lead">Before sealing, Claude restates the whole intent inside the question box and asks me to break it.</p>
+    <div class="sf-scene">
+      <div class="sf-step"><span class="dim">box 3, the restatement in the question itself</span></div>
+      <div class="sf-step">"Here is the build. Break anything that's wrong. …"</div>
+      <div class="sf-step">my answer · <span class="ok">That's it</span></div>
+    </div>
+    <p class="sf-note">From the 12 October record. Rounds three and four of that session asked whether "the restatement above" matched what I wanted, and in round four I answered: "I never ever see the statement you ask me about every time we get to this point of the workflow. I NEVER see it." The build window then ran a real Claude Code session in a virtual terminal. The box drew 23 rows, and on a 30-row screen the paragraph's opening line was off the top. On a 60-row screen, the control, it was visible.</p>
+    <p>So the restatement goes in the box's question field, and the question hook refuses a box that points at reply text: "the restatement above", "listed above", "in my reply". On 29 October that rule was narrowed. Of 27 pointer findings in the ten days before, 16 pointed at the reply and 11 did not. A promised later reply now passes, and so do "the table above", ordinary uses of "above", and an option's "Unlike the … above". A vague pointer at another part of the same box stays refused, and the refusal says to name that part by its label. Replayed over 1,470 boxes, findings went from 115 to 100, with none new.</p>
+  </StoryCard>
+
+  <StoryCard i={7} stage={stages[7]}>
+    <p class="sf-lead">The plan is sealed with the confirmed intent, and every item carries the command that proves it.</p>
+    <div class="sf-scene">
+      <div class="sf-step">## Intent <span class="dim">· WHO · WHAT · NOT · WHY · HOW · DONE</span></div>
+      <div class="sf-step">&lt;!-- INTENT-LOCK:CONFIRMED --&gt;</div>
+      <div class="sf-step">## From zero <span class="dim">· the design as if nothing existed</span></div>
+      <div class="sf-step">## Steps · ## Verification <span class="dim">· each item ends</span> Proof: <span class="arrow">`one whole command`</span></div>
+    </div>
+    <p>Each proof is one whole command in backticks, and the item is proved when that command runs exactly as written and exits clean. Nothing in it may hide its exit code: no pipe, no <code>|| true</code>, no leading <code>!</code>. Since 25 October a plan that builds also needs a From zero section, holding the design from the objective alone and a keep, replace or remove for each piece it touches.</p>
+    <p>Since 23 October saving a sealed plan triggers a precheck. It runs everything the exit gate would refuse and hands the whole list back at once, so the first exit passes. It exists because 52 of 85 plans in the 30 days before were refused at least once at the exit. This post's plan was written once, at {et(P.planAt)} ET.</p>
+    <p class="sf-note">DONE changed too. On 12 October it was evidence for the judge to find in the conversation. Now it is for me to read, and the items and their proofs are the checks.</p>
+  </StoryCard>
+
+  <StoryCard i={8} stage={stages[8]}>
+    <p class="sf-lead">The last question is whether I watch the build here or walk away and let a fresh window build it.</p>
+    <div class="sf-scene">
+      <div class="sf-step">{et(boxes[1].at)} ET · Watch or walk? <span class="arrow">Watch</span></div>
+      <div class="sf-step">{et(boxes[2].at)} ET · a judge while you watch? <span class="arrow">typed: "switch to a walk away build"</span></div>
+      <div class="sf-step">{et(boxes[3].at)} ET · Walk away or watch? <span class="ok">Walk away</span></div>
+    </div>
+    <p>This session shows the rule working. I answered Watch, then typed a switch into the next box's free-text row. The gate counts an answer only from a box whose question offers both choices, and the box I typed into asked about the judge. So the session asked once more, and I picked Walk away. The answer is read from the box's recorded answers, never from its text, because that text repeats the question, which names both. The plan then carries <code>&lt;!-- INTENT-LOCK:WALK --&gt;</code>, and the gate checks that line against my answer.</p>
+    <p>Watching keeps the build in the planning window. Walking away arms the handoff.</p>
+  </StoryCard>
+
+  <StoryCard i={9} stage={stages[9]}>
+    <p class="sf-lead">Claude cannot leave plan mode until a hook has read the plan and found nothing to refuse.</p>
+    <div class="sf-scene">
+      <div class="sf-step">no helper still out</div>
+      <div class="sf-step">sealed, with an Intent of 40 words or more</div>
+      <div class="sf-step">numbered Steps and Verification, every item proved or marked mine or later</div>
+      <div class="sf-step">every proof one whole command that can fail</div>
+      <div class="sf-step">From zero present · watch or walk matches my answer</div>
+      <div class="sf-step">the launcher can build the goal</div>
+    </div>
+    <p>A <code>PreToolUse</code> hook on <code>ExitPlanMode</code> runs before the approval prompt is drawn. A proof line is refused when it stops at a backtick inside its own command, names no command, holds a placeholder in angle brackets, or cannot fail. Those proof rules live in one plan reader, the same code the completion meter counts with, so the gate and the count can never read a plan differently.</p>
+    <p>If the gate cannot read what it needs, it lets the exit through. Since 26 October it also says on my screen, and to Claude, what went unchecked. This post's plan passed on its first exit, at {et(P.approvedAt)} ET.</p>
+  </StoryCard>
+
+  <StoryCard i={10} stage={stages[10]}>
+    <p class="sf-lead">I approve the plan, and a fresh window opens in auto mode with its first prompt already typed: a <code>/goal</code> built from the plan.</p>
+    <div class="sf-scene">
+      <div class="sf-step">PostToolUse · ExitPlanMode <span class="arrow">→</span> the walk record for this exit</div>
+      <div class="sf-step">Claude runs the launcher, in view</div>
+      <div class="sf-step">goal · the plan's path and each step's first line <span class="dim">· {n(B.goalChars)} characters</span></div>
+      <div class="sf-step">claude --permission-mode auto --model … --session-id … --effort … "/goal …"</div>
+      <div class="sf-step">opened <span class="ok">✓</span> <span class="dim">· the new window's transcript shows the goal set</span></div>
+    </div>
+    <p>The walk answer leaves a record. The approval hook acts only for the exit and the plan that record names, matched by the exit call's own id since 26 October, so a stale record never fires on tomorrow's plan. It does not start a window behind Claude's back: it tells Claude its next and only action is one launcher command, so the launch lands in the transcript.</p>
+    <p>The launcher builds the goal from the plan's path and the first line of each step, as many as fit under the 4,000 characters <code>/goal</code> accepts. This build's came to {n(B.goalChars)}. It reports the window opened only once the new window's own transcript shows the goal set.</p>
+  </StoryCard>
+
+  <StoryCard i={11} stage={stages[11]}>
+    <p class="sf-lead">After every turn of the build, a separate model reads the conversation and decides whether the goal is met. Since 26 October the goal is one printed line.</p>
+    <div class="sf-scene">
+      <pre>{`... Done when the latest tally, printed with that tool after the last change,
+ends with the line VERDICT: ALL DONE.`}</pre>
+    </div>
+    <p>Anthropic's guide files <code>/goal</code> under the instructions the model decides, and says of any hook that asks a model: "A <code>prompt</code> or <code>agent</code> hook asks <em>another model</em> to decide, so it isn't deterministic either." That was true of the 12 October version, where the judge read the plan's DONE line and judged the evidence itself.</p>
+    <p>Now the completion meter counts the plan in code, and the judge reads the tally's last line. The judge is still a model, but it no longer has to decide what "done" means. A plan with no item a command proves gets no goal at all. How the count works is the subject of <a href="/blog/completion-meter/">The completion meter</a>.</p>
+  </StoryCard>
+
+  <StoryCard i={12} stage={stages[12]}>
+    <p class="sf-lead">Both windows counted, against the same build run inside the planning window.</p>
+    <ul>
+      <li><b>The planning window</b> sent {P.requests} requests and read {n(P.read)} tokens. Its last request carried {n(P.lastCtx)}.</li>
+      <li><b>The build window</b> started at {n(B.baseCtx)} per request, its own setup, and to the cut sent {n(B.requests)} requests reading {n(B.read)}.</li>
+      <li><b>Both together:</b> {n(bill.both)}.</li>
+      <li><b>The same build in the planning window</b> carries the interview on every request: {n(bill.carry)} more each, {n(bill.oneWindow)} in all. The handoff read {n(bill.saved)} fewer, <b>{bill.savedPct}% less</b>.</li>
+    </ul>
+    <p>Every request re-reads its whole context, so a window's cost is the sum of its context at every request. The fresh window's saving is in that re-reading, and the larger saving is the rework the interview moved earlier, to where it is cheapest.</p>
+    <p class="sf-note">Tokens here are each request's input, cache read and cache write, counted once per request from the two session logs, to the cut recorded in the figures file.</p>
+  </StoryCard>
+</StoryFrame>
+
+<script>
+  import { runStory } from '../../lib/story-runner';
+  const root = document.querySelector<HTMLElement>('.sf[data-story="plan-mode"]');
+  if (root) runStory(root);
+</script>

@@ -1,0 +1,10 @@
+---
+/** One stage card in a StoryFrame: its number, title and kind chip, then whatever the story puts inside. */
+import { KIND, type StoryStage } from './story';
+interface Props { i: number; stage: StoryStage }
+const { i, stage } = Astro.props;
+---
+<li class="sf-card" data-i={i} data-stage={stage.id} id={`stage-${stage.id}`}>
+  <header><span class="sf-num">{String(i + 1).padStart(2, '0')}</span><h3>{stage.title}</h3><span class={`sf-kind ${stage.kind}`}>{KIND[stage.kind]}</span></header>
+  <slot />
+</li>

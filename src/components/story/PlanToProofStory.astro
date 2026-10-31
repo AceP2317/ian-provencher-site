@@ -1,0 +1,275 @@
+---
+/**
+ * PlanToProofStory — the scroll story for "From plan to proof": the parts of the setup on one diagram, then
+ * this job traced through every one of them, from the first prompt to the last tally. Every panel value is
+ * read by scripts/story-figures.mjs from the planning session's log and the build window's log, to one cut.
+ */
+import StoryFrame from './StoryFrame.astro';
+import StoryCard from './StoryCard.astro';
+import RunTimeline from './RunTimeline.astro';
+import F from '../../data/story-figures.generated.json';
+import { figure, n, et, span, type StoryStage, type StoryRow } from './story';
+
+type At = { ctx: number; read: number; requests: number };
+type Box = At & { at: number; questions: number };
+type Run = { item: string; at: number; ok: boolean };
+type Tally = { at: number; done: number; of: number; verdict: string; open: number; proved: string[] };
+const P = {
+  promptAt: figure<number>(F, 'planning.promptAt'),
+  firstCtx: figure<number>(F, 'planning.firstCtx'),
+  helpers: figure<number>(F, 'planning.helpers'),
+  helpersBackAt: figure<number>(F, 'planning.helpersBackAt'),
+  boxes: figure<Box[]>(F, 'planning.perBox'),
+  questions: figure<number>(F, 'planning.questions'),
+  planAt: figure<number>(F, 'planning.firstPlanWriteAt'),
+  approvedAt: figure<number>(F, 'planning.approvedAt'),
+  read: figure<number>(F, 'planning.read'),
+  requests: figure<number>(F, 'planning.requests'),
+  output: figure<number>(F, 'planning.output'),
+  atHelpersBack: figure<At>(F, 'planning.atHelpersBack'),
+  atPlanWrite: figure<At>(F, 'planning.atPlanWrite'),
+  atExit: figure<At>(F, 'planning.atExit'),
+};
+const B = {
+  start: figure<number>(F, 'build.start'),
+  cut: figure<number>(F, 'build.cut'),
+  goalSetAt: figure<number>(F, 'build.goalSetAt'),
+  goalRewrites: figure<number>(F, 'build.goalRewrites'),
+  goalChars: figure<number>(F, 'build.goalChars'),
+  baseCtx: figure<number>(F, 'build.baseCtx'),
+  read: figure<number>(F, 'build.read'),
+  output: figure<number>(F, 'build.output'),
+  requests: figure<number>(F, 'build.requests'),
+  runs: figure<Run[]>(F, 'build.runs'),
+  pending: figure<number>(F, 'build.runsPending'),
+  tallies: figure<Tally[]>(F, 'build.tallies'),
+  verdicts: figure<{ at: number; met: boolean }[]>(F, 'build.verdicts'),
+  items: figure<{ id: string; list: string }[]>(F, 'build.items'),
+  refused: figure<{ at: number; tool: string; guard: string }[]>(F, 'build.refused'),
+};
+const bill = figure<{ both: number; oneWindow: number; saved: number; savedPct: number; carry: number }>(F, 'bill');
+const samples = figure<{ label: string; at: number }[]>(F, 'hud.samples');
+
+const boxes = [...P.boxes].sort((a, b) => a.at - b.at);
+const asked = (k: number) => boxes.slice(0, k + 1).reduce((s, b) => s + b.questions, 0);
+const steps = B.items.filter((i) => i.list === 'steps').length;
+const checks = B.items.filter((i) => i.list === 'checks').length;
+const mine = B.items.length - 2; // S10 is his and S11 a later event's: the frozen plan names both outside Claude's part
+const provedBy = (t: number) => { const s = new Map<string, boolean>(); for (const r of B.runs) if (r.at <= t) s.set(r.item, r.ok); return [...s.values()].filter(Boolean).length; };
+const runsBy = (t: number) => B.runs.filter((r) => r.at <= t).length;
+const lastTally = B.tallies.at(-1)!;
+const judged = B.verdicts.length;
+const bg = figure<{ background: boolean }[]>(F, 'build.runs').filter((r) => r.background).length;
+
+const st = (t: number, holds: string, passes: string, q: number, read: number) =>
+  ({ at: `${et(t)} ET`, holds, passes, q, proved: provedBy(t), runs: runsBy(t), read });
+const S: StoryStage[] = [
+  { id: 'parts', title: 'The parts', kind: 'harness', state: st(P.promptAt, 'the whole setup', 'nothing yet', 0, 0) },
+  { id: 'words', title: 'Words in', kind: 'person', state: st(P.promptAt, 'Claude Code, in plan mode', 'my first message', 0, P.firstCtx) },
+  { id: 'research', title: 'Research with no side effects', kind: 'hook', state: st(P.helpersBackAt, `${P.helpers} search helpers`, `${P.helpers} maps of the code`, 0, P.atHelpersBack.read) },
+  { id: 'boxes', title: 'Decisions as boxes', kind: 'hook', state: st(boxes[2].at, 'the question hook', `${asked(2)} answers, the restatement confirmed`, asked(2), boxes[2].read) },
+  { id: 'plan', title: 'One plan, four readers', kind: 'file', state: st(P.planAt, 'the plan file', `${steps} steps and ${checks} checks, each with its proof`, asked(2), P.atPlanWrite.read) },
+  { id: 'gate', title: 'The precheck and the gate', kind: 'hook', state: st(P.approvedAt, 'the exit hook', 'a sealed plan, read by one reader', P.questions, P.atExit.read) },
+  { id: 'freeze', title: 'Approval freezes the list', kind: 'mod', state: st(P.approvedAt, 'the completion meter', `${B.items.length} items, frozen`, P.questions, P.read) },
+  { id: 'window', title: 'A window opens with the goal', kind: 'hook', state: st(B.goalSetAt, 'a fresh window, auto mode', `the goal, ${n(B.goalChars)} characters`, P.questions, P.read + B.baseCtx) },
+  { id: 'runs', title: 'Each proof run, each tally', kind: 'mod', state: st(B.cut, 'the build window', `${B.runs.length} proof runs, ${B.tallies.length} tallies`, P.questions, bill.both) },
+  { id: 'judge', title: 'The judge after every turn', kind: 'harness', state: st(B.cut, 'the /goal judge', 'the tally\'s last line', P.questions, bill.both) },
+  { id: 'instrument', title: 'The instruments while it runs', kind: 'mod', state: st(B.cut, 'the HUD strip and the meter band', `${samples.length} HUD readings`, P.questions, bill.both) },
+  { id: 'go', title: 'My read and my go', kind: 'person', state: st(B.cut, 'me', 'one question box, four addresses', P.questions, bill.both) },
+  { id: 'bill', title: 'The bill for the whole job', kind: 'measured', state: st(B.cut, 'both windows, counted', `${n(P.output + B.output)} tokens written`, P.questions, bill.both) },
+];
+const rows: StoryRow[] = [
+  { k: 'at', label: 'Clock' },
+  { k: 'holds', label: 'Holding the job', wide: true },
+  { k: 'passes', label: 'What passes on', wide: true, phone: false },
+  { k: 'q', label: 'Questions answered', phone: false },
+  { k: 'proved', label: `Proved, of ${mine}`, type: 'count' },
+  { k: 'runs', label: 'Proof runs', phone: false },
+  { k: 'read', label: 'Tokens read, both windows', type: 'count', phone: false },
+];
+
+// The system diagram: one column of parts in the order a job meets them, each with the failure it stops.
+const PARTS: { kind: 'person' | 'harness' | 'hook' | 'mod' | 'file'; name: string; stops: string }[] = [
+  { kind: 'person', name: 'My words', stops: 'the ask, before anything is decided' },
+  { kind: 'harness', name: 'Plan mode, the default', stops: 'a change before a plan is approved' },
+  { kind: 'hook', name: 'Method loader', stops: 'planning without the interview' },
+  { kind: 'hook', name: 'Helper hold', stops: 'a change before the research lands' },
+  { kind: 'hook', name: 'Question guard', stops: 'a decision I could not answer well' },
+  { kind: 'file', name: 'The plan', stops: 'a step with no way to prove it' },
+  { kind: 'hook', name: 'Precheck and exit gate', stops: 'approving a half-written plan' },
+  { kind: 'mod', name: 'Completion meter', stops: 'done as a claim' },
+  { kind: 'hook', name: 'Handoff', stops: 'a build that carries the interview' },
+  { kind: 'harness', name: '/goal judge', stops: 'a build that stops when it looks done' },
+  { kind: 'mod', name: 'HUD strip', stops: 'a limit found by hitting it' },
+  { kind: 'person', name: 'My go', stops: 'anything public before I read it' },
+];
+const KINDS = { person: 'his call', harness: 'Claude Code', hook: 'a hook', mod: 'a mod', file: 'a file' };
+// Drawn 300 wide so a phone shows it near full size; on a desktop it is capped at 26rem.
+const DW = 300, BH = 46, GAP = 14, X = 24, BW = DW - X - 8;
+const DH = PARTS.length * (BH + GAP);
+---
+<StoryFrame id="plan-to-proof" label="This job traced through every part of the setup, step by step" stages={S} rows={rows}
+  foot="this job's own record: the planning session and the build window, read from both session logs to one cut">
+
+  <StoryCard i={0} stage={S[0]}>
+    <p class="sf-lead">Twelve parts, in the order a job meets them. Each one exists to stop one failure.</p>
+    <figure class="pp-diagram">
+      <svg viewBox={`0 0 ${DW} ${DH}`} role="img" aria-label={`The setup as a column of parts: ${PARTS.map((p) => `${p.name}, which stops ${p.stops}`).join('; ')}`}>
+        <line class="pp-spine" x1={X + 2} x2={X + 2} y1={BH / 2} y2={DH - GAP - BH / 2} />
+        {PARTS.map((p, i) => {
+          const y = i * (BH + GAP);
+          return (
+            <g class={`pp-part pp-${p.kind}`}>
+              <rect class="pp-box" x={X} y={y} width={BW} height={BH} rx="8" />
+              <rect class="pp-bar" x={X} y={y} width="5" height={BH} rx="2" />
+              <text class="pp-name" x={X + 16} y={y + 19}>{p.name}</text>
+              <text class="pp-kind" x={X + BW - 10} y={y + 19} text-anchor="end">{KINDS[p.kind]}</text>
+              <text class="pp-stops" x={X + 16} y={y + 36}>{p.stops}</text>
+              {i < PARTS.length - 1 && <path class="pp-arrow" d={`M${X + 2},${y + BH + 3} l0,${GAP - 6} m-4,-5 l4,5 l4,-5`} />}
+            </g>
+          );
+        })}
+      </svg>
+      <figcaption>Each box: the part, what kind of thing it is, and the failure it stops.</figcaption>
+    </figure>
+    <p>Three kinds of part are machinery. A hook is a script Claude Code runs at a fixed moment, such as before a tool call, and it can refuse that call. A mod is code that runs inside Claude Code itself. It can add a tool, watch the session and draw on screen. Two of the boxes are built into Claude Code: plan mode and the <code>/goal</code> judge. Between the planning window and the build, only the plan file and a goal written from it pass across.</p>
+    <p>The rest of this story follows one job through every box: the job that wrote this post and the three beside it.</p>
+  </StoryCard>
+
+  <StoryCard i={1} stage={S[1]}>
+    <p class="sf-lead">The job starts as words in a plan-mode session, which can read and ask but cannot change anything.</p>
+    <div class="sf-scene">
+      <div class="sf-step">{et(P.promptAt)} ET · the first prompt</div>
+      <div class="sf-step">mode <span class="arrow">plan</span> · the method loads · {n(P.firstCtx)} tokens in the first request</div>
+    </div>
+    <p>The first request already carried {n(P.firstCtx)} tokens before the model wrote a word. That is Claude Code's own system prompt and tools, this setup's instructions, and the interview method the prompt hook added. Every later request in the window carries all of it again, so whatever the setup adds to a session is read again on every request.</p>
+  </StoryCard>
+
+  <StoryCard i={2} stage={S[2]}>
+    <p class="sf-lead">The planning window sent {P.helpers} helpers to map the code in parallel, and nothing on the machine could change until all of them reported.</p>
+    <div class="sf-scene">
+      <div class="sf-step">{P.helpers} search helpers out <span class="dim">· their own contexts, read only</span></div>
+      <div class="sf-step">back at {et(P.helpersBackAt)} ET <span class="ok">changes open</span></div>
+    </div>
+    <p>A helper reads in its own context and returns a summary, so the planning window holds the conclusion rather than every file the helper opened. The price is that a summary can be wrong. The build window sent two helpers of its own and checked both maps against the code before writing from them. The HUD map corrected the plan's picture of the grading module. The plan had five surfaces sharing one file, and the map found six copies of it, only two of which grade.</p>
+  </StoryCard>
+
+  <StoryCard i={3} stage={S[3]}>
+    <p class="sf-lead">Every decision reached me as a box of options, checked by a hook before it was drawn.</p>
+    <div class="sf-scene">
+      {boxes.map((b, k) => <div class="sf-step">box {k + 1} · {et(b.at)} ET · {b.questions} question(s)</div>)}
+    </div>
+    <p>{boxes.length} boxes held {P.questions} questions. They covered where the figures come from, how I would use the posts in an interview, whether the meter and the HUD get public code, a stale record, whether my real usage readings could be shown, what would most embarrass me, where I would read the drafts, whether a judge should check a watched build, the restatement, and watch or walk.</p>
+    <p>Watch or walk was asked twice. I picked Watch, then typed a switch into the next box's judge question. The gate counts only an answer picked in a box, so the last box asked again. The third box carried the restatement of the whole build inside its question, and I confirmed it there.</p>
+    <p class="sf-note">The gap between the first box and the second is overnight. The clock in the panel is wall time, not working time.</p>
+  </StoryCard>
+
+  <StoryCard i={4} stage={S[4]}>
+    <p class="sf-lead">The plan is one file with four readers, and each reads only the part it needs.</p>
+    <div class="sf-scene">
+      <div class="sf-step"><b>me</b> <span class="dim">· the Intent: who, what, not, why, how, and done</span></div>
+      <div class="sf-step"><b>the exit gate</b> <span class="dim">· the seal, From zero, every proof line</span></div>
+      <div class="sf-step"><b>the completion meter</b> <span class="dim">· the numbered items and their proofs, frozen</span></div>
+      <div class="sf-step"><b>the launcher</b> <span class="dim">· the path and each step's first line, for the goal</span></div>
+    </div>
+    <p>This plan has {steps} steps and {checks} checks, and every one ends with the command that proves it, or says it is mine or a later event's. The gate and the meter read those lines through the same code, so a plan cannot pass the gate and then be counted differently.</p>
+  </StoryCard>
+
+  <StoryCard i={5} stage={S[5]}>
+    <p class="sf-lead">Saving a sealed plan runs every check the exit would run. The exit runs them again, and there a failed check refuses.</p>
+    <div class="sf-scene">
+      <div class="sf-step">plan saved · {et(P.planAt)} ET <span class="dim">· precheck: nothing to refuse</span></div>
+      <div class="sf-step">ExitPlanMode <span class="arrow">→</span> the gate <span class="ok">ALLOW</span></div>
+      <div class="sf-step">approved · {et(P.approvedAt)} ET</div>
+    </div>
+    <p>The precheck answers as context, not as a refusal, so Claude fixes the plan before it ever asks to leave plan mode. This plan was saved once and passed the gate on its first exit.</p>
+  </StoryCard>
+
+  <StoryCard i={6} stage={S[6]}>
+    <p class="sf-lead">At approval the meter freezes the list, so nothing written into the plan later can change what counts.</p>
+    <div class="sf-scene">
+      <div class="sf-step">{B.items.length} items frozen · {mine} in Claude's part</div>
+      <div class="sf-step"><span class="dim">plus commit, push and close</span> → Claude 0 of {mine + 3}</div>
+    </div>
+    <p>Each item's key is its list and its whole text. Two of the {B.items.length} sit outside Claude's part: my read and my go, and the publication that follows it. Neither can be closed by Claude running a command.</p>
+  </StoryCard>
+
+  <StoryCard i={7} stage={S[7]}>
+    <p class="sf-lead">Approval opened a fresh window in auto mode, its first prompt already set to <code>/goal</code>.</p>
+    <div class="sf-scene">
+      <div class="sf-step">goal set · {et(B.goalSetAt)} ET · {n(B.goalChars)} characters</div>
+      <div class="sf-step">first request · {n(B.baseCtx)} tokens <span class="dim">· the window's own setup, not the interview</span></div>
+    </div>
+    <p>The goal names the plan file, lists each step's first line, and ends with the one line that counts: done when the latest tally ends <code>VERDICT: ALL DONE</code>. The new window starts with none of the planning conversation. Everything it knows about the job is in the plan file and that goal.</p>
+  </StoryCard>
+
+  <StoryCard i={8} stage={S[8]}>
+    <p class="sf-lead">Only a proof run moves the count. A tally reads it back.</p>
+    <RunTimeline runs={B.runs} tallies={B.tallies} start={B.start} end={B.cut} of={mine} />
+    <p>{B.runs.length} runs to the cut: {B.runs.filter((r) => r.ok).length} passed and {B.runs.filter((r) => !r.ok).length} failed{B.pending ? `, and ${B.pending} still running` : ''}.{bg ? ` ${bg} of them came from a command run in the background, so the meter held each as pending until the engine's own notice reported its exit.` : ''} The figures script reads those notices the same way. An early version did not, and showed a background build that exited cleanly as a failure, until its count was checked against the meter's own tally.</p>
+    <p>The last tally to the cut read Claude {lastTally.done} of {lastTally.of}, {lastTally.verdict}.</p>
+  </StoryCard>
+
+  <StoryCard i={9} stage={S[9]}>
+    <p class="sf-lead">When a turn ends, a separate model reads the conversation against the goal and decides whether the build may stop.</p>
+    <div class="sf-scene">
+      <div class="sf-step">goal set · {et(B.goalSetAt)} ET</div>
+      <div class="sf-step">to the cut · {judged} verdict(s) written</div>
+    </div>
+    <p>The judge runs no commands and opens no files, so it can only weigh what the conversation shows. That is why the goal ends on a line the meter prints. {judged ? `To the cut it wrote ${judged} verdict(s).` : 'To the cut it had written no verdict. Each turn that ended while it was armed ended with a search helper still at work.'}</p>
+    <p class="sf-note">The log writes the goal again, word for word, each time the conversation is compacted: {B.goalRewrites} {B.goalRewrites === 1 ? 'time' : 'times'} to the cut. The figures script reads the first as the moment the goal was set.</p>
+  </StoryCard>
+
+  <StoryCard i={10} stage={S[10]}>
+    <p class="sf-lead">While the build ran, two lines above the prompt showed where it stood: the meter's band and the HUD.</p>
+    <div class="sf-scene">
+      <div class="sf-step">band · Claude {lastTally.done} of {lastTally.of} · the seven stages</div>
+      <div class="sf-step">HUD · cache · 5-hour · week · the model window · context</div>
+    </div>
+    <p>The build took {samples.length} HUD readings, one at its start and one after each post, and the HUD post grades every one of them. Both lines are there so a glance answers the two questions a long build raises: how much is left of the plan, and how much is left of the allowance.</p>
+  </StoryCard>
+
+  <StoryCard i={11} stage={S[11]}>
+    <p class="sf-lead">The build's last act is one question box with the four draft addresses, and only my answer publishes them.</p>
+    <div class="sf-scene">
+      <div class="sf-step">/blog/completion-meter/ · /blog/intent-lock-update/</div>
+      <div class="sf-step">/blog/plan-to-proof/ · /blog/hud/</div>
+      <div class="sf-step">go, or what to change</div>
+    </div>
+    <p>Drafts render only on my own machine's preview, through the filter the site already uses, so nothing in this build was public before that answer. Publication itself is the plan's last item, a later event's, and it moves the update onto the original address of "Plan mode, enforced".</p>
+  </StoryCard>
+
+  <StoryCard i={12} stage={S[12]}>
+    <p class="sf-lead">The whole job, both windows counted.</p>
+    <ul>
+      <li><b>Planning:</b> {P.requests} requests reading {n(P.read)} tokens.</li>
+      <li><b>Building, to the cut:</b> {n(B.requests)} requests reading {n(B.read)} tokens.</li>
+      <li><b>Together:</b> {n(bill.both)} read, and {n(P.output + B.output)} written.</li>
+      <li><b>The same build in the planning window</b> would have carried {n(bill.carry)} more tokens on every request, {n(bill.oneWindow)} in all. The handoff read {bill.savedPct}% less.</li>
+    </ul>
+    <p>Almost all of it is re-reading. Each request sends the whole conversation so far, so the written output is a small share of the bill, and a fresh window is how the build stops paying for the interview on every request.</p>
+  </StoryCard>
+</StoryFrame>
+
+<style>
+  .pp-diagram { margin: 0; display: grid; gap: 0.5rem; }
+  .pp-diagram svg { display: block; width: 100%; max-width: 26rem; height: auto; margin-inline: auto; }
+  .pp-spine { stroke: var(--color-line-2); stroke-width: 2; }
+  .pp-box { fill: var(--color-canvas); stroke: var(--color-line); stroke-width: 1; }
+  .pp-name { fill: var(--color-ink); font-family: var(--font-sans); font-size: 13px; font-weight: 600; }
+  .pp-stops { fill: var(--color-ink-muted); font-family: var(--font-sans); font-size: 11px; }
+  .pp-kind { fill: var(--color-ink-faint); font-family: var(--font-mono); font-size: 8.5px; letter-spacing: 0.06em; text-transform: uppercase; }
+  .pp-arrow { fill: none; stroke: var(--color-ink-faint); stroke-width: 1.5; stroke-linecap: round; stroke-linejoin: round; }
+  .pp-person .pp-bar { fill: var(--color-violet); }
+  .pp-harness .pp-bar { fill: var(--color-cyan-deep); }
+  .pp-hook .pp-bar { fill: var(--color-accent); }
+  .pp-mod .pp-bar { fill: var(--color-indigo); }
+  .pp-file .pp-bar { fill: var(--color-ink-muted); }
+  .pp-diagram figcaption { font-size: 0.8rem; color: var(--color-ink-faint); text-align: center; }
+</style>
+
+<script>
+  import { runStory } from '../../lib/story-runner';
+  const root = document.querySelector<HTMLElement>('.sf[data-story="plan-to-proof"]');
+  if (root) runStory(root);
+</script>
