@@ -1,0 +1,10 @@
+{
+  "generatedAt": "2026-11-06T10:04:21.433Z",
+  "source": "Command Center OS + site tool records + the estate scheduled jobs (public-safe export)",
+  "counts": {
+    "tools": 59,
+    "architectures": 11,
+    "cronRunning": 33,
+    "cronUndescribed": 0
+  }
+}

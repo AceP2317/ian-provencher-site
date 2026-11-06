@@ -1,0 +1,28 @@
+---
+// Real screenshots for a post, drawn only from what scripts/in-action.mjs recorded: cropped, name-boxed, read back.
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+import record from '../data/in-action.generated.json';
+
+interface Props { post: string; place: 'lead' | 'section'; }
+const { post, place } = Astro.props;
+const files = import.meta.glob<{ default: ImageMetadata }>('../assets/in-action/*.png', { eager: true });
+const shots = record
+  .filter((r) => r.post === post && r.place === place)
+  .sort((a, b) => a.order - b.order)
+  .map((r) => {
+    const mod = files[`../assets/in-action/${r.file}`];
+    if (!mod) throw new Error(`InAction: ${r.file} is recorded for ${post} but missing from src/assets/in-action/; run node scripts/in-action.mjs --write`);
+    return { ...r, img: mod.default, widths: [360, 720, 1440].filter((w) => w <= r.width) };
+  });
+---
+{shots.length > 0 && (
+  <section class={place === 'lead' ? 'mt-10' : 'mb-12'} aria-label={place === 'section' ? 'In action' : undefined}>
+    {place === 'section' && <div class="post-prose"><h2>In action</h2></div>}
+    {shots.map((s) => (
+      <figure data-in-action={s.id} class="mt-6 first:mt-0"><a href={s.img.src} class="block overflow-hidden rounded-lg border border-line transition-colors hover:border-accent"><Image src={s.img} alt={s.alt} widths={s.widths} sizes="(min-width: 768px) 720px, calc(100vw - 3rem)" loading="lazy" decoding="async" class="block h-auto w-full" /></a>
+        <figcaption class="mt-2 text-sm leading-relaxed text-ink-muted">{s.caption}</figcaption>
+      </figure>
+    ))}
+  </section>
+)}

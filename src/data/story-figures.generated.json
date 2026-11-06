@@ -1,0 +1,642 @@
+{
+  "_comment": "Written by scripts/story-figures.mjs --write from this PC's session logs, the build's plan file and the HUD samples. Never hand-edited; --check re-derives every figure.",
+  "planning": {
+    "session": "planning",
+    "start": 1793425723349,
+    "promptAt": 1793425712672,
+    "approvedAt": 1793446860632,
+    "end": 1793446917588,
+    "requests": 43,
+    "read": 8888211,
+    "output": 102885,
+    "firstCtx": 96655,
+    "lastCtx": 305089,
+    "boxes": 4,
+    "questions": 11,
+    "perBox": [
+      {
+        "at": 1793427348957,
+        "questions": 4,
+        "ctx": 232728,
+        "read": 4952810,
+        "requests": 29,
+        "out": 49575
+      },
+      {
+        "at": 1793446174507,
+        "questions": 4,
+        "ctx": 237357,
+        "read": 5190167,
+        "requests": 30,
+        "out": 56843
+      },
+      {
+        "at": 1793446424368,
+        "questions": 2,
+        "ctx": 244962,
+        "read": 5435129,
+        "requests": 31,
+        "out": 61980
+      },
+      {
+        "at": 1793446839381,
+        "questions": 1,
+        "ctx": 289702,
+        "read": 6796729,
+        "requests": 36,
+        "out": 99775
+      }
+    ],
+    "helpers": 3,
+    "helpersOutAt": 1793425864187,
+    "helpersBackAt": 1793426404248,
+    "refusal": {
+      "at": 1793425947394,
+      "tool": "Bash",
+      "word": "npm"
+    },
+    "planWrites": 1,
+    "firstPlanWriteAt": 1793446813971,
+    "exits": 1,
+    "exitRefused": 0,
+    "atPrompt": {
+      "ctx": 0,
+      "read": 0,
+      "requests": 0,
+      "out": 0
+    },
+    "atHelpersBack": {
+      "ctx": 205171,
+      "read": 3582603,
+      "requests": 23,
+      "out": 31551
+    },
+    "atPlanWrite": {
+      "ctx": 274547,
+      "read": 6507027,
+      "requests": 35,
+      "out": 99167
+    },
+    "atExit": {
+      "ctx": 291817,
+      "read": 7379014,
+      "requests": 38,
+      "out": 100220
+    }
+  },
+  "build": {
+    "session": "build",
+    "start": 1793446873367,
+    "cut": 1793452465854,
+    "requests": 353,
+    "read": 93534584,
+    "output": 364668,
+    "baseCtx": 73267,
+    "lastCtx": 164603,
+    "items": [
+      {
+        "id": "S1",
+        "list": "steps",
+        "proof": "command"
+      },
+      {
+        "id": "S2",
+        "list": "steps",
+        "proof": "command"
+      },
+      {
+        "id": "S3",
+        "list": "steps",
+        "proof": "command"
+      },
+      {
+        "id": "S4",
+        "list": "steps",
+        "proof": "command"
+      },
+      {
+        "id": "S5",
+        "list": "steps",
+        "proof": "command"
+      },
+      {
+        "id": "S6",
+        "list": "steps",
+        "proof": "command"
+      },
+      {
+        "id": "S7",
+        "list": "steps",
+        "proof": "command"
+      },
+      {
+        "id": "S8",
+        "list": "steps",
+        "proof": "command"
+      },
+      {
+        "id": "S9",
+        "list": "steps",
+        "proof": "command"
+      },
+      {
+        "id": "S10",
+        "list": "steps",
+        "proof": "yours"
+      },
+      {
+        "id": "S11",
+        "list": "steps",
+        "proof": "later"
+      },
+      {
+        "id": "V1",
+        "list": "checks",
+        "proof": "command"
+      },
+      {
+        "id": "V2",
+        "list": "checks",
+        "proof": "command"
+      },
+      {
+        "id": "V3",
+        "list": "checks",
+        "proof": "command"
+      },
+      {
+        "id": "V4",
+        "list": "checks",
+        "proof": "command"
+      },
+      {
+        "id": "V5",
+        "list": "checks",
+        "proof": "command"
+      }
+    ],
+    "runs": [
+      {
+        "item": "S1",
+        "at": 1793446965085,
+        "ok": true,
+        "background": false
+      },
+      {
+        "item": "S2",
+        "at": 1793447255302,
+        "ok": true,
+        "background": false
+      },
+      {
+        "item": "S3",
+        "at": 1793447626832,
+        "ok": true,
+        "background": false
+      },
+      {
+        "item": "V1",
+        "at": 1793447626832,
+        "ok": true,
+        "background": false
+      },
+      {
+        "item": "S4",
+        "at": 1793448106248,
+        "ok": true,
+        "background": false
+      },
+      {
+        "item": "S5",
+        "at": 1793449784028,
+        "ok": true,
+        "background": false
+      },
+      {
+        "item": "S3",
+        "at": 1793449869463,
+        "ok": true,
+        "background": true
+      },
+      {
+        "item": "V1",
+        "at": 1793449869463,
+        "ok": true,
+        "background": true
+      },
+      {
+        "item": "S8",
+        "at": 1793451130438,
+        "ok": true,
+        "background": false
+      },
+      {
+        "item": "S6",
+        "at": 1793451605131,
+        "ok": true,
+        "background": false
+      },
+      {
+        "item": "S7",
+        "at": 1793452426412,
+        "ok": true,
+        "background": false
+      }
+    ],
+    "runsPassed": 11,
+    "runsFailed": 0,
+    "runsPending": 0,
+    "provedAt": [
+      {
+        "at": 1793446965085,
+        "proved": 1
+      },
+      {
+        "at": 1793447255302,
+        "proved": 2
+      },
+      {
+        "at": 1793447626832,
+        "proved": 3
+      },
+      {
+        "at": 1793447626832,
+        "proved": 4
+      },
+      {
+        "at": 1793448106248,
+        "proved": 5
+      },
+      {
+        "at": 1793449784028,
+        "proved": 6
+      },
+      {
+        "at": 1793449869463,
+        "proved": 6
+      },
+      {
+        "at": 1793449869463,
+        "proved": 6
+      },
+      {
+        "at": 1793451130438,
+        "proved": 7
+      },
+      {
+        "at": 1793451605131,
+        "proved": 8
+      },
+      {
+        "at": 1793452426412,
+        "proved": 9
+      }
+    ],
+    "tallies": [
+      {
+        "at": 1793446881559,
+        "done": 0,
+        "of": 17,
+        "verdict": "NOT DONE",
+        "open": 15,
+        "proved": [],
+        "ship": "open"
+      },
+      {
+        "at": 1793449258934,
+        "done": 5,
+        "of": 17,
+        "verdict": "NOT DONE",
+        "open": 10,
+        "proved": [
+          "S1",
+          "S2",
+          "S3",
+          "S4",
+          "V1"
+        ],
+        "ship": "open"
+      },
+      {
+        "at": 1793451740424,
+        "done": 8,
+        "of": 17,
+        "verdict": "NOT DONE",
+        "open": 7,
+        "proved": [
+          "S1",
+          "S2",
+          "S3",
+          "S4",
+          "S5",
+          "S6",
+          "S8",
+          "V1"
+        ],
+        "ship": "open"
+      }
+    ],
+    "verdicts": [],
+    "goalChars": 2500,
+    "goalSetAt": 1793446876973,
+    "goalRewrites": 2,
+    "boxes": 1,
+    "refused": [
+      {
+        "at": 1793447075813,
+        "tool": "Edit",
+        "guard": "folder-guard"
+      },
+      {
+        "at": 1793447077312,
+        "tool": "Edit",
+        "guard": "folder-guard"
+      },
+      {
+        "at": 1793447079024,
+        "tool": "Edit",
+        "guard": "folder-guard"
+      },
+      {
+        "at": 1793447080555,
+        "tool": "Edit",
+        "guard": "folder-guard"
+      },
+      {
+        "at": 1793447328197,
+        "tool": "Bash",
+        "guard": "api-key lock"
+      },
+      {
+        "at": 1793449924401,
+        "tool": "Bash",
+        "guard": "plan-agents"
+      },
+      {
+        "at": 1793450337612,
+        "tool": "Bash",
+        "guard": "plan-agents"
+      }
+    ]
+  },
+  "bill": {
+    "both": 102422795,
+    "oneWindow": 184255961,
+    "carry": 231822,
+    "saved": 81833166,
+    "savedPct": 44.4
+  },
+  "hud": {
+    "band": [
+      100,
+      128.57142857142858
+    ],
+    "samples": [
+      {
+        "label": "build-start",
+        "at": 1793448075398,
+        "five": {
+          "pct": 2,
+          "landing": 18.4,
+          "band": "ok",
+          "resetIn": "4h 18m"
+        },
+        "week": {
+          "pct": 0,
+          "landing": 0,
+          "band": "ok",
+          "resetIn": "6d 19h",
+          "budget": 2.9,
+          "dayText": "day 1 of 7 — 0.2 days' worth in hand",
+          "edges": [
+            17.5,
+            35,
+            48,
+            61,
+            74,
+            87
+          ],
+          "elapsed": 0.0239
+        },
+        "fable": {
+          "pct": 0,
+          "landing": null,
+          "band": "ok",
+          "resetIn": "6d 19h"
+        },
+        "weekend": {
+          "pct": 0,
+          "closed": false,
+          "band": "ok",
+          "closesIn": "1d 19h"
+        },
+        "cacheLeft": 3586,
+        "cacheTtl": 3600,
+        "cacheBand": "ok",
+        "context": {
+          "tokens": 386529,
+          "window": 1000000,
+          "pct": 39,
+          "band": "ok"
+        },
+        "alarm": null
+      },
+      {
+        "label": "after-S5",
+        "at": 1793449788297,
+        "five": {
+          "pct": 3,
+          "landing": 14.5,
+          "band": "ok",
+          "resetIn": "3h 50m"
+        },
+        "week": {
+          "pct": 1,
+          "landing": 2.9,
+          "band": "ok",
+          "resetIn": "6d 19h",
+          "budget": 3.3,
+          "dayText": "day 1 of 7 — 0.1 days' worth in hand",
+          "edges": [
+            17.5,
+            35,
+            48,
+            61,
+            74,
+            87
+          ],
+          "elapsed": 0.0268
+        },
+        "fable": {
+          "pct": 0,
+          "landing": null,
+          "band": "ok",
+          "resetIn": "6d 19h"
+        },
+        "weekend": {
+          "pct": 1,
+          "closed": false,
+          "band": "ok",
+          "closesIn": "1d 19h"
+        },
+        "cacheLeft": 3551,
+        "cacheTtl": 3600,
+        "cacheBand": "ok",
+        "context": {
+          "tokens": 252457,
+          "window": 1000000,
+          "pct": 25,
+          "band": "ok"
+        },
+        "alarm": null
+      },
+      {
+        "label": "after-S8",
+        "at": 1793451136700,
+        "five": {
+          "pct": 5,
+          "landing": 16,
+          "band": "ok",
+          "resetIn": "3h 27m"
+        },
+        "week": {
+          "pct": 2,
+          "landing": 5.7,
+          "band": "ok",
+          "resetIn": "6d 19h",
+          "budget": 3.6,
+          "dayText": "day 1 of 7 — 0.1 days' worth in hand",
+          "edges": [
+            17.5,
+            35,
+            48,
+            61,
+            74,
+            87
+          ],
+          "elapsed": 0.029
+        },
+        "fable": {
+          "pct": 0,
+          "landing": null,
+          "band": "ok",
+          "resetIn": "6d 19h"
+        },
+        "weekend": {
+          "pct": 2,
+          "closed": false,
+          "band": "ok",
+          "closesIn": "1d 19h"
+        },
+        "cacheLeft": 3559,
+        "cacheTtl": 3600,
+        "cacheBand": "ok",
+        "context": {
+          "tokens": 378080,
+          "window": 1000000,
+          "pct": 38,
+          "band": "ok"
+        },
+        "alarm": null
+      },
+      {
+        "label": "after-S6",
+        "at": 1793451613009,
+        "five": {
+          "pct": 5,
+          "landing": 15.3,
+          "band": "ok",
+          "resetIn": "3h 19m"
+        },
+        "week": {
+          "pct": 2,
+          "landing": 5.7,
+          "band": "ok",
+          "resetIn": "6d 18h",
+          "budget": 3.6,
+          "dayText": "day 1 of 7 — 0.1 days' worth in hand",
+          "edges": [
+            17.5,
+            35,
+            48,
+            61,
+            74,
+            87
+          ],
+          "elapsed": 0.0298
+        },
+        "fable": {
+          "pct": 0,
+          "landing": null,
+          "band": "ok",
+          "resetIn": "6d 18h"
+        },
+        "weekend": {
+          "pct": 2,
+          "closed": false,
+          "band": "ok",
+          "closesIn": "1d 18h"
+        },
+        "cacheLeft": 3560,
+        "cacheTtl": 3600,
+        "cacheBand": "ok",
+        "context": {
+          "tokens": 420396,
+          "window": 1000000,
+          "pct": 42,
+          "band": "ok"
+        },
+        "alarm": null
+      },
+      {
+        "label": "after-S7",
+        "at": 1793452432221,
+        "five": {
+          "pct": 6,
+          "landing": 16,
+          "band": "ok",
+          "resetIn": "3h 6m"
+        },
+        "week": {
+          "pct": 2,
+          "landing": 5.7,
+          "band": "ok",
+          "resetIn": "6d 18h",
+          "budget": 3.8,
+          "dayText": "day 1 of 7 — 0.1 days' worth in hand",
+          "edges": [
+            17.5,
+            35,
+            48,
+            61,
+            74,
+            87
+          ],
+          "elapsed": 0.0311
+        },
+        "fable": {
+          "pct": 0,
+          "landing": null,
+          "band": "ok",
+          "resetIn": "6d 18h"
+        },
+        "weekend": {
+          "pct": 2,
+          "closed": false,
+          "band": "ok",
+          "closesIn": "1d 18h"
+        },
+        "cacheLeft": 3565,
+        "cacheTtl": 3600,
+        "cacheBand": "ok",
+        "context": {
+          "tokens": 160528,
+          "window": 1000000,
+          "pct": 16,
+          "band": "ok"
+        },
+        "alarm": null
+      }
+    ]
+  }
+}

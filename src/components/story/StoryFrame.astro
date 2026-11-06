@@ -1,0 +1,160 @@
+---
+/**
+ * StoryFrame — the shared frame of every scroll story: a column of stage cards on a spine, a panel that
+ * follows the reader and shows the state at the current stage, a stage list, and Left/Right stepping by
+ * key or by the panel's buttons. A story supplies its stages (id, title, kind, state), its panel rows,
+ * and its cards (StoryCard) in the default slot; a replica drawn in the panel goes in the "panel" slot.
+ * The client side is src/lib/story-runner.ts, started by the story's own script.
+ *
+ * Theme tokens only, every :hover gated, and every scene finished at rest: with scripts off the cards
+ * show their end state and the stage list is plain links to each card.
+ */
+import { pad, type StoryRow, type StoryStage } from './story';
+interface Props { id: string; label: string; stages: StoryStage[]; rows: StoryRow[]; foot: string }
+
+const { id, label, stages, rows, foot } = Astro.props;
+const first = stages[0]?.state ?? {};
+const show = (v: unknown) => (v == null ? '–' : typeof v === 'number' ? v.toLocaleString('en-US') : String(v));
+---
+<section class="sf" data-story={id} aria-label={label} data-states={JSON.stringify(stages.map((s) => s.state))}>
+  <div class="sf-grid">
+    <ol class="sf-cards">
+      <li class="sf-spine" aria-hidden="true"><span class="sf-flow"></span><span class="sf-packet"></span></li>
+      <slot />
+    </ol>
+
+    <aside class="sf-inst" aria-label="State at the current stage">
+      <div class="sf-nav">
+        <button class="sf-btn sf-prev" type="button" aria-label="Previous stage" disabled>←</button>
+        <details class="sf-list">
+          <summary><span class="sf-n" data-k="_n">01</span><span class="sf-of">/{pad(stages.length)}</span> <span class="sf-title" data-k="_title">{stages[0]?.title}</span></summary>
+          <ol>
+            {stages.map((s, i) => (
+              <li><a href={`#stage-${s.id}`} data-go={i} class={i === 0 ? 'on' : undefined}><span>{pad(i + 1)}</span> {s.title}</a></li>
+            ))}
+          </ol>
+        </details>
+        <button class="sf-btn sf-next" type="button" aria-label="Next stage">→</button>
+      </div>
+
+      <slot name="panel" />
+
+      {rows.map((r) => (
+        <div class:list={['sf-row', r.type === 'big' || r.type === 'count' || r.type === 'bar' ? 'col' : null, r.wide ? 'wide' : null, r.phone === false || r.type === 'bar' ? 'sf-hide-phone' : null]}>
+          <span class="sf-l">{r.label}</span>
+          {r.type === 'lamps' ? (
+            <span class="sf-lamps" data-lamp={r.k}>
+              {(r.lamps ?? []).map((v) => <span class:list={['sf-lamp', String(first[r.k]) === v ? 'on' : null]} data-v={v}>{v}</span>)}
+            </span>
+          ) : r.type === 'bar' ? (
+            <span class="sf-bar"><span data-w={r.k} style={`width:${Math.max(0, Math.min(100, Number(first[r.k]) || 0))}%`}></span></span>
+          ) : (
+            <span class:list={['sf-v', r.type === 'big' || r.type === 'count' ? 'big' : null, r.type === 'count' ? 'sf-count' : null]} data-k={r.k}>{show(first[r.k])}</span>
+          )}
+        </div>
+      ))}
+
+      <div class="sf-foot">{foot}</div>
+      <p class="sf-keys">← → or the buttons step through the stages</p>
+    </aside>
+  </div>
+</section>
+
+<style is:global>
+  /* Wider than the post column it sits in: centred on the column, never wider than the screen less its gutters. */
+  .sf { margin-block: 3rem; width: min(72rem, calc(100vw - 2rem)); margin-inline: calc((100% - min(72rem, calc(100vw - 2rem))) / 2); }
+  .sf-grid { display: grid; grid-template-columns: minmax(0, 1fr) 17.5rem; gap: 2.5rem; align-items: start; }
+  .sf-cards { list-style: none; margin: 0; padding: 0 0 0 2.25rem; display: grid; gap: 1.5rem; position: relative; }
+  .sf-spine { position: absolute; left: 0.7rem; top: 0.5rem; bottom: 0.5rem; width: 2px; background: var(--color-line); }
+  .sf-flow { position: absolute; inset: 0; background: repeating-linear-gradient(to bottom, var(--color-accent) 0 6px, transparent 6px 18px); opacity: 0.35; }
+  .sf-packet { position: absolute; left: -6px; top: 0; width: 14px; height: 14px; border-radius: 50%; background: var(--color-accent); box-shadow: 0 0 0 6px color-mix(in oklch, var(--color-accent) 18%, transparent); transition: top 0.7s cubic-bezier(0.6, 0, 0.3, 1); }
+
+  .sf-card { background: var(--color-surface-2); border: 1.5px solid var(--color-line); border-radius: 1rem; padding: 1.4rem 1.5rem; display: grid; gap: 0.9rem; min-width: 0; transition: border-color 0.35s, box-shadow 0.35s; color: var(--color-ink-muted); line-height: 1.7; scroll-margin-top: 6rem; }
+  .sf-card.is-cur { border-color: var(--color-accent); box-shadow: 0 0 0 5px color-mix(in oklch, var(--color-accent) 10%, transparent); }
+  .sf-card header { display: flex; flex-wrap: wrap; align-items: baseline; gap: 0.4rem 0.8rem; }
+  .sf-card h3 { margin: 0; font-family: var(--font-display); font-size: 1.45rem; font-weight: 600; line-height: 1.2; color: var(--color-ink); text-wrap: balance; }
+  .sf-num { font-family: var(--font-mono); font-size: 0.85rem; font-weight: 700; color: var(--color-accent); }
+  .sf-kind { margin-left: auto; font-family: var(--font-mono); font-size: 0.66rem; letter-spacing: 0.08em; text-transform: uppercase; border-radius: 999px; padding: 0.3rem 0.6rem; border: 1px solid var(--color-line-2); color: var(--color-ink-faint); white-space: nowrap; }
+  .sf-kind.hook, .sf-kind.mod { background: var(--color-accent); border-color: var(--color-accent); color: var(--color-on-accent); }
+  .sf-kind.measured { border-color: var(--color-up); color: var(--color-up); }
+  .sf-kind.harness, .sf-kind.tool { border-color: var(--color-cyan-deep); color: var(--color-cyan-deep); }
+  .sf-kind.person { border-color: var(--color-violet); color: var(--color-violet); }
+  .sf-lead { margin: 0; color: var(--color-ink); font-size: 1.05rem; }
+  .sf-card p { margin: 0; }
+  .sf-card code { font-family: var(--font-mono); font-size: 0.82em; color: var(--color-ink); background: var(--color-void); border-radius: 0.3rem; padding: 0.05rem 0.3rem; overflow-wrap: anywhere; }
+  .sf-card ul { margin: 0; padding-left: 1.1rem; display: grid; gap: 0.55rem; }
+  .sf-card b { color: var(--color-ink); }
+  .sf-note { font-size: 0.88rem; color: var(--color-ink-faint); border-left: 3px solid var(--color-line-2); padding-left: 0.8rem; }
+  .sf-card pre { margin: 0; background: var(--color-canvas); border: 1px solid var(--color-line); border-radius: 0.6rem; padding: 0.8rem 0.9rem; font-family: var(--font-mono); font-size: 0.74rem; line-height: 1.55; color: var(--color-ink); overflow-x: auto; white-space: pre; }
+  .sf-card pre .c { color: var(--color-ink-faint); }
+  /* Code is quoted as it is written: the mono face's ligatures would draw <!-- as an arrow and === as one glyph. */
+  .sf-card code, .sf-card pre, .sf-scene, .sf-inst { font-variant-ligatures: none; }
+
+  /* scenes: the finished state is the resting state, so a still frame reads correctly */
+  .sf-scene { background: var(--color-canvas); border: 1px solid var(--color-line); border-radius: 0.75rem; padding: 0.9rem 1rem; font-family: var(--font-mono); font-size: 0.78rem; line-height: 1.6; color: var(--color-ink); overflow: hidden; min-width: 0; }
+  .sf-scene .dim { color: var(--color-ink-faint); }
+  .sf-scene .ok { color: var(--color-up); font-weight: 700; }
+  .sf-scene .no { color: var(--color-down); font-weight: 700; }
+  .sf-scene .warn { color: var(--color-warn); font-weight: 700; }
+  .sf-scene .arrow { color: var(--color-accent); }
+  .sf-step { overflow-wrap: anywhere; }
+  .sf-scene .sans { font-family: var(--font-sans); }
+  .sf-scene svg { display: block; width: 100%; height: auto; }
+  .sf.is-moving .sf-step { opacity: 0.18; transform: translateY(4px); transition: opacity 0.35s, transform 0.35s; }
+  .sf.is-moving .sf-step.on { opacity: 1; transform: none; }
+
+  /* the panel */
+  .sf-inst { position: sticky; top: 5.5rem; background: var(--color-ink); color: var(--color-canvas); border-radius: 1rem; padding: 1rem 1.1rem; display: grid; gap: 0.7rem; font-family: var(--font-mono); }
+  .sf-nav { display: grid; grid-template-columns: auto minmax(0, 1fr) auto; gap: 0.5rem; align-items: start; }
+  .sf-btn { display: none; width: 2rem; height: 2rem; border-radius: 0.5rem; border: 1px solid color-mix(in oklch, var(--color-canvas) 30%, transparent); background: transparent; color: var(--color-canvas); font: inherit; font-weight: 700; cursor: pointer; }
+  .sf.is-live .sf-btn { display: block; }
+  .sf-btn:disabled { opacity: 0.3; cursor: default; }
+  .sf-btn:focus-visible, .sf-list summary:focus-visible, .sf-list a:focus-visible { outline: 2px solid var(--color-accent-2); outline-offset: 2px; }
+  .sf-list summary { cursor: pointer; font-size: 0.8rem; line-height: 1.35; list-style: none; }
+  .sf-list summary::-webkit-details-marker { display: none; }
+  .sf-n { color: var(--color-accent-2); font-weight: 700; }
+  .sf-of { opacity: 0.55; }
+  .sf-list ol { list-style: none; margin: 0.6rem 0 0; padding: 0; display: grid; gap: 0.15rem; max-height: 50vh; overflow-y: auto; }
+  .sf-list a { display: block; padding: 0.25rem 0.4rem; border-radius: 0.35rem; color: var(--color-canvas); text-decoration: none; font-size: 0.74rem; opacity: 0.75; }
+  .sf-list a span { color: var(--color-accent-2); }
+  .sf-list a.on { opacity: 1; background: color-mix(in oklch, var(--color-canvas) 14%, transparent); }
+  @media (hover: hover) {
+    .sf-btn:not(:disabled):hover { background: color-mix(in oklch, var(--color-canvas) 14%, transparent); }
+    .sf-list a:hover { opacity: 1; }
+  }
+  .sf-row { display: flex; justify-content: space-between; align-items: center; gap: 0.6rem; border-top: 1px solid color-mix(in oklch, var(--color-canvas) 16%, transparent); padding-top: 0.55rem; min-width: 0; }
+  .sf-row.col { display: grid; justify-content: stretch; gap: 0.25rem; }
+  .sf-l { font-size: 0.62rem; letter-spacing: 0.1em; text-transform: uppercase; opacity: 0.65; }
+  .sf-v { font-size: 0.88rem; font-weight: 700; font-variant-numeric: tabular-nums; text-align: right; overflow-wrap: anywhere; min-width: 0; }
+  .sf-row.col .sf-v { text-align: left; }
+  .sf-v.big { font-size: 1.5rem; line-height: 1.1; }
+  .sf-lamps { display: flex; gap: 0.3rem; flex-wrap: wrap; justify-content: flex-end; }
+  .sf-lamp { font-size: 0.64rem; font-weight: 700; padding: 0.25rem 0.45rem; border-radius: 0.35rem; border: 1px solid color-mix(in oklch, var(--color-canvas) 25%, transparent); opacity: 0.35; transition: all 0.3s; }
+  .sf-lamp.on { opacity: 1; background: var(--color-accent-2); border-color: var(--color-accent-2); color: var(--color-ink); }
+  .sf-lamp.on[data-v="DENY"], .sf-lamp.on[data-v="NOT DONE"], .sf-lamp.on[data-v="failed"], .sf-lamp.on[data-v="not met"] { background: var(--color-down); border-color: var(--color-down); color: var(--color-on-accent); }
+  .sf-lamp.on[data-v="ALLOW"], .sf-lamp.on[data-v="ALL DONE"], .sf-lamp.on[data-v="passed"], .sf-lamp.on[data-v="met"] { background: var(--color-up); border-color: var(--color-up); color: var(--color-on-accent); }
+  .sf-bar { display: block; height: 0.45rem; border-radius: 0.25rem; background: color-mix(in oklch, var(--color-canvas) 15%, transparent); overflow: hidden; }
+  .sf-bar span { display: block; height: 100%; background: var(--color-accent-2); transition: width 0.8s ease; }
+  .sf-foot { font-size: 0.62rem; opacity: 0.55; line-height: 1.4; }
+  .sf-keys { display: none; margin: 0; font-size: 0.62rem; opacity: 0.55; }
+  .sf.is-live .sf-keys { display: block; }
+
+  @media (max-width: 900px) {
+    .sf-grid { grid-template-columns: minmax(0, 1fr); gap: 1.25rem; }
+    .sf-inst { order: -1; top: 4.25rem; z-index: 5; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.4rem 0.7rem; padding: 0.7rem 0.8rem; }
+    .sf-nav, .sf-replica { grid-column: 1 / -1; }
+    .sf-row { border-top: 0; padding-top: 0; display: grid; justify-content: start; gap: 0.1rem; }
+    .sf-row.wide { grid-column: 1 / -1; }
+    .sf-v { text-align: left; }
+    .sf-v.big { font-size: 1.05rem; }
+    .sf-lamps { justify-content: flex-start; }
+    .sf-foot, .sf-keys, .sf-bar, .sf-hide-phone { display: none !important; }
+    .sf-cards { padding-left: 1.6rem; }
+    .sf-spine { left: 0.45rem; }
+    .sf-card { padding: 1.1rem 1rem; scroll-margin-top: 14rem; }
+    .sf-kind { margin-left: 0; }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .sf-packet, .sf-card, .sf-bar span, .sf-lamp { transition: none; }
+  }
+</style>
