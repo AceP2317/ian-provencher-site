@@ -1,0 +1,270 @@
+---
+/**
+ * HudStory — the scroll story for "The HUD": the strip above the prompt, where each number comes from, and
+ * the landing math in the shared core. The panel is a replica of the strip drawn from this build's own
+ * readings, each graded by the HUD's own module (scripts/story-figures.mjs), with the week on one axis.
+ */
+import StoryFrame from './StoryFrame.astro';
+import StoryCard from './StoryCard.astro';
+import HudWeekChart from './HudWeekChart.astro';
+import F from '../../data/story-figures.generated.json';
+import { figure, et, type StoryStage, type StoryRow } from './story';
+
+type W = { pct: number; landing: number | null; band: string | null; resetIn: string | null };
+type Sample = {
+  label: string; at: number; five: W | null; fable: W | null;
+  week: (W & { budget: number | null; dayText: string | null; edges: number[] | null; elapsed: number | null }) | null;
+  weekend: { pct: number; closed: boolean; band: string | null; closesIn: string | null } | null;
+  cacheLeft: number | null; cacheTtl: number | null; cacheBand: string | null;
+  context: { tokens: number; window: number; pct: number; band: string | null } | null; alarm: string | null;
+};
+const samples = figure<Sample[]>(F, 'hud.samples');
+const band = figure<[number, number]>(F, 'hud.band');
+
+// The strip's own drawing rules (strip.ts): five pill cells, any non-zero reading shows at least one.
+const pill = (p: number | null) => {
+  if (p == null || !Number.isFinite(p)) return '·····';
+  const c = Math.max(0, Math.min(100, p));
+  const n = c > 0 ? Math.max(1, Math.round((c / 100) * 5)) : 0;
+  return '▰'.repeat(n) + '▱'.repeat(5 - n);
+};
+const resets = (s: Sample) => {
+  const groups: { names: string[]; at: string }[] = [];
+  for (const [short, w] of [['5h', s.five], ['wk', s.week], ['fable', s.fable]] as const) {
+    if (!w?.resetIn) continue;
+    const same = groups.find((g) => g.at === w.resetIn);
+    if (same) same.names.push(short); else groups.push({ names: [short], at: w.resetIn });
+  }
+  return groups.map((g) => `${g.names.join(' & ')} ${g.names.length > 1 ? 'reset' : 'resets'} in ${g.at}`).join(' · ');
+};
+const land = (w: W | null) => (w ? (w.landing != null ? `${w.pct}% → lands ${w.landing}%` : `${w.pct}%, too early to project`) : '–');
+function stateOf(s: Sample) {
+  const cacheFill = s.cacheLeft != null && s.cacheTtl ? (100 * s.cacheLeft) / s.cacheTtl : null;
+  return {
+    at: `${s.label} · ${et(s.at)} ET`,
+    b_cache: pill(cacheFill), f_cache: s.cacheLeft == null ? '–' : s.cacheLeft > 0 ? `${Math.floor(s.cacheLeft / 60)}m` : 'cold',
+    b_five: pill(s.five?.pct ?? null), f_five: s.five ? `${Math.round(s.five.pct)}%` : '?',
+    b_wk: pill(s.week?.pct ?? null), f_wk: s.week ? `${Math.round(s.week.pct)}%` : '?',
+    b_fable: pill(s.fable?.pct ?? null), f_fable: s.fable ? `${Math.round(s.fable.pct)}%` : '?',
+    b_ctx: pill(s.context?.pct ?? null), f_ctx: s.context ? `${s.context.pct}%` : '?',
+    resets: resets(s),
+    five: land(s.five),
+    week: s.week ? `${s.week.pct}% · plan ${s.week.budget ?? '–'}% by now → lands ${s.week.landing ?? '–'}%` : '–',
+    fable: land(s.fable),
+    ctx: s.context ? `${s.context.pct}%, ${s.context.band ?? '–'}` : '–',
+    alarm: s.alarm ?? 'none',
+    sample: s.label,
+    band_cache: s.cacheBand, band_five: s.five?.band ?? null, band_wk: s.week?.band ?? null, band_fable: s.fable?.band ?? null, band_ctx: s.context?.band ?? null,
+  };
+}
+const moments = samples.map(stateOf);
+const S: Omit<StoryStage, 'state'>[] = [
+  { id: 'strip', title: 'What the strip shows', kind: 'mod' },
+  { id: 'mod', title: 'A mod, not a status line', kind: 'mod' },
+  { id: 'sources', title: 'Where each number comes from', kind: 'file' },
+  { id: 'cache', title: 'The cache countdown', kind: 'rule' },
+  { id: 'landing', title: 'Grade a landing, not a level', kind: 'math' },
+  { id: 'week', title: 'The week has a shape', kind: 'math' },
+  { id: 'fuel', title: 'Low fuel is a second landing', kind: 'math' },
+  { id: 'five', title: 'Five hours and the Fable window', kind: 'math' },
+  { id: 'context', title: 'Context', kind: 'rule' },
+  { id: 'effort', title: 'The effort chip', kind: 'mod' },
+  { id: 'refresh', title: 'Refreshed by events', kind: 'mod' },
+  { id: 'core', title: 'One core, six copies', kind: 'file' },
+  { id: 'measured', title: 'Measured on this build', kind: 'measured' },
+];
+// The readings walk forward with the stages and end on the last one taken.
+const pick = (i: number) => moments[Math.min(moments.length - 1, Math.round((i / (S.length - 1)) * (moments.length - 1)))];
+const stages: StoryStage[] = S.map((s, i) => ({ ...s, state: pick(i) }));
+const rows: StoryRow[] = [
+  { k: 'five', label: '5-hour', wide: true },
+  { k: 'week', label: 'Week', wide: true },
+  { k: 'fable', label: 'Fable window', wide: true, phone: false },
+  { k: 'ctx', label: 'Context', phone: false },
+  { k: 'alarm', label: 'Alarm', phone: false },
+];
+const first = moments[0];
+const gauges = [['cache', 'cache'], ['five', '5h'], ['wk', 'wk'], ['fable', 'fable'], ['ctx', 'ctx']] as const;
+const last = samples.at(-1)!;
+---
+<StoryFrame id="hud" label="How the HUD strip reads and grades usage, step by step" stages={stages} rows={rows}
+  foot="this build's own readings, each graded by the HUD's own module">
+  <div slot="panel" class="hs-panel sf-replica">
+    <div class="hs-at" data-k="at">{first.at}</div>
+    <div class="hs-strip" aria-label="A replica of the strip">
+      {gauges.map(([k, short]) => (
+        <span class="hs-g" data-g={k} data-band={first[`band_${k}`] ?? undefined}><span class="hs-l">{short}</span> <span class="hs-bar" data-k={`b_${k}`}>{first[`b_${k}`]}</span> <span data-k={`f_${k}`}>{first[`f_${k}`]}</span></span>
+      ))}
+      <span class="hs-dim sf-hide-phone" data-k="resets">{first.resets}</span>
+    </div>
+    <div class="sf-hide-phone"><HudWeekChart samples={samples} band={band} compact /></div>
+  </div>
+
+  <StoryCard i={0} stage={stages[0]}>
+    <p class="sf-lead">One line above the prompt, in every terminal: the cache, three usage windows and the context, each as five cells and a figure.</p>
+    <div class="sf-scene">
+      <div class="sf-step">effort <span class="dim">level</span> · cache {first.b_cache} {first.f_cache} · 5h {first.b_five} {first.f_five} · wk {first.b_wk} {first.f_wk}</div>
+      <div class="sf-step">fable {first.b_fable} {first.f_fable} · ctx {first.b_ctx} {first.f_ctx} · <span class="dim">{first.resets}</span></div>
+    </div>
+    <p>The story's panel is that line as it read during this build. The effort chip comes first, then the gauges in a fixed order: cache, 5-hour, week, the model-scoped window, context. Then the resets, grouped when two windows reset together, and how long the session has run. When something needs attention, its alarm leads the line in its band's colour.</p>
+    <p>Five cells is coarse on purpose. Any reading above zero lights at least one cell, so a window that has started is never drawn empty. The figure beside the cells is the exact reading, and the colour is the grade, which is the part the rest of this story is about.</p>
+  </StoryCard>
+
+  <StoryCard i={1} stage={stages[1]}>
+    <p class="sf-lead">The status line carries the session. The HUD carries the account and the clock.</p>
+    <div class="sf-scene">
+      <div class="sf-step"><span class="dim">status line</span> · folder · branch · model · effort</div>
+      <div class="sf-step"><span class="dim">HUD strip</span> · cache · limits · context · resets · session clock</div>
+    </div>
+    <p>That split is a decision from 11 October. A status line is a script Claude Code runs and prints, so it can show text and nothing else. A mod is code Claude Code loads into its own engine. This one draws the effort chip as a real button, opens a full panel on <code>/hud</code>, and hooks two engine events a script never sees: each request going out, and each measurement of the session.</p>
+    <p>In VS Code the strip hides itself by default, because the same readings are already in a sidebar there. The effort chip stays, so the band above the prompt always draws.</p>
+  </StoryCard>
+
+  <StoryCard i={2} stage={stages[2]}>
+    <p class="sf-lead">Three sources, and the strip trusts each one for different numbers.</p>
+    <div class="sf-scene">
+      <pre>{`$.session.usage()                    context, and this session's 5-hour and weekly readings
+statusline-stats/usage-latest.json   the account's usage reading, shared with the sidebar;
+                                     the only source of the model (Fable) window
+statusline-stats/session-stdin-<id>  the status line's capture: the prompt cache, the model,
+                                     effort, and the session's running time`}</pre>
+    </div>
+    <p>The engine's own usage call answers for this session. The account-wide reading comes from Claude's usage service, which reports the 5-hour window, the 7-day window and a weekly window scoped to one model, each with its reset time. That reading lives in one shared file, so the sidebar and every terminal read the same numbers. When the session's figure and the shared one disagree, the strip keeps the highest reading for the newest reset, because a window can only fill until it resets.</p>
+    <p>The status line's capture supplies what only Claude Code knows about this conversation: how long its prompt cache lives and when the current one expires.</p>
+  </StoryCard>
+
+  <StoryCard i={3} stage={stages[3]}>
+    <p class="sf-lead">The cache countdown is the time until the next request pays full price to re-read the conversation.</p>
+    <div class="sf-scene">
+      <pre>{`export function cacheExpiry(anchorMs, ttl, capExp) {
+  let exp = anchorMs != null ? Math.round(anchorMs / 1000) + ttl : null
+  if (capExp != null && (exp == null || capExp >= exp)) exp = capExp
+  ...
+}`}</pre>
+    </div>
+    <p>Each request writes the conversation into a cache, and a request within its lifetime reads it back at a fraction of the cost. The anchor is the moment the main conversation's last request went out, noted on the engine's request event. Expiry is that moment plus the cache's lifetime, or Claude Code's own expiry figure when that is later. A helper's request does not move it, because a helper keeps a cache of its own.</p>
+    <p>The strip shows whole minutes, rounded down. The alarm says "cache cold in" a number of minutes rounded up, so it never claims more time than is left.</p>
+  </StoryCard>
+
+  <StoryCard i={4} stage={stages[4]}>
+    <p class="sf-lead">A level says how much is gone. A landing says where the window ends up at its reset, and only the landing is graded.</p>
+    <div class="sf-scene">
+      <pre>{`export const PRESSURE_WARN = 100;
+export const PRESSURE_BAD = (100 * WEEKEND_CEILING) / WEEKEND_SAFE;
+export const LANDING_BAND = [PRESSURE_WARN, PRESSURE_BAD];
+export const bandOf = (v, [warn, bad]) => (v >= bad ? "bad" : v >= warn ? "warn" : "ok");`}</pre>
+    </div>
+    <p>Green runs all the way to the whole allowance, because allowance left unused at the reset is waste. Amber starts at a landing of 100%. Red starts at {band[1].toFixed(1)}%, a figure that is derived rather than typed: it is the weekend's ceiling divided by the weekend's plan, so the weekly bar and the weekend card turn red at exactly the same reading.</p>
+    <p class="sf-note">The comment above the constant: "A rounded 130 would let the two cards disagree across pct 45.0..45.5." One band serves every limit window, a decision from 25 September.</p>
+  </StoryCard>
+
+  <StoryCard i={5} stage={stages[5]}>
+    <p class="sf-lead">The week is planned front-loaded, and a week is graded against that plan, not against the clock.</p>
+    <HudWeekChart samples={samples} band={band} />
+    <p>The weekend's two days are planned to take 35% of the week's allowance, and the five weekdays split the rest evenly. So the plan reaches 35% when the weekend closes and 100% at the reset, with a corner where the two meet. The landing is the share of the plan spent so far, carried to the end: at 74% of what the plan expects by now, the week lands at 74%.</p>
+    <pre>{`export function weekPlanLanding(pct, elapsedFrac, share) {
+  ...
+  const denom = weekBudget(Math.max(Number(elapsedFrac) || 0, WEEKEND_FRAC), share);
+  return denom > 0 ? (100 * p) / denom : null;
+}`}</pre>
+    <p>Two choices in those lines are measured ones. Dividing by clock time instead of the plan "projects a 122% overrun for a weekend spent exactly to plan", because the plan front-loads. And elapsed time is floored at the weekend's close, "so three hours of Saturday cannot project 137%". At the floor the plan already reads the weekend's share, so the landing does not jump when the floor stops applying.</p>
+  </StoryCard>
+
+  <StoryCard i={6} stage={stages[6]}>
+    <p class="sf-lead">The plan arm is an average. A second landing catches a burst, and the worse of the two wins.</p>
+    <div class="sf-scene">
+      <pre>{`const recent = p + r * Math.min(h, RECENT_HORIZON_HOURS)
+return recent == null ? l : Math.max(l, recent)`}</pre>
+    </div>
+    <p>The second landing is today's level plus the recent burn rate, carried forward at most five hours. Both are on the same scale, a percent of the allowance at the reset, so "the worse reading wins" is a plain maximum. The rate is fitted over the last hour for the 5-hour window and the last three for the week, and it needs at least ten minutes of rising readings before it counts.</p>
+    <p>An idle window has no recent rate, and then the plan figure stands alone. Reading idle as a rate of zero would grade an idle session better than a working one.</p>
+  </StoryCard>
+
+  <StoryCard i={7} stage={stages[7]}>
+    <p class="sf-lead">The 5-hour window and the model window have no plan, so their landing is the plain projection.</p>
+    <div class="sf-scene">
+      <div class="sf-step">landing = used + average rate × time left</div>
+      <div class="sf-step">below a tenth of the window <span class="dim">· too early to project</span></div>
+      <div class="sf-step">beside it <span class="dim">· the recent-rate landing, the worse one wins</span></div>
+    </div>
+    <p>A reading arrives as a whole percent. Five percent of the way into a window, half a point of rounding moves the projection by ten points either way. So for the first tenth of a window no landing is formed, and the level itself is graded on the same band. The level is never above the landing, so that can only under-warn.</p>
+    <p>On these two windows a landing past 100% means requests refused before the reset. The amber stretch up to {band[1].toFixed(1)}% is deliberate: the same band everywhere, read the same way.</p>
+  </StoryCard>
+
+  <StoryCard i={8} stage={stages[8]}>
+    <p class="sf-lead">Context is graded on its level, against a band from half full to seven tenths full.</p>
+    <div class="sf-scene">
+      <pre>{`export const CONTEXT_BAND = [50, 70];
+{ ok: "Plenty of room", warn: "Clear at the next natural break", bad: "Clear now" }`}</pre>
+    </div>
+    <p>Context fill is the conversation's size against the model's window. It has no reset to land at, so its level is the grade. The three verdicts are instructions rather than descriptions, because the only action context fill ever calls for is clearing or compacting the conversation.</p>
+  </StoryCard>
+
+  <StoryCard i={9} stage={stages[9]}>
+    <p class="sf-lead">The first thing on the line is the effort level, and pressing it opens Claude Code's own picker.</p>
+    <div class="sf-scene">
+      <pre>{`export const effortFromReply = (text) =>
+  /Set effort level to ([a-z]+)\\b/i.exec(text ?? '')?.[1]?.toLowerCase() ?? null`}</pre>
+    </div>
+    <p>The chip is a button that runs <code>/effort</code>, and Alt+E opens the same picker from the prompt. The level shown comes from the status line's capture, or from the picker's own reply the moment it is answered. The time of the last reply is kept, so a capture written before it cannot put the old level back.</p>
+  </StoryCard>
+
+  <StoryCard i={10} stage={stages[10]}>
+    <p class="sf-lead">Readings refresh on a minute timer, after every answer, and when the engine measures the session.</p>
+    <div class="sf-scene">
+      <pre>{`$.clock.every(60_000, () => { void refreshNow($); ... })
+on('turn.step', ...)        // after each main response: refreshSoon($)
+on('session.measure', ...)  // refreshSoon($)`}</pre>
+    </div>
+    <p>The account reading is the expensive one. Claude's usage service rate-limits, and a 429 arrived with only two callers, so every display shares one slot: the shared file's modification time. A display fetches only when the file is older than five minutes, and it touches the file before fetching, which claims the slot for everyone else.</p>
+    <p>One fast timer does run, every five seconds, and it only lists the helpers and shells still running. It never refreshes a reading.</p>
+  </StoryCard>
+
+  <StoryCard i={11} stage={stages[11]}>
+    <p class="sf-lead">The grading math lives in one module, and a check refuses a copy that drifts from it.</p>
+    <div class="sf-scene">
+      <div class="sf-step">vscode-hud/hud-core.mjs <span class="dim">· the source, loaded by the VS Code sidebar</span></div>
+      <div class="sf-step">mods/hud-strip <span class="dim">· grades with it</span></div>
+      <div class="sf-step">four other mods <span class="dim">· its clock and text helpers only</span></div>
+      <div class="sf-step">a sync script copies it · a guard compares every copy <span class="ok">identical</span></div>
+    </div>
+    <p>Claude Code loads each mod from its own folder, so a mod cannot import a file outside it. The module is therefore copied into each mod that uses it, six copies in all. A sync script writes the copies. A guard compares each one to the source and refuses any commit to the setup that touches them while one differs. Its control plants a changed band constant in a copy and must see the difference.</p>
+    <p>Only two of the six grade anything: the sidebar and this strip. That is the property that matters. They run the same file, so they cannot disagree about a colour.</p>
+  </StoryCard>
+
+  <StoryCard i={12} stage={stages[12]}>
+    <p class="sf-lead">Every reading on this page was taken during the build that wrote it, and graded by the module itself.</p>
+    <ul>
+      {samples.map((s) => (
+        <li><b>{s.label}, {et(s.at)} ET.</b> 5-hour {land(s.five)}; week {s.week ? `${s.week.pct}%, landing ${s.week.landing ?? '–'}%` : '–'}; context {s.context ? `${s.context.pct}%` : '–'}.</li>
+      ))}
+    </ul>
+    <p>Only named fields were kept from each reading: the three windows' percents and resets, the cache's expiry and the context fill. The script that took them hands each one to the HUD's own grading functions rather than a copy of the math, so a figure here is the figure the strip drew.</p>
+  </StoryCard>
+</StoryFrame>
+
+<style>
+  .hs-panel { display: grid; gap: 0.5rem; }
+  .hs-at { font-size: 0.66rem; opacity: 0.65; }
+  .hs-strip { display: flex; flex-wrap: wrap; gap: 0.2rem 0.7rem; font-size: 0.74rem; line-height: 1.5; }
+  .hs-g { white-space: nowrap; }
+  .hs-l { opacity: 0.6; }
+  .hs-bar { color: var(--color-accent-2); letter-spacing: 0.02em; }
+  .hs-g[data-band="warn"] .hs-bar { color: var(--color-warn); }
+  .hs-g[data-band="bad"] .hs-bar, .hs-g[data-band="cold"] .hs-bar { color: var(--color-down); }
+  .hs-dim { opacity: 0.55; font-size: 0.66rem; }
+</style>
+
+<script>
+  import { runStory } from '../../lib/story-runner';
+  const root = document.querySelector<HTMLElement>('.sf[data-story="hud"]');
+  if (root) runStory(root, {
+    onStage: (_i, s, r) => {
+      r.querySelectorAll<HTMLElement>('.hs-g[data-g]').forEach((g) => {
+        const b = s[`band_${g.dataset.g}`];
+        if (b) g.dataset.band = String(b); else delete g.dataset.band;
+      });
+      r.querySelectorAll<SVGElement>('.hw-compact [data-sample]').forEach((el) => el.classList.toggle('cur', el.dataset.sample === s.sample));
+    },
+  });
+</script>

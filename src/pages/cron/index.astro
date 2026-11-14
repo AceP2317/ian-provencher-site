@@ -1,0 +1,120 @@
+---
+/**
+ * /cron — every scheduled job that actually runs, described in plain words.
+ *
+ * WHAT THIS REPLACED. Until 2026-09-25 the page listed ten jobs read from the Hermes
+ * second brain's public model, and Hermes was shut down on 2026-08-02 — so for seven
+ * weeks it showed only dead jobs and none of the ~37 running ones. Those ten now sit
+ * at the foot, dimmed and dated (D62), and the running list is read from where each
+ * job is defined. Times are rounded on purpose: an exact time tells a reader when a
+ * security check fires (the operator's call, 2026-09-25).
+ */
+import PageLayout from '../../layouts/PageLayout.astro';
+import Icon from '../../components/Icon.astro';
+import PipelineFlow from '../../components/PipelineFlow.astro';
+import { bySlug } from '../../data/sections';
+import { runningJobs, retiredJobs, runningCount, undescribedCount, CADENCE_ORDER } from '../../data/cron';
+
+const section = bySlug.get('cron')!;
+const groups = CADENCE_ORDER
+  .map((c) => ({ cadence: c, items: runningJobs.filter((j) => j.cadence === c) }))
+  .filter((g) => g.items.length > 0);
+const hosts = [...new Set(runningJobs.map((j) => j.host))];
+const retiredOn = retiredJobs[0]?.retiredOn ?? null;
+const retiredPretty = retiredOn
+  ? new Intl.DateTimeFormat('en-GB', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'UTC' })
+      .format(new Date(retiredOn + 'T00:00:00Z'))
+  : null;
+---
+<PageLayout dataSlug="cron" title="Cron jobs" description={section.description} image="/og/cron.png?v=2">
+  <section class="section">
+    <div class="mx-auto max-w-4xl px-6">
+      <div class="max-w-2xl">
+        <p class="mono-label">Cron jobs · {runningCount} running</p>
+        <h1 class="mt-2 font-display text-title font-semibold text-ink">
+          The machinery that runs itself
+        </h1>
+        <p class="mt-4 text-base leading-relaxed text-ink-muted">
+          Every scheduled job across my setup — on {hosts.join(', ').replace(/, ([^,]*)$/, ' and $1')} —
+          read from where each one is defined and described in plain words. Times are rounded on
+          purpose: the page says how often a job runs, never the minute it fires.
+        </p>
+        {undescribedCount > 0 && (
+          <p class="mt-3 text-sm leading-relaxed text-ink-faint">
+            {undescribedCount === 1 ? 'One more job runs' : `${undescribedCount} more jobs run`} that
+            {undescribedCount === 1 ? ' has' : ' have'} not been described yet; {undescribedCount === 1 ? 'it is' : 'they are'} counted above
+            and named here once written up.
+          </p>
+        )}
+      </div>
+
+      <div class="mt-8">
+        <PipelineFlow
+          label="What each scheduled job does, unattended"
+          stages={[
+            { name: 'schedule', note: 'a timer fires' },
+            { name: 'trigger', note: 'the job wakes' },
+            { name: 'run', note: 'build · guard · tidy', lit: true },
+            { name: 'report', note: 'failures surface' },
+            { name: 'done', note: 'no hands needed', lit: true },
+          ]}
+        />
+      </div>
+
+      <div class="mt-10 space-y-10">
+        {groups.map((g) => (
+          <div>
+            <div class="flex items-center gap-3">
+              <h2 class="section-index">{g.cadence}</h2>
+              <span class="h-px flex-1 bg-line"></span>
+              <span class="font-mono text-xs text-ink-faint">{g.items.reduce((n, j) => n + j.count, 0)}</span>
+            </div>
+            <div class="mt-4 space-y-3">
+              {g.items.map((j) => (
+                <div class="panel flex items-start gap-4 p-4">
+                  <span class="mt-0.5 grid h-9 w-9 shrink-0 place-items-center rounded-lg border border-line bg-surface-2 text-indigo">
+                    <Icon name="timer" size={16} />
+                  </span>
+                  <div class="min-w-0 flex-1">
+                    <div class="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
+                      <h3 class="font-display text-base font-semibold tracking-tight text-ink">
+                        {j.label}{j.count > 1 && <span class="ml-1.5 font-mono text-xs font-normal text-ink-faint">× {j.count}</span>}
+                      </h3>
+                      <span class="rounded border border-line bg-surface-2 px-1.5 py-0.5 font-mono text-[0.65rem] text-indigo">{j.host}</span>
+                    </div>
+                    <p class="mt-1 text-sm leading-relaxed text-ink-muted">{j.purpose}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* The Hermes jobs, retired in place: dimmed, dated, never shown as running (D62).
+          data-retired marks them for the retired-copy gate. */}
+      {retiredJobs.length > 0 && (
+        <div class="mt-16 opacity-70" data-retired={retiredOn ?? ''}>
+          <div class="flex items-center gap-3">
+            <h2 class="section-index">Retired</h2>
+            <span class="h-px flex-1 bg-line"></span>
+            <span class="chip border-line-2 text-ink-faint">Retired {retiredPretty}</span>
+          </div>
+          <p class="mt-3 max-w-2xl text-sm leading-relaxed text-ink-faint">
+            These ran on the Hermes second brain until it was shut down. They are kept as the record
+            of what that system did, and none of them runs today.
+          </p>
+          <ul class="mt-4 grid grid-cols-1 gap-2 sm:grid-cols-2">
+            {retiredJobs.map((j) => (
+              <li class="rounded-[var(--r-md)] border border-line px-3 py-2">
+                <span class="text-sm font-medium text-ink-muted">{j.label}</span>
+                <span class="ml-2 font-mono text-[0.65rem] text-ink-faint">{j.cadence}</span>
+                <p class="mt-0.5 text-xs leading-relaxed text-ink-faint">{j.purpose}</p>
+              </li>
+            ))}
+          </ul>
+        </div>
+      )}
+    </div>
+  </section>
+</PageLayout>

@@ -1,0 +1,475 @@
+---
+/**
+ * PlanModeStory: the whole "Plan mode, enforced" page, drawn as two drawing sheets. Sheet one holds the
+ * title block and the flowchart, one stage at a time. Sheet two lays out the post's own sections, cut at
+ * each heading, with every {{figure}} placeholder filled from src/data/story-figures.generated.json.
+ */
+import F from '../../data/story-figures.generated.json';
+import { figure, n, et } from './story';
+import { site } from '../../data/site';
+
+interface Props { html: string; data: { title: string; description: string; publishedAt: Date; updatedAt?: Date } }
+const { html, data } = Astro.props;
+
+const day = (ms: number) =>
+  new Intl.DateTimeFormat('en-GB', { timeZone: 'America/New_York', day: 'numeric', month: 'long', year: 'numeric' }).format(new Date(ms));
+const filled = html.replace(/\{\{([\w.]+)(?:\|(et|day))?\}\}/g, (_m, path: string, fmt?: string) => {
+  const v = figure<number | string>(F, path);
+  if (fmt === 'et') return `${et(Number(v))} ET`;
+  if (fmt === 'day') return day(Number(v));
+  return String(n(v));
+});
+if (filled.includes('{{')) throw new Error('plan-mode: a {{…}} placeholder in the post was not filled');
+
+const parts = filled.split(/(?=<h2[\s>])/);
+if (!parts[0].startsWith('<h2') && parts.shift()!.trim()) throw new Error('plan-mode: the post has text before its first heading, which no sheet has room for');
+const sections = parts.map((p) => {
+  const m = /^<h2 id="([^"]+)">([\s\S]*?)<\/h2>([\s\S]*)$/.exec(p);
+  if (!m) throw new Error(`plan-mode: cannot read the heading of "${p.slice(0, 60)}"`);
+  return { id: m[1], title: m[2], body: m[3] };
+});
+const one = (title: string) => {
+  const s = sections.find((x) => x.title === title);
+  if (!s) throw new Error(`plan-mode: the post has no "${title}" section`);
+  return s;
+};
+const overview = one('In one minute');
+const record = one('The record');
+const kit = one('Take the kit');
+const details = sections.filter((s) => /^Detail [A-Z]\. /.test(s.title)).map((s) => ({ ...s, letter: s.title[7], name: s.title.slice(10) }));
+const strays = sections.filter((s) => ![overview, record, kit].includes(s) && !details.some((d) => d.id === s.id));
+if (strays.length) throw new Error(`plan-mode: no place on the sheet for "${strays.map((s) => s.title).join('", "')}"`);
+if (details.map((d) => d.letter).join('') !== 'ABCDEFGHIJ'.slice(0, details.length)) throw new Error('plan-mode: the details must run A, B, C… in order');
+
+const rev = [...record.body.matchAll(/<tr>\s*<td>([^<]*)<\/td>/g)].at(-1)?.[1]?.trim();
+if (!rev || !/^[A-Z]$/.test(rev)) throw new Error('plan-mode: the record table needs a revision letter in the first cell of its last row');
+const takeBody = kit.body.replace(/<p><a ([^>]*)>([^<]*)<\/a><\/p>\s*$/,'<p class="d-go"><a class="d-btn" $1>$2</a></p>');
+if (takeBody === kit.body) throw new Error('plan-mode: "Take the kit" must end on a paragraph holding only its link');
+
+const dated = data.updatedAt ?? data.publishedAt;
+const planModel = figure<string>(F, 'watch.planning.model');
+const buildModel = figure<string>(F, 'watch.build.model');
+const guide = figure<string>(F, 'watch.build.guide');
+const split = guide === planModel ? `${planModel} plans and guides, and ${buildModel} builds` : `${planModel} plans, ${guide} guides, and ${buildModel} builds`;
+
+type Kind = 'set' | 'hook' | 'you' | 'cc';
+const KIND: Record<Kind, string> = { set: 'a setting', hook: 'a hook', you: 'my answer', cc: 'Claude Code' };
+const ST: { n: string; t: string; k: Kind; s: string; sub?: string }[] = [
+  { n: 'Plan mode', t: 'Plan mode first', k: 'set',
+    s: 'Every session starts read-only. Claude reads, searches and asks, and nothing on the machine changes until a plan is approved.' },
+  { n: 'Method', t: 'The method loads', k: 'hook',
+    s: 'On the first planning turn, a hook puts the interview method into Claude’s context. Claude sizes the interview to the ask and says which branch it took.' },
+  { n: 'Interview', t: 'The interview', k: 'hook',
+    s: 'Every decision arrives as a box of options. A hook refuses a box I could not answer well, and the restatement of the whole build goes inside the box for me to break.' },
+  { n: 'Seal', t: 'The seal', k: 'hook',
+    s: 'The plan carries the intent I confirmed, and every step ends with one command that proves it. A plan missing either cannot be approved.' },
+  { n: 'Watch or walk', t: 'Watch or walk', k: 'you', sub: 'the decision',
+    s: 'The last question is whether I will watch the build or walk away from it, and my setup offers a third answer, build here. The answer goes into the plan as a line of its own.' },
+  { n: 'Exit gate', t: 'The exit gate', k: 'hook',
+    s: 'Claude cannot leave plan mode until a hook has read the plan and found nothing to refuse.' },
+  { n: 'Fresh window', t: 'A fresh window', k: 'hook',
+    s: 'Approving opens a new auto-mode session in the same folder, for a watch or a walk-away. The build starts from the plan alone, without the interview riding along on every request.' },
+  { n: 'Build', t: 'Two kinds of build', k: 'cc', sub: 'walk: /goal judge<br>watch: watch stops',
+    s: 'Walked away from, the build runs under a <code>/goal</code>, and a separate model checks the plan’s tally after every turn. Watched, it has no grader, and it stops to ask me at each watch stop the plan names.' },
+  { n: 'Guide', t: 'A guide on call', k: 'cc', sub: 'when the build asks',
+    s: `The build model can ask a stronger model for advice: before leaving the plan’s path, when the same check fails twice, and before reporting done. Here ${split}.` },
+];
+// Desktop runs right along the top row, down, then left; a phone snakes three across. The dashed arrow is the guide, on call.
+const DESK = ['ar-r', 'ar-r', 'ar-r', 'ar-r', 'ar-r', 'ar-d', 'ar-l', 'ar-l dash', ''];
+const PHONE = ['pr', 'pr', 'pd', 'pl', 'pl', 'pd', 'pr', 'pr', ''];
+const ZT = ['1', '2', '3', '4', '5', '6'];
+const ZL = ['A', 'B', 'C', 'D'];
+---
+<div class="pm">
+  <div class="d-ground">
+    <section class="d-sheet" aria-label="Sheet 1 of 2">
+      <div class="d-ztop" aria-hidden="true">{ZT.map((z) => <span>{z}</span>)}</div>
+      <div class="d-zleft" aria-hidden="true">{ZL.map((z) => <span>{z}</span>)}</div>
+      <div class="d-in d-one">
+        <div class="d-blocks">
+          <div class="d-legend">
+            <p class="d-lab">Symbols</p>
+            <ul>
+              <li><span class="d-sym s-set" aria-hidden="true"></span>a setting</li>
+              <li><span class="d-sym" aria-hidden="true"></span>a hook</li>
+              <li><span class="d-sym s-you" aria-hidden="true"></span>my answer</li>
+              <li><span class="d-sym s-cc" aria-hidden="true"></span>Claude Code</li>
+              <li><span class="d-sym s-dash" aria-hidden="true"></span>on call, when asked</li>
+            </ul>
+          </div>
+          <div class="d-tb">
+            <div class="d-cell wide"><span class="d-lab">Title</span><h1>{data.title}</h1></div>
+            <div class="d-cell wide"><span class="d-lab">Subject</span><p>{data.description}</p></div>
+            <div class="d-cell"><span class="d-lab">Drawn by</span><p>{site.author}</p></div>
+            <div class="d-cell"><span class="d-lab">Date</span><p><time datetime={dated.toISOString()}>{day(dated.getTime())}</time></p></div>
+            <div class="d-cell"><span class="d-lab">Sheet</span><p>1 of 2</p></div>
+            <div class="d-cell"><span class="d-lab">Revision</span><p>{rev}</p></div>
+          </div>
+        </div>
+
+        <div class="d-pic" data-flow-picture role="group" aria-label="The flow from planning to build, one stage at a time">
+          <ol class="d-chart">
+            {ST.map((s, k) => (
+              <li class:list={['d-node', `d-p${k}`, `k-${s.k}`, DESK[k], PHONE[k], k === 0 ? 'on' : 'todo']}>
+                <span class="d-bal" aria-hidden="true">{k + 1}</span>
+                <button type="button" id={`fp-n${k}`} data-fp-go={k} aria-current={k === 0 ? 'step' : undefined}>
+                  {s.n}{s.sub && <span class="d-sub" set:html={s.sub} />}
+                </button>
+                {k === 5 && <span class="d-appr" aria-hidden="true">approval</span>}
+              </li>
+            ))}
+            <li class="d-pn">
+              {ST.map((s, k) => (
+                <div class:list={['d-note', k === 0 && 'is-on']} id={`stage-${k + 1}`} data-stage={k + 1}>
+                  <p class="d-nlab">General note {k + 1}</p>
+                  <div class="d-nt"><h2>{s.t}</h2><span class:list={['chip', `k-${s.k}`]}>{KIND[s.k]}</span></div>
+                  <p class="d-ns" set:html={s.s} />
+                </div>
+              ))}
+              <div class="fp-ctl">
+                <button type="button" class="fp-b" data-fp-step="-1" aria-disabled="true" aria-label="Back one stage">Back</button>
+                <span class="fp-count" data-fp-count aria-hidden="true">1 of {ST.length}</span>
+                <button type="button" class="fp-b fp-b-p" data-fp-step="1" aria-disabled="false" aria-label="Next stage">Next</button>
+              </div>
+            </li>
+          </ol>
+          <p class="sr-only" aria-live="polite" data-fp-live></p>
+        </div>
+      </div>
+    </section>
+
+    <section class="d-sheet d-two" aria-label="Sheet 2 of 2">
+      <div class="d-ztop" aria-hidden="true">{ZT.map((z) => <span>{z}</span>)}</div>
+      <div class="d-zleft" aria-hidden="true">{ZL.map((z) => <span>{z}</span>)}</div>
+      <div class="d-in">
+        <section class="d-panel d-ov" aria-labelledby={overview.id}>
+          <h2 id={overview.id} set:html={overview.title} />
+          <div class="d-body d-cols" set:html={overview.body} />
+        </section>
+
+        <div class="d-mid">
+        <nav class="d-index" aria-label="Details on this sheet">
+          <p class="d-lab">On this sheet</p>
+          <ol>
+            {details.map((d) => (
+              <li><a href={`#${d.id}`}><span class="d-ix" aria-hidden="true">{d.letter}</span><span set:html={d.name} /></a></li>
+            ))}
+            <li><a href={`#${record.id}`}><span class="d-ix" aria-hidden="true"></span>{record.title}</a></li>
+            <li><a href={`#${kit.id}`}><span class="d-ix" aria-hidden="true"></span>{kit.title}</a></li>
+          </ol>
+        </nav>
+
+        <div class="d-details">
+          {details.map((d) => (
+            <section class="d-panel" aria-labelledby={d.id}>
+              <div class="d-ph">
+                <span class="d-bal" aria-hidden="true">{d.letter}</span>
+                <h2 id={d.id}><span class="sr-only">Detail {d.letter}. </span><Fragment set:html={d.name} /></h2>
+              </div>
+              <div class="d-body" set:html={d.body} />
+            </section>
+          ))}
+        </div>
+        </div>
+
+        <section class="d-revbox" aria-labelledby={record.id}>
+          <h2 id={record.id} set:html={record.title} />
+          <div class="d-rev" set:html={record.body} />
+        </section>
+
+        <div class="d-take">
+          <section class="d-panel" aria-labelledby={kit.id}>
+            <h2 id={kit.id} set:html={kit.title} />
+            <div class="d-body" set:html={takeBody} />
+          </section>
+          <div class="d-tb">
+            <div class="d-cell"><span class="d-lab">Sheet</span><p>2 of 2</p></div>
+            <div class="d-cell"><span class="d-lab">Revision</span><p>{rev}</p></div>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+</div>
+
+<style>
+  .pm {
+    --ln: var(--color-ink); --lw: 1.5px; --frame: var(--color-ink); --rad: 2px; --white: var(--color-surface-3);
+    container-type: inline-size;
+    color: var(--color-ink-muted); font-family: var(--font-sans); font-size: 16px; line-height: 1.65;
+  }
+  .pm h1, .pm h2, .pm p { margin: 0; }
+  .pm h1, .pm h2 { font-family: var(--font-display); color: var(--color-ink); font-weight: 500; letter-spacing: -0.012em; text-wrap: balance; }
+  .pm :global(code) {
+    font-family: var(--font-mono); font-size: 0.86em; background: var(--color-void); color: var(--color-ink);
+    padding: 0.05rem 0.3rem; border-radius: var(--rad); overflow-wrap: anywhere; font-variant-ligatures: none;
+  }
+  .pm :global(a) { color: var(--color-accent); text-decoration: underline; text-underline-offset: 3px; }
+  @media (hover: hover) { .pm :global(a:not(.d-btn):hover) { color: var(--color-accent-deep); } }
+
+  .d-ground { background: var(--color-void); padding: clamp(8px, 3cqw, 34px); display: grid; gap: clamp(12px, 3cqw, 34px); }
+  .d-sheet { background: var(--color-surface); border: calc(var(--lw) + 0.5px) solid var(--frame); position: relative; padding: 26px; min-width: 0; }
+  .d-ztop, .d-zleft { position: absolute; display: grid; font: 600 11px/1 var(--font-mono); color: var(--color-ink-muted); }
+  .d-ztop { top: 0; left: 26px; right: 26px; height: 26px; grid-template-columns: repeat(6, 1fr); }
+  .d-ztop span { display: grid; place-items: center; border-left: 1px solid var(--color-line-2); }
+  .d-ztop span:first-child { border-left: 0; }
+  .d-zleft { left: 0; top: 26px; bottom: 26px; width: 26px; grid-template-rows: repeat(4, 1fr); }
+  .d-zleft span { display: grid; place-items: center; border-top: 1px solid var(--color-line-2); }
+  .d-zleft span:first-child { border-top: 0; }
+  .d-in { border: 1px solid var(--frame); padding: clamp(14px, 2.4cqw, 28px); display: grid; grid-template-columns: minmax(0, 1fr); gap: 22px; background: var(--white); min-width: 0; }
+  .d-lab { font: 500 11px/1.2 var(--font-mono); color: var(--color-ink-muted); }
+
+  /* The flowchart. Each box's outline says what holds that stage, and the legend names the outlines. */
+  .d-chart {
+    --gx: 30px; --gy: 34px;
+    list-style: none; margin: 0; padding: 12px 0 0 12px; display: grid;
+    grid-template-columns: repeat(6, minmax(0, 1fr)); gap: var(--gy) var(--gx); align-items: start;
+  }
+  .d-node { position: relative; min-width: 0; display: grid; }
+  .d-node button {
+    appearance: none; width: 100%; min-height: 76px; background: var(--white); border: var(--lw) solid var(--ln);
+    border-radius: var(--rad); padding: 14px 10px 10px; text-align: left; cursor: pointer; color: var(--color-ink);
+    font: 600 13.5px/1.25 var(--font-sans); display: grid; align-content: start; gap: 0.3rem;
+  }
+  .d-node.done button { background: var(--color-canvas); }
+  .d-node.on button { background: var(--color-accent); border-color: var(--color-accent-deep); color: var(--color-on-accent); }
+  .d-sub { font: 500 11.5px/1.3 var(--font-mono); color: var(--color-ink-muted); }
+  .d-node.on .d-sub { color: var(--color-on-accent); }
+  .d-bal {
+    position: absolute; top: -13px; left: -13px; width: 27px; height: 27px; border-radius: 50%; border: var(--lw) solid var(--ln);
+    background: var(--white); display: grid; place-items: center; font: 600 12px/1 var(--font-mono); color: var(--color-ink);
+    z-index: 2; font-variant-numeric: tabular-nums;
+  }
+  .d-node.on .d-bal { background: var(--color-ink); border-color: var(--color-ink); color: var(--white); }
+  @media (hover: hover) { .d-node:not(.on) button:hover { border-color: var(--color-accent); color: var(--color-accent); } }
+
+  .k-set button { border-radius: 999px; padding-inline: 18px; }
+  .k-cc button { border-left: 6px double var(--ln); border-right: 6px double var(--ln); }
+  .k-cc.on button { border-left-color: var(--color-accent-deep); border-right-color: var(--color-accent-deep); }
+  /* My answer is a six-sided box. The clip sits on two layers behind the button, so its focus ring is never cut. */
+  .k-you { --tip: 14px; }
+  .k-you button, .k-you.on button, .k-you.done button { border: 0; background: transparent; position: relative; isolation: isolate; padding-inline: calc(var(--tip) + 2px); }
+  .k-you button::before, .k-you button::after {
+    content: ""; position: absolute; z-index: -1;
+    clip-path: polygon(var(--tip) 0, calc(100% - var(--tip)) 0, 100% 50%, calc(100% - var(--tip)) 100%, var(--tip) 100%, 0 50%);
+  }
+  .k-you button::before { inset: 0; background: var(--ln); }
+  .k-you button::after { inset: 2px; background: var(--white); }
+  .k-you.done button::after { background: var(--color-canvas); }
+  .k-you.on button::before { background: var(--color-accent-deep); }
+  .k-you.on button::after { background: var(--color-accent); }
+  @media (hover: hover) { .k-you:not(.on) button:hover::before { background: var(--color-accent); } }
+
+  .d-pic { scroll-margin-top: 5.5rem; }
+  .d-pn { min-width: 0; scroll-margin: 6rem 0 1rem; }
+  .d-note { display: grid; gap: 0.55rem; align-content: start; border-left: 3px solid var(--color-accent); padding: 0.1rem 0 0.2rem 1rem; }
+  .d-note + .d-note { margin-top: 1.4rem; }
+  .d-nlab { font: 500 12px/1.2 var(--font-mono); color: var(--color-ink-muted); }
+  .d-nt { display: flex; flex-wrap: wrap; align-items: center; gap: 0.4rem 0.8rem; }
+  .d-nt h2 { font-size: 1.25rem; }
+  .d-ns { font-size: 14.5px; line-height: 1.55; color: var(--color-ink); max-width: 66ch; }
+  .chip {
+    display: inline-flex; align-items: center; font: 600 12px/1 var(--font-sans); padding: 5px 10px; border-radius: 999px;
+    border: 1px solid var(--color-line-2); color: var(--color-ink-muted); background: var(--color-surface); white-space: nowrap;
+  }
+  .chip.k-hook { background: var(--color-accent); border-color: var(--color-accent); color: var(--color-on-accent); }
+  .chip.k-you { border-color: var(--color-label); border-width: 1.5px; }
+  .chip.k-cc { border-color: var(--color-accent); color: var(--color-accent); }
+
+  /* With no script every note shows as a list; with one, a single note shows and the buttons step it. */
+  .fp-ctl { display: none; align-items: center; gap: 0.75rem; flex-wrap: wrap; margin: 0.9rem 0 0 calc(1rem + 3px); }
+  @media (scripting: enabled) {
+    .d-note:not(.is-on) { display: none; }
+    .fp-ctl { display: flex; }
+  }
+  .is-live .d-note:not(.is-on) { display: none; }
+  .is-live .fp-ctl { display: flex; }
+  .fp-b {
+    appearance: none; font: 600 14px/1 var(--font-sans); padding: 0.62rem 1.05rem; border-radius: var(--rad);
+    border: 1.5px solid var(--color-accent); background: var(--color-surface); color: var(--color-accent); cursor: pointer;
+  }
+  .fp-b-p { background: var(--color-accent); color: var(--color-on-accent); }
+  .fp-b[aria-disabled="true"] { border-color: var(--color-line-2); background: transparent; color: var(--color-ink-faint); cursor: default; }
+  @media (hover: hover) { .fp-b:not([aria-disabled="true"]):hover { background: var(--color-accent-deep); border-color: var(--color-accent-deep); color: var(--color-on-accent); } }
+  .fp-b:not([aria-disabled="true"]):active { transform: translateY(1px); }
+  .fp-count { font: 500 13px/1 var(--font-mono); color: var(--color-ink-muted); font-variant-numeric: tabular-nums; }
+
+  /* The title block, with the legend beside it. */
+  .d-blocks { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 34rem); gap: 22px; align-items: end; }
+  .d-legend { display: grid; gap: 0.5rem; align-content: end; }
+  .d-legend ul { list-style: none; margin: 0; padding: 0; display: flex; flex-wrap: wrap; gap: 0.6rem 1.4rem; font-size: 13.5px; color: var(--color-ink); }
+  .d-legend li { display: flex; align-items: center; gap: 0.55rem; }
+  .d-sym { width: 38px; height: 20px; border: var(--lw) solid var(--ln); background: var(--white); flex: none; position: relative; }
+  .d-sym.s-set { border-radius: 999px; }
+  .d-sym.s-cc { border-left: 5px double var(--ln); border-right: 5px double var(--ln); }
+  .d-sym.s-you { border: 0; background: var(--ln); clip-path: polygon(8px 0, calc(100% - 8px) 0, 100% 50%, calc(100% - 8px) 100%, 8px 100%, 0 50%); }
+  .d-sym.s-you::after { content: ""; position: absolute; inset: 2px; background: var(--white); clip-path: polygon(7px 0, calc(100% - 7px) 0, 100% 50%, calc(100% - 7px) 100%, 7px 100%, 0 50%); }
+  .d-sym.s-dash { height: 0; border: 0; border-top: var(--lw) dashed var(--ln); background: none; }
+  .d-tb { display: grid; grid-template-columns: 1fr 1fr; border: var(--lw) solid var(--frame); background: var(--white); align-self: end; }
+  .d-cell { padding: 0.5rem 0.75rem; border-bottom: 1px solid var(--frame); border-right: 1px solid var(--frame); display: grid; gap: 0.15rem; min-width: 0; }
+  .d-cell:nth-child(2n) { border-right: 0; }
+  .d-cell.wide { grid-column: 1 / -1; border-right: 0; }
+  .d-tb .d-cell:nth-last-child(-n + 2) { border-bottom: 0; }
+  .d-cell h1 { font-size: clamp(1.5rem, 1.2rem + 1cqw, 2rem); line-height: 1.08; letter-spacing: -0.015em; }
+  .d-cell p { font-size: 13.5px; line-height: 1.45; color: var(--color-ink); }
+
+  /* Sheet two: the minute first, then an index beside the details, then the record and the kit.
+     The index sticks only within its own box, so it stops where the details stop. */
+  .d-mid { display: grid; grid-template-columns: minmax(0, 14rem) minmax(0, 1fr); gap: 22px; align-items: start; min-width: 0; }
+  .d-details { grid-column: 2; display: grid; gap: 22px; min-width: 0; }
+  .d-panel { border: var(--lw) solid var(--frame); padding: clamp(14px, 2cqw, 22px); display: grid; grid-template-columns: minmax(0, 1fr); gap: 0.9rem; min-width: 0; background: var(--white); }
+  .d-panel h2, .d-revbox h2 { font-size: 1.35rem; scroll-margin-top: 6rem; }
+  .d-ph { display: flex; align-items: center; gap: 0.8rem; }
+  .d-ph .d-bal { position: static; flex: none; }
+  .d-body { font-size: 15.5px; color: var(--color-ink-muted); min-width: 0; }
+  .d-body > :global(* + *) { margin-top: 0.9rem; }
+  .d-body :global(p) { max-width: 68ch; }
+  .d-cols { columns: 2 22rem; column-gap: 2.5rem; }
+  .d-cols > :global(p) { break-inside: avoid; margin: 0 0 0.9rem; }
+  .d-body :global(.d-fig) { margin: 0.9rem 0; border: 1px solid var(--color-line-2); background: var(--color-canvas); min-width: 0; max-width: 68ch; }
+  .d-body :global(.d-fig pre) {
+    margin: 0; padding: 0.8rem 0.9rem; overflow-x: auto; white-space: pre; color: var(--color-ink);
+    font: 12.5px/1.65 var(--font-mono); font-variant-ligatures: none;
+  }
+  .d-body :global(.d-fig figcaption) { font: 500 12px/1.4 var(--font-mono); color: var(--color-ink-muted); border-top: 1px solid var(--color-line-2); padding: 0.45rem 0.9rem; }
+
+  .d-index { grid-column: 1; min-width: 0; display: grid; gap: 0.6rem; align-self: start; }
+  .d-index ol { list-style: none; margin: 0; padding: 0; display: grid; gap: 0.15rem; }
+  .d-index a { display: grid; grid-template-columns: 1.6rem minmax(0, 1fr); gap: 0.4rem; padding: 0.3rem 0; font-size: 14px; line-height: 1.35; color: var(--color-ink); text-decoration: none; }
+  @media (hover: hover) { .d-index a:hover { color: var(--color-accent); text-decoration: underline; } }
+  .d-ix { font: 600 12px/1.35 var(--font-mono); color: var(--color-ink-muted); }
+
+  .d-revbox { border: var(--lw) solid var(--frame); min-width: 0; background: var(--white); }
+  .d-revbox h2 { font-size: 1.15rem; padding: 0.6rem 0.8rem; border-bottom: 1px solid var(--frame); }
+  .d-rev :global(table) { border-collapse: collapse; width: 100%; font-size: 13.5px; }
+  .d-rev :global(th), .d-rev :global(td) { text-align: left; vertical-align: top; padding: 0.5rem 0.8rem; border-bottom: 1px solid var(--color-line-2); }
+  .d-rev :global(th) { font: 600 11.5px/1.3 var(--font-mono); color: var(--color-ink-muted); }
+  .d-rev :global(td) { color: var(--color-ink); line-height: 1.45; }
+  .d-rev :global(td:first-child), .d-rev :global(td:nth-child(2)) { font-family: var(--font-mono); font-size: 12.5px; white-space: nowrap; }
+  .d-rev :global(tr:last-child td) { border-bottom: 0; }
+
+  .d-take { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 16rem); gap: 22px; align-items: end; }
+  .d-take :global(.d-go) { margin-top: 1.2rem; }
+  .d-take :global(.d-btn) {
+    display: inline-block; border: 1.5px solid var(--color-accent); border-radius: var(--rad); padding: 0.72rem 1.3rem;
+    background: var(--color-accent); color: var(--color-on-accent); font: 700 15px/1.2 var(--font-sans); text-decoration: none;
+    overflow-wrap: anywhere;
+  }
+  @media (hover: hover) { .d-take :global(.d-btn:hover) { background: var(--color-accent-deep); border-color: var(--color-accent-deep); } }
+  .d-take :global(.d-btn:active) { transform: translateY(1px); }
+
+  @container (min-width: 761px) {
+    .d-blocks { order: 2; }
+    .d-p0 { grid-area: 1 / 1; } .d-p1 { grid-area: 1 / 2; } .d-p2 { grid-area: 1 / 3; }
+    .d-p3 { grid-area: 1 / 4; } .d-p4 { grid-area: 1 / 5; } .d-p5 { grid-area: 1 / 6; }
+    .d-p6 { grid-area: 2 / 6; } .d-p7 { grid-area: 2 / 5; } .d-p8 { grid-area: 2 / 4; }
+    .d-pn { grid-area: 2 / 1 / 3 / 4; padding-right: 1rem; }
+    /* The top row holds only boxes, so they share one height and the down arrow always meets the row below. */
+    .d-p0, .d-p1, .d-p2, .d-p3, .d-p4, .d-p5 { align-self: stretch; }
+    .ar-r::after, .ar-l::after { content: ""; position: absolute; top: 38px; width: var(--gx); border-top: var(--lw) solid var(--ln); }
+    .ar-r::after { left: 100%; }
+    .ar-l::after { right: 100%; }
+    .dash::after { border-top-style: dashed; }
+    .ar-r::before { content: ""; position: absolute; top: 33px; left: calc(100% + var(--gx) - 8px); border: 5px solid transparent; border-left: 8px solid var(--ln); border-right: 0; }
+    .ar-l::before { content: ""; position: absolute; top: 33px; right: calc(100% + var(--gx) - 8px); border: 5px solid transparent; border-right: 8px solid var(--ln); border-left: 0; }
+    .ar-d::after { content: ""; position: absolute; left: 50%; top: 100%; height: var(--gy); border-left: var(--lw) solid var(--ln); }
+    .ar-d::before { content: ""; position: absolute; left: calc(50% - 5px); top: calc(100% + var(--gy) - 8px); border: 5px solid transparent; border-top: 8px solid var(--ln); border-bottom: 0; }
+    .d-appr { position: absolute; top: calc(100% + 9px); right: calc(50% + 9px); font: 500 11px/1 var(--font-mono); color: var(--color-ink-muted); white-space: nowrap; }
+    .d-index { position: sticky; top: 5.5rem; }
+  }
+
+  @container (max-width: 760px) {
+    .d-ztop, .d-zleft, .d-appr, .d-legend { display: none; }
+    .d-sheet { padding: 6px; }
+    .d-in { padding: 10px; gap: 16px; }
+    .d-chart { --gx: 18px; --gy: 24px; grid-template-columns: repeat(3, minmax(0, 1fr)); align-items: stretch; padding: 10px 0 0 10px; }
+    .d-p0 { grid-area: 1 / 1; } .d-p1 { grid-area: 1 / 2; } .d-p2 { grid-area: 1 / 3; }
+    .d-p3 { grid-area: 2 / 3; } .d-p4 { grid-area: 2 / 2; } .d-p5 { grid-area: 2 / 1; }
+    .d-p6 { grid-area: 3 / 1; } .d-p7 { grid-area: 3 / 2; } .d-p8 { grid-area: 3 / 3; }
+    .d-pn { grid-area: 4 / 1 / 5 / 4; }
+    .d-node button { min-height: 54px; font-size: 12.5px; padding: 12px 6px 7px; hyphens: auto; }
+    .k-set button { padding-inline: 10px; }
+    .k-you { --tip: 9px; }
+    .d-sub { display: none; }
+    .d-bal { top: -10px; left: -10px; width: 22px; height: 22px; font-size: 11px; }
+    .pr::after, .pl::after { content: ""; position: absolute; top: 50%; width: var(--gx); border-top: var(--lw) solid var(--ln); }
+    .pr::after { left: 100%; }
+    .pl::after { right: 100%; }
+    .dash::after { border-top-style: dashed; }
+    .pr::before { content: ""; position: absolute; top: calc(50% - 4px); left: calc(100% + var(--gx) - 7px); border: 4px solid transparent; border-left: 7px solid var(--ln); border-right: 0; }
+    .pl::before { content: ""; position: absolute; top: calc(50% - 4px); right: calc(100% + var(--gx) - 7px); border: 4px solid transparent; border-right: 7px solid var(--ln); border-left: 0; }
+    .pd::after { content: ""; position: absolute; left: 50%; top: 100%; height: var(--gy); border-left: var(--lw) solid var(--ln); }
+    .pd::before { content: ""; position: absolute; left: calc(50% - 4px); top: calc(100% + var(--gy) - 7px); border: 4px solid transparent; border-top: 7px solid var(--ln); border-bottom: 0; }
+    .d-ns { font-size: 14px; line-height: 1.5; }
+    .d-blocks { grid-template-columns: minmax(0, 1fr); }
+    .d-mid, .d-take { grid-template-columns: minmax(0, 1fr); gap: 16px; }
+    .d-details { grid-column: 1; }
+    .d-index { padding-bottom: 0.4rem; border-bottom: 1px solid var(--color-line-2); }
+    .d-rev :global(table), .d-rev :global(tbody) { display: block; }
+    .d-rev :global(thead) { display: none; }
+    .d-rev :global(tr) { display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 0.2rem 0.7rem; padding: 0.6rem 0.8rem; border-bottom: 1px solid var(--color-line-2); }
+    .d-rev :global(tr:last-child) { border-bottom: 0; }
+    .d-rev :global(td) { border: 0; padding: 0; }
+    .d-rev :global(td:nth-child(3)) { grid-column: 1 / -1; }
+  }
+</style>
+
+<script>
+  const pic = document.querySelector<HTMLElement>('[data-flow-picture]');
+  if (pic) {
+    const nodes = [...pic.querySelectorAll<HTMLButtonElement>('[data-fp-go]')];
+    const notes = [...pic.querySelectorAll<HTMLElement>('[data-stage]')];
+    const back = pic.querySelector<HTMLElement>('[data-fp-step="-1"]')!;
+    const next = pic.querySelector<HTMLElement>('[data-fp-step="1"]')!;
+    const count = pic.querySelector<HTMLElement>('[data-fp-count]')!;
+    const live = pic.querySelector<HTMLElement>('[data-fp-live]')!;
+    const last = nodes.length - 1;
+    const still = matchMedia('(prefers-reduced-motion: reduce)');
+    let at = 0;
+    const go = (i: number, focus: HTMLElement | null, say: boolean) => {
+      at = Math.max(0, Math.min(last, i));
+      nodes.forEach((b, k) => {
+        b.parentElement!.classList.toggle('done', k < at);
+        b.parentElement!.classList.toggle('on', k === at);
+        b.parentElement!.classList.toggle('todo', k > at);
+        if (k === at) b.setAttribute('aria-current', 'step');
+        else b.removeAttribute('aria-current');
+      });
+      notes.forEach((el, k) => el.classList.toggle('is-on', k === at));
+      back.setAttribute('aria-disabled', String(at === 0));
+      next.setAttribute('aria-disabled', String(at === last));
+      count.textContent = `${at + 1} of ${nodes.length}`;
+      focus?.focus({ preventScroll: true });
+      if (say) live.textContent = `Stage ${at + 1} of ${nodes.length}: ${notes[at].querySelector('h2')!.textContent}. ${notes[at].querySelector('.d-ns')!.textContent}`;
+    };
+    const show = () => notes[at].parentElement!.scrollIntoView({ block: 'nearest', behavior: still.matches ? 'auto' : 'smooth' });
+    pic.addEventListener('click', (e) => {
+      const t = e.target as HTMLElement;
+      const node = t.closest<HTMLElement>('[data-fp-go]');
+      const step = t.closest<HTMLElement>('[data-fp-step]');
+      if (node) go(Number(node.dataset.fpGo), node, true);
+      else if (step && step.getAttribute('aria-disabled') !== 'true') go(at + Number(step.dataset.fpStep), step, true);
+      else return;
+      show();
+    });
+    const KEYS: Record<string, (i: number) => number> = { ArrowRight: (i) => i + 1, ArrowLeft: (i) => i - 1, Home: () => 0, End: () => last };
+    pic.addEventListener('keydown', (e) => {
+      const to = KEYS[e.key];
+      if (!to || e.altKey || e.ctrlKey || e.metaKey || e.shiftKey) return;
+      e.preventDefault();
+      const i = Math.max(0, Math.min(last, to(at)));
+      const t = e.target as HTMLElement;
+      go(i, t.closest('[data-fp-go]') ? nodes[i] : t, true);
+      show();
+    });
+    const fromHash = () => {
+      const m = /^#stage-(\d+)$/.exec(location.hash);
+      if (!m || Number(m[1]) < 1 || Number(m[1]) > nodes.length) return;
+      go(Number(m[1]) - 1, null, false);
+      pic.scrollIntoView({ block: 'start' });
+    };
+    pic.classList.add('is-live');
+    fromHash();
+    addEventListener('hashchange', fromHash);
+  }
+</script>
