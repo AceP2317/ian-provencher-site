@@ -1,0 +1,45 @@
+# Cloudflare Workers static-assets honors this file (same format as Pages).
+# More-specific paths win; every request also gets the site-wide /* block.
+
+# ── Caching ──────────────────────────────────────────────────────────────
+# Content-hashed build output (JS, CSS, fonts) — the filename changes whenever
+# the bytes change, so these are safe to cache forever.
+/_astro/*
+  Cache-Control: public, max-age=31536000, immutable
+
+# Social/OG cards — long-lived but revalidatable (filenames are stable, so they
+# can be regenerated in place).
+/og/*
+  Cache-Control: public, max-age=604800
+
+# Icons — stable, regeneratable.
+/favicon.svg
+  Cache-Control: public, max-age=604800
+/*.png
+  Cache-Control: public, max-age=604800
+
+# ── Security + privacy (site-wide) ───────────────────────────────────────
+/*
+  # Force HTTPS for a year (add "; preload" only when ready — hard to reverse).
+  Strict-Transport-Security: max-age=31536000; includeSubDomains
+  # Don't let browsers MIME-sniff responses into a different content type.
+  X-Content-Type-Options: nosniff
+  # Clickjacking guard (CSP frame-ancestors below is the modern equivalent).
+  X-Frame-Options: SAMEORIGIN
+  # Send only the origin on cross-site navigations; full path same-origin.
+  Referrer-Policy: strict-origin-when-cross-origin
+  # Deny powerful features this site never uses.
+  Permissions-Policy: geolocation=(), camera=(), microphone=(), payment=(), usb=()
+  # The script rule BLOCKS since 2026-10-25 (his pick, D112): a browser refuses any script,
+  # style, font, image or connection it does not name. All 123 live pages and the city were
+  # walked under it first. 'unsafe-inline' covers the islands' inline styles and Astro's
+  # inline reveal script. 'wasm-unsafe-eval' lets the 3D city compile its physics engine
+  # (WebAssembly); without it /world stops. static.cloudflareinsights.com is Cloudflare's
+  # analytics script, which Cloudflare adds to every page for browsers; it reports to
+  # /cdn-cgi/rum on this site, so connect-src stays 'self'. font-src data: lets one small
+  # JetBrains Mono character set load from the stylesheet it is packed into. img-src https:
+  # is for external favicons (Favorites) and article thumbnails (Signal). media-src covers
+  # the podcast audio, served from media.ian-provencher.com (R2). The nightly page walk and
+  # the city and desk walks send this same line (scripts/lib/site-policy.mjs), so a page
+  # that needs something it refuses fails a walk instead of breaking for visitors.
+  Content-Security-Policy: default-src 'self'; script-src 'self' 'unsafe-inline' 'wasm-unsafe-eval' https://static.cloudflareinsights.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; media-src 'self' https://media.ian-provencher.com; font-src 'self' data:; connect-src 'self'; base-uri 'self'; form-action 'self'; object-src 'none'; frame-ancestors 'self'

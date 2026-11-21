@@ -1,0 +1,134 @@
+---
+import PageLayout from '../../layouts/PageLayout.astro';
+import Icon from '../../components/Icon.astro';
+import PipelineFlow from '../../components/PipelineFlow.astro';
+import { bySlug } from '../../data/sections';
+import { liveArchitectures } from '../../data/architectures';
+
+const section = bySlug.get('command-center')!;
+
+/* Until 2026-09-25 this page described a local-first desktop console and read its module
+   list from the console's own registry. The console retired that day and became the one
+   page described below, read-only until 2026-09-27, when it began acting on his own notes
+   and answering the agents (Command_Center_OS CLAUDE.md, "What it acts on"). The console
+   stays at the foot of the page, retired in place (D62), and its diagram is kept as a
+   retired record. */
+
+const principles = [
+  { icon: 'search', title: 'Acts on my list, nothing else', body: 'A tap closes, snoozes or rewords one of my own notes, acknowledges a fault, or answers an agent. It never deletes an item, never approves an agent’s pull request, and never sends anything to another person.' },
+  { icon: 'database', title: 'Derived, not typed', body: 'Every number comes from a live source — git, the session transcripts, my notes list, the agents’ own status files. Nothing on the page is kept current by hand.' },
+  { icon: 'bell-ring', title: 'Honest before calm', body: 'A check that can’t run shows as a fault, never as all clear. Each half of the page says how old it is, and a half that stops reporting turns red instead of looking quiet.' },
+  { icon: 'shield', title: 'Two locks', body: 'An email sign-in at the edge, then the server checks that sign-in again itself — on every request, the page’s own files included.' },
+];
+
+const questions = [
+  { icon: 'layers', title: 'What’s waiting on me', body: 'Open items from my action-notes list, plus each agent’s open questions, pull requests and approvals.' },
+  { icon: 'zap', title: 'What Claude is costing', body: 'Spend today, this week and this month, by model, with the 5-hour and weekly limits — the agents’ spend counted in.' },
+  { icon: 'wrench', title: 'What’s broken', body: 'Failing guard tests, backups, the commit gate, the agents and their box — and any half of the page that stopped reporting.' },
+  { icon: 'git-branch', title: 'What moved', body: 'Commits in the last 24 hours and the week, mine kept apart from automated ones, stalled focus projects, and commits not yet pushed.' },
+];
+---
+<PageLayout title="Command Center" description={section.description} image="/og/command-center.png?v=3">
+  <section class="section">
+    <div class="mx-auto max-w-5xl px-6">
+      <div class="max-w-2xl">
+        <p class="mono-label">Command Center · one page on my phone</p>
+        <h1 class="mt-2 font-display text-title font-semibold text-ink">
+          One page for the whole estate
+        </h1>
+        <p class="mt-4 font-display text-lg leading-relaxed text-cyan">
+          What’s waiting on me, what Claude is costing, what’s broken, and what moved — for every repo I run and both of my agents.
+        </p>
+        <p class="mt-4 text-base leading-relaxed text-ink-muted">
+          A single page on my phone. My PC builds a snapshot every half hour, my two headless
+          agents publish their own status, and a small server folds the two together on every
+          visit, so it answers with the laptop shut. It sends a summary each morning, and
+          buzzes my phone for a new red fault, a new question from an agent, or a snoozed item
+          due back; overnight it stays quiet except for red. Since late September it is also
+          where I act on what is waiting: my own notes, the faults, and the agents’ questions.
+        </p>
+      </div>
+
+      {/* Principles */}
+      <div class="mt-10 grid grid-cols-1 gap-4 sm:grid-cols-2">
+        {principles.map((p) => (
+          <div class="panel flex gap-4 p-5">
+            <span class="grid h-10 w-10 shrink-0 place-items-center rounded-lg border border-line bg-surface-2 text-cyan">
+              <Icon name={p.icon} size={19} />
+            </span>
+            <div>
+              <h2 class="font-display text-base font-semibold tracking-tight text-ink">{p.title}</h2>
+              <p class="mt-1 text-sm leading-relaxed text-ink-muted">{p.body}</p>
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* The four questions */}
+      <div class="mt-12">
+        <div class="flex items-center gap-3">
+          <h2 class="font-display text-head font-semibold text-ink">The four questions</h2>
+          <span class="h-px flex-1 bg-line"></span>
+        </div>
+        <div class="mt-5 grid grid-cols-1 gap-3 sm:grid-cols-2">
+          {questions.map((q) => (
+            <div class="flex gap-3 rounded-lg border border-line bg-surface/50 px-4 py-3">
+              <span class="mt-0.5 text-cyan-deep"><Icon name={q.icon} size={16} /></span>
+              <div>
+                <p class="text-sm font-medium text-ink">{q.title}</p>
+                <p class="mt-0.5 text-sm leading-relaxed text-ink-muted">{q.body}</p>
+              </div>
+            </div>
+          ))}
+        </div>
+      </div>
+
+      {/* Tie-in / safety */}
+      <div class="mt-12 panel bg-surface/40 p-6">
+        <p class="mono-label">How it ties in here</p>
+        <p class="mt-3 max-w-2xl text-sm leading-relaxed text-ink-muted">
+          This public site never connects to it live — it’s gated and private by design.
+          Instead, a reviewed <span class="font-mono text-xs text-cyan-deep">public-safe snapshot</span>
+          is exported: the {liveArchitectures.length} running architectures you can browse
+          here were published through an opt-in gate that strips anything sensitive before it
+          ever reaches the web.
+        </p>
+        <div class="mt-5 flex flex-wrap gap-3">
+          <a href="/architectures/command-center/" class="btn btn-primary text-sm">
+            <Icon name="network" size={15} /> See the architecture
+          </a>
+          <a href="/tools/" class="btn btn-secondary text-sm">Browse the builds</a>
+        </div>
+      </div>
+
+      {/* The safe-export pipeline as a living flow */}
+      <div class="mt-6">
+        <PipelineFlow
+          label="The safe-export pipeline — private infrastructure → reviewed public snapshot"
+          stages={[
+            { name: 'source', note: 'private records' },
+            { name: 'export', note: 'field allowlist' },
+            { name: 'scrub', note: 'denylist' },
+            { name: 'gate', note: 'never ships red', lit: true },
+            { name: 'commit', note: 'reviewable diff' },
+            { name: 'deploy', note: 'live in ~1 min', lit: true },
+          ]}
+        />
+      </div>
+
+      {/* The console it replaced — retired in place (D62). data-retired keeps its words
+          out of check-retired's reach, because they describe it as it ran. */}
+      <div class="mt-16 opacity-70" data-retired="2026-09-25">
+        <p class="mono-label">Retired 25 Sep 2026</p>
+        <h2 class="mt-2 font-display text-head font-semibold text-ink">The console it replaced</h2>
+        <p class="mt-3 max-w-2xl text-sm leading-relaxed text-ink-muted">
+          From July to September this was a local-first operations console on my desktop: a
+          modular Next.js app, a file watcher that streamed every change to the screen,
+          an agent-assignment queue only I could close, and a phone app of its own. It retired
+          when one read-only page did the part I used every day.
+          <a href="/architectures/command-center-console/" class="text-cyan-deep underline underline-offset-2">Its architecture, as it ran.</a>
+        </p>
+      </div>
+    </div>
+  </section>
+</PageLayout>

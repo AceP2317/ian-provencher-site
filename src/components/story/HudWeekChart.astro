@@ -1,0 +1,89 @@
+---
+/**
+ * HudWeekChart — the week as the HUD grades it, on one axis (percent of the weekly allowance): the
+ * front-loaded plan line with its day dividers, the landing band above the allowance, and each sampled
+ * reading with the line to where it lands at the reset. One series of readings, so no legend box; the
+ * caption names every mark, and the table under it holds every value.
+ */
+import { et } from './story';
+type Week = { pct: number; landing: number | null; budget: number | null; edges: number[] | null; elapsed: number | null };
+type Sample = { label: string; at: number; week: Week | null };
+interface Props { samples: Sample[]; band: [number, number]; compact?: boolean }
+const { samples, band, compact = false } = Astro.props;
+
+const pts = samples.filter((s) => s.week && s.week.elapsed != null);
+const edges = pts[0]?.week?.edges ?? [];
+const W = compact ? 260 : 640, H = compact ? 150 : 260;
+const L = compact ? 26 : 40, R = compact ? 8 : 16, T = compact ? 8 : 14, Bm = compact ? 18 : 30;
+const top = Math.ceil((band[1] + 10) / 10) * 10;
+const x = (days: number) => L + (days / 7) * (W - L - R);
+const y = (v: number) => T + (1 - Math.min(v, top) / top) * (H - T - Bm);
+// The plan: two weekend days spend the first share, five weekdays split the rest; edges are its day ends.
+const plan = [0, ...edges, 100];
+const planD = plan.map((v, d) => `${d ? 'L' : 'M'}${x(d).toFixed(1)},${y(v).toFixed(1)}`).join(' ');
+const last = pts.at(-1);
+const fs = compact ? 8 : 10;
+---
+<figure class:list={['hw', compact && 'hw-compact']}>
+  <svg viewBox={`0 0 ${W} ${H}`} role="img" aria-label={`The week on one axis: the plan line, the landing band from ${band[0]} to ${band[1].toFixed(1)} percent, and ${pts.length} sampled readings`}>
+    <rect class="hw-warn" x={L} y={y(band[1])} width={W - L - R} height={y(band[0]) - y(band[1])} />
+    <rect class="hw-bad" x={L} y={y(top)} width={W - L - R} height={y(band[1]) - y(top)} />
+    {[0, edges[1] ?? 35, band[0], Number(band[1].toFixed(1))].map((v) => (
+      <g><line class="hw-grid" x1={L} x2={W - R} y1={y(v)} y2={y(v)} /><text class="hw-ax" x={L - 5} y={y(v) + fs / 3} text-anchor="end" font-size={fs}>{v}</text></g>
+    ))}
+    {[1, 2, 3, 4, 5, 6].map((d) => <line class="hw-day" x1={x(d)} x2={x(d)} y1={T} y2={H - Bm} />)}
+    <line class="hw-axis" x1={L} x2={W - R} y1={H - Bm} y2={H - Bm} />
+    {[1, 2, 3, 4, 5, 6, 7].map((d) => <text class="hw-ax" x={x(d - 0.5)} y={H - Bm + fs + 4} text-anchor="middle" font-size={fs}>{compact ? d : `day ${d}`}</text>)}
+    <path class="hw-plan" d={planD} />
+    {pts.map((s) => s.week!.landing != null && (
+      <line class="hw-proj" data-sample={s.label} x1={x(s.week!.elapsed! * 7)} y1={y(s.week!.pct)} x2={x(7)} y2={y(s.week!.landing!)} />
+    ))}
+    {pts.map((s) => (
+      <g class="hw-pt" data-sample={s.label}>
+        <circle cx={x(s.week!.elapsed! * 7)} cy={y(s.week!.pct)} r={compact ? 3.5 : 5} />
+        <circle class="hw-hit" cx={x(s.week!.elapsed! * 7)} cy={y(s.week!.pct)} r="12"><title>{`${s.label}, ${et(s.at)} ET: week ${s.week!.pct}%, the plan ${s.week!.budget ?? '–'}% by then, lands at ${s.week!.landing ?? '–'}%`}</title></circle>
+      </g>
+    ))}
+    {!compact && last?.week?.landing != null && <text class="hw-end" x={x(7) - 4} y={y(last.week.landing) - 8} text-anchor="end">lands {last.week.landing}%</text>}
+    {!compact && <text class="hw-note" x={x(2) + 10} y={y(edges[1] ?? 35) + 16}>plan: {edges[1] ?? 35}% by the weekend's close</text>}
+  </svg>
+  {!compact && <figcaption>Percent of the weekly allowance. The line is the plan; the dots are this build's readings, each with a line to where it lands at the reset. The amber band starts at the whole allowance, and red starts where the weekend's ceiling maps.</figcaption>}
+  {!compact && (
+    <details class="hw-table">
+      <summary>The readings as a table</summary>
+      <table>
+        <thead><tr><th>Reading</th><th>Time (ET)</th><th>Used</th><th>Plan by then</th><th>Lands at</th></tr></thead>
+        <tbody>{pts.map((s) => <tr><td>{s.label}</td><td>{et(s.at)}</td><td>{s.week!.pct}%</td><td>{s.week!.budget ?? '–'}%</td><td>{s.week!.landing ?? '–'}%</td></tr>)}</tbody>
+      </table>
+    </details>
+  )}
+</figure>
+
+<style>
+  .hw { margin: 0; display: grid; gap: 0.5rem; }
+  .hw svg { display: block; width: 100%; height: auto; overflow: visible; }
+  .hw-warn { fill: var(--color-warn); opacity: 0.12; }
+  .hw-bad { fill: var(--color-down); opacity: 0.1; }
+  .hw-grid { stroke: var(--color-line); stroke-width: 1; }
+  .hw-day { stroke: var(--color-line); stroke-width: 1; opacity: 0.6; }
+  .hw-axis { stroke: var(--color-line-2); stroke-width: 1; }
+  .hw-ax { fill: var(--color-ink-faint); font-family: var(--font-mono); font-variant-numeric: tabular-nums; }
+  .hw-plan { fill: none; stroke: var(--color-ink-muted); stroke-width: 2; stroke-linejoin: round; }
+  .hw-proj { stroke: var(--color-accent); stroke-width: 1; opacity: 0.45; }
+  .hw-pt circle:not(.hw-hit) { fill: var(--color-accent); stroke: var(--color-canvas); stroke-width: 2; }
+  .hw-hit { fill: transparent; stroke: none; }
+  .hw-end, .hw-note { fill: var(--color-ink); font-family: var(--font-mono); font-size: 11px; }
+  .hw-note { fill: var(--color-ink-muted); font-size: 10px; }
+  .hw figcaption { font-size: 0.8rem; color: var(--color-ink-faint); }
+  .hw-table summary { cursor: pointer; font-size: 0.8rem; color: var(--color-ink-muted); }
+  .hw-table table { margin-top: 0.5rem; width: 100%; border-collapse: collapse; font-family: var(--font-mono); font-size: 0.74rem; }
+  .hw-table th, .hw-table td { text-align: left; padding: 0.2rem 0.4rem; border-bottom: 1px solid var(--color-line); font-variant-numeric: tabular-nums; }
+  /* In the dark panel: the current reading is the one drawn solid. */
+  .hw-compact .hw-plan { stroke: var(--color-canvas); opacity: 0.7; }
+  .hw-compact .hw-ax { fill: var(--color-canvas); opacity: 0.6; }
+  .hw-compact .hw-grid, .hw-compact .hw-day, .hw-compact .hw-axis { stroke: var(--color-canvas); opacity: 0.18; }
+  .hw-compact .hw-pt circle:not(.hw-hit) { fill: var(--color-accent-2); stroke: var(--color-ink); opacity: 0.35; }
+  .hw-compact .hw-pt.cur circle:not(.hw-hit) { opacity: 1; }
+  .hw-compact .hw-proj { stroke: var(--color-accent-2); opacity: 0; }
+  .hw-compact .hw-proj.cur { opacity: 0.7; }
+</style>

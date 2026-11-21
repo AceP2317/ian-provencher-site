@@ -1,0 +1,87 @@
+---
+/**
+ * /world — the estate as a walkable city: every family of the estate as a district, one building per record,
+ * with a clock that runs and rewinds. The orrery view is kept at /world/orrery.
+ */
+import PageLayout from '../../layouts/PageLayout.astro';
+import WorldCity from '../../components/islands/world/WorldCity.jsx';
+import { bySlug } from '../../data/sections';
+import { WORLD } from '../../data/world';
+import { BUILT_BY } from '../../components/islands/world/city/built.js';
+
+const section = bySlug.get('world')!;
+const origin = new URL(Astro.site!).origin;
+const records = WORLD.reduce((n, p) => n + p.moons.length, 0);
+
+const ORDER = ['cron', 'builds', 'architectures', 'repos', 'stack'];
+const planets = ORDER.map((id) => {
+  const p = WORLD.find((x) => x.id === id);
+  if (!p) throw new Error(`the city has no family "${id}" in src/data/world.ts`);
+  return {
+    id: p.id,
+    label: p.label,
+    moons: p.moons.map((m) => ({
+      id: m.id,
+      label: m.label,
+      detail: m.detail,
+      cadence: m.cadence,
+      metric: m.metric,
+      daysSincePush: m.daysSincePush,
+    })),
+  };
+});
+
+const schema = [
+  {
+    '@type': 'CreativeWork',
+    '@id': `${origin}/world/#exhibit`,
+    name: section.title,
+    url: `${origin}/world/`,
+    description: section.description,
+    isPartOf: { '@id': `${origin}/#website` },
+    about: { '@id': `${origin}/#person` },
+    creator: { '@id': `${origin}/#person` },
+  },
+  {
+    '@type': 'BreadcrumbList',
+    '@id': `${origin}/world/#breadcrumb`,
+    itemListElement: [
+      { '@type': 'ListItem', position: 1, name: 'Home', item: `${origin}/` },
+      { '@type': 'ListItem', position: 2, name: 'The World', item: `${origin}/world/` },
+    ],
+  },
+];
+---
+<PageLayout
+  title="The World"
+  description={section.description}
+  image="/og/claude-setup.png?v=2"
+  schema={schema}
+  pageSources={['src/data/world.ts', 'src/components/islands/world/city/layout.js', 'src/components/islands/world/WorldCity.jsx']}
+>
+  <section class="relative overflow-hidden border-b border-line">
+    <div class="bg-grid bg-grid-fade pointer-events-none absolute inset-0 -z-10 opacity-60"></div>
+    <div class="relative mx-auto max-w-5xl px-6 pt-20 pb-14 sm:pt-28 sm:pb-16">
+      <p class="mono-label">The World · a walkable city</p>
+      <h1 class="mt-3 max-w-3xl font-display text-title font-semibold text-ink">
+        The whole estate, as a city you can walk through.
+      </h1>
+      <p class="mt-5 max-w-2xl text-lg leading-relaxed text-ink-muted">
+        Each family of the estate is a district, and every record is a building you can read. The traffic, the rain
+        and the lit windows follow a clock you can speed up or rewind. This shows {records} records across {WORLD.length} families.
+      </p>
+      <p class="mt-4 max-w-2xl text-sm leading-relaxed text-ink-faint">
+        Prefer the diagram? <a href="/world/orrery/" class="underline">The orrery view</a>.
+      </p>
+      <p class="mt-4 max-w-2xl text-sm leading-relaxed text-ink-faint">
+        Planned with Claude {BUILT_BY.planner}, built entirely with Claude {BUILT_BY.model}, at {BUILT_BY.effort} effort, for testing.
+      </p>
+    </div>
+  </section>
+
+  <section class="section">
+    <div class="mx-auto max-w-6xl px-6">
+      <WorldCity planets={planets} client:visible />
+    </div>
+  </section>
+</PageLayout>
