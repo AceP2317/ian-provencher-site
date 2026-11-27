@@ -1,0 +1,34 @@
+{
+  "doctrineVersion": "v58.2",
+  "hookEvents": [
+    "UserPromptSubmit",
+    "PreSkillShellCommand",
+    "PreToolUse",
+    "PermissionRequest",
+    "PermissionDenied",
+    "PostModelSwitch",
+    "PostToolUse",
+    "PostToolUseFailure",
+    "SessionStart",
+    "SessionEnd",
+    "SubagentStop",
+    "Stop"
+  ],
+  "hookCount": 68,
+  "perEvent": {
+    "UserPromptSubmit": 6,
+    "PreSkillShellCommand": 3,
+    "PreToolUse": 22,
+    "PermissionRequest": 1,
+    "PermissionDenied": 1,
+    "PostModelSwitch": 3,
+    "PostToolUse": 10,
+    "PostToolUseFailure": 1,
+    "SessionStart": 14,
+    "SessionEnd": 1,
+    "SubagentStop": 2,
+    "Stop": 4
+  },
+  "skillCount": 60,
+  "agentCount": 2
+}

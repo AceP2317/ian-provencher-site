@@ -1,0 +1,37 @@
+---
+/**
+ * BuildLine — the page's "updated" day and the site's build stamp, on every page (house rule, Ian
+ * 2026-10-08; D94). scripts/check-stamp.mjs refuses a built page without both.
+ *
+ * The stamp comes from scripts/lib/build-stamp.cjs at config time (__BUILD_STAMP__), the same file
+ * every tool and site of the house uses. The day comes from src/lib/page-date.ts.
+ *
+ * Plain small type, not .mono-label: that style sets capitals, which would print the commit code
+ * as "D6A5441" when git writes it "d6a5441", and a code that cannot be pasted back is no use.
+ */
+import { pageDay } from '../lib/page-date';
+
+declare const __BUILD_STAMP__: string;
+
+interface Props {
+  dataSlug?: string;
+  dataDate?: string;
+  /** Data files this page renders beyond its own file, e.g. a generated JSON a template reads. */
+  sources?: string[];
+  class?: string;
+}
+const { dataSlug, dataDate, sources, class: klass = '' } = Astro.props;
+const day = pageDay({ routePattern: Astro.routePattern, dataSlug, dataDate, sources });
+const stamp = typeof __BUILD_STAMP__ === 'undefined' ? 'unstamped build' : __BUILD_STAMP__;
+// "25 Sep 2026", the stamp's own format. en-GB would print "Sept", so the parts are assembled.
+const when = day ? new Date(day + 'T00:00:00Z') : null;
+const pretty = when
+  ? `${when.getUTCDate()} ${new Intl.DateTimeFormat('en-US', { month: 'short', timeZone: 'UTC' }).format(when)} ${when.getUTCFullYear()}`
+  : '';
+---
+<p class={`flex flex-wrap items-center gap-x-3 gap-y-1 font-mono text-[0.6875rem] text-ink-faint ${klass}`}>
+  <span data-page-date={day ?? 'unknown'} title="The day this page's own content last changed: its file, its post or its data.">
+    {day && <>Page updated <time datetime={day} class="text-ink-muted">{pretty}</time></>}
+  </span>
+  <span data-build-stamp title="Which build of the site this is: the build number counts every saved change, then the day it was built (ET) and the code of the change it was built from.">{stamp}</span>
+</p>
